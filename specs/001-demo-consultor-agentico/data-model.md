@@ -27,7 +27,8 @@ interface EvidenceSlot { slot: Slot; kind: 'documento'|'transcripcion'|'entrevis
   name: string /* admite {empresa} */; detail: string; excerpts: Excerpt[] }      // origen: 'ejemplo'
 interface Excerpt { id: string; slot: Slot; locator: string; text: string }        // «min 14:20», «pág. 12»
 interface Finding { id: string; dimension: Dimension; title: string; text: string;
-  citations: Citation[]; verified: boolean; unverifiedReason?: string }       // 8 por diagnóstico, 1 con verified=false
+  citations: Citation[]; verified: boolean; unverifiedReason?: string;
+  plainText?: string /* se añade en L5b (no existe en L3): texto no técnico para el Contacto, FR-035 */ } // 8 por diagnóstico, 1 con verified=false
 interface Citation { slot: Slot; excerptId: string }                           // ≥ 1 por hallazgo (FR-017); resuelve por ranura
 interface DiagnosisTemplate { maturityIndex: number; findings: Finding[] }         // UNA, compartida por todos los proyectos
 interface StrategyTemplate { risks: StrategyItem[]; route: StrategyItem[];
@@ -44,17 +45,18 @@ Cantidades iniciales (NO VERIFICADO que sean las definitivas; se fijan en las ta
 ### 2.1 Plantillas únicas compartidas
 
 - Existe **UNA** `DiagnosisTemplate` (8 hallazgos, 6 dimensiones) y **UNA** `StrategyTemplate`, usadas por **todos** los proyectos, tanto los del Consultor como los de los equipos adicionales del Líder. Lo único que cambia entre proyectos es el nombre ficticio de la empresa (`{empresa}`), el estado inicial (`ProjectState`) y qué ranuras de evidencia se muestran (`sampleSlots`).
-- La evidencia de ejemplo se define **por ranura (1 a 5)**, no por proyecto: cada ranura tiene nombre, tipo, detalle y extractos. Las citas de los hallazgos apuntan a `{ slot, excerptId }`, por lo que **resuelven en cualquier proyecto**, incluido uno cuya lista visible no incluya esa ranura (por ejemplo **P-D**: sin evidencia propia hasta que se cargue un archivo; el diagnóstico cita extractos de ejemplo rotulados «Extracto de ejemplo (ficticio)»).
+- La evidencia de ejemplo se define **por ranura (1 a 5)**, no por proyecto: cada ranura tiene nombre, tipo, detalle y extractos. Las citas de los hallazgos apuntan a `{ slot, excerptId }`, por lo que **resuelven en cualquier proyecto**, incluido uno cuya lista visible no incluya esa ranura (por ejemplo **P-D**: sin evidencia propia hasta que se cargue un archivo; el diagnóstico cita evidencia de ejemplo). **Toda cita se rotula «Evidencia de ejemplo (ficticia)»**, también cuando el elemento citado no aparece en la lista de evidencia del proyecto (FR-017).
 - Los identificadores de hallazgo, de ranura y de elemento de estrategia son **iguales en todos los proyectos**; las decisiones (`Decision`) sí son por proyecto.
 - Los equipos adicionales del Líder reutilizan las mismas plantillas con otros nombres ficticios de empresa; sus estados iniciales (entregas por revisar y una calificada) se definen como `ProjectState` precargados.
+- El campo `plainText` de cada hallazgo se crea en **L5b** (no en L3), con su prueba: todo hallazgo de la plantilla tiene un `plainText` no vacío.
 - Una prueba unitaria comprueba que **toda cita de la plantilla resuelve a una ranura y un extracto existentes** y que cada hallazgo tiene al menos una cita.
 
 Proyectos del Consultor (estado inicial):
 - **P-A**: con evidencia completa, diagnóstico sin generar (recorrido principal).
-- **P-B**: diagnóstico emitido, estrategia sin enviar (probar estrategia).
-- **P-C**: estrategia enviada y calificada (ver la calificación).
+- **P-B**: diagnóstico emitido, estrategia sin generar (probar estrategia). Sus decisiones sembradas incluyen **un hallazgo aceptado pero NO VERIFICADO, uno editado y uno rechazado** (el resto aceptados), que usa la prueba e2e de la estrategia.
+- **P-C**: diagnóstico emitido y estrategia enviada, con **ambas entregas calificadas** (`dx/P-C` y `st/P-C`), para ver la calificación.
 - **P-D**: **sin evidencia** (probar el bloqueo, FR-014).
-Equipos para el Líder: tres equipos más, con entregas precargadas por revisar (FR-033) y una ya calificada.
+Equipos para el Líder: tres equipos más con diagnóstico emitido; **uno tiene `dx` calificado y los otros dos quedan por revisar** (FR-033). El estado inicial incluye, por tanto, `gradings` para `dx/P-C`, `st/P-C` y `dx/<proyecto del equipo calificado>`.
 
 ## 3. Capa persistida (`PersistedState`, versión 1)
 
@@ -105,7 +107,7 @@ Lo que **no** se persiste: contenido de archivos, extractos, hallazgos, estrateg
 | `deriveStrategy(template, findings, decisions)` | → elementos incluidos con `derivedFrom` | FR-025, SC-012 |
 | `average(levels)` / `formatScore(n)` | media exacta; formato `4,2` / `1,0` | FR-031, SC-013 |
 | `deliveriesFor(state)` | entregas del Consultor y precargadas | FR-022, FR-027, FR-033 |
-| `reportContent(project, state)` | contenido del informe | FR-044 a 046 |
+| `reportContent(project, state, scope)` | contenido del informe; `scope` = `consultor` (proyecto propio: diagnóstico y, si existe, estrategia generada), `dx` (solo el diagnóstico) o `st` (estrategia enviada con su diagnóstico); nunca una estrategia generada pero no enviada en un informe de entrega | FR-044 a 046 |
 | `accessDecision(route, role)` | → `allow` / `redirect(to, notice)` | FR-003 |
 
 ## 5. Reglas de validación (de los requisitos)
@@ -114,7 +116,7 @@ Lo que **no** se persiste: contenido de archivos, extractos, hallazgos, estrateg
 - **Generar** (FR-015): al menos 1 elemento de evidencia (de ejemplo o archivo propio).
 - **Decisión** (FR-019/020): `edited` exige texto con contenido; una edición vacía no se guarda.
 - **Emitir** (FR-021): todos los hallazgos con decisión distinta de `pending`, y al menos un `accepted` o `edited`. Un hallazgo `verified: false` puede aceptarse y conserva «NO VERIFICADO».
-- **Estrategia** (FR-023/025): solo si `diagnosis.status === 'issued'`; cada elemento aparece solo si tiene ≥ 1 hallazgo de apoyo con decisión `accepted`/`edited` **y** `verified: true`; `derivedFrom` lista esos hallazgos.
+- **Estrategia** (FR-023/024/025): la acción «Generar estrategia» solo está disponible si `diagnosis.status === 'issued'` y es idempotente (simulación de 1,5 s en la interfaz); cada elemento aparece solo si tiene ≥ 1 hallazgo de respaldo con decisión `accepted`/`edited` **y** `verified: true`; `derivedFrom` lista **solo** esos hallazgos: **un hallazgo aceptado pero NO VERIFICADO no cuenta como respaldo ni aparece en `derivedFrom`**; si ningún elemento tiene respaldo, la pantalla muestra un aviso. **`sendStrategy` solo con la estrategia generada** (`strategy.status === 'generated'`) y es idempotente (FR-027).
 - **Calificación** (FR-030/031): los 4 criterios con nivel entero 1–5 y comentario no vacío; `average` = media aritmética exacta; se muestra con 1 decimal y coma (`4,3`; si es exacto `4,0`); se compara con «Meta del programa (ilustrativa): 4,2 de 5» sin efectos sobre el flujo.
 - **Encuesta** (FR-036): todas las preguntas obligatorias respondidas.
 
@@ -124,7 +126,7 @@ Lo que **no** se persiste: contenido de archivos, extractos, hallazgos, estrateg
 Diagnóstico:  none ──generar──▶ generated ──aprobar y emitir──▶ issued (solo lectura)
                  (bloqueado sin evidencia)   (todos revisados, ≥1 aceptado/editado)
 
-Estrategia:   none ──(disponible solo con diagnóstico issued)──generar──▶ generated ──enviar──▶ sent
+Estrategia:   none ──(solo con diagnóstico issued)──«Generar estrategia» (1,5 s «Simulada»)──▶ generated ──enviar──▶ sent
                                                               (idempotente: reenviar no duplica)
 
 Entrega:      por_revisar ──guardar calificación──▶ calificada (solo lectura)

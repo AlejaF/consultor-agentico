@@ -15,7 +15,7 @@ La demo no tiene API ni servidor. Sus «interfaces» son las rutas por hash. El 
 | `#/lider` | `lider` | Tablero | US6 | P2 |
 | `#/lider/entregas/:tipo/:projectId` | `lider` | Revisión y calificación de una entrega (`tipo` = `dx` diagnóstico o `st` estrategia) | US6 | P2 |
 | `#/consultor/proyectos/:projectId/informe` | `consultor` | Informe imprimible | US8 | P3 |
-| `#/lider/entregas/:tipo/:projectId/informe` | `lider` | Informe imprimible de la entrega | US8 | P3 |
+| `#/lider/entregas/:tipo/:projectId/informe` | `lider` | Informe imprimible de la entrega (`dx`: solo diagnóstico; `st`: estrategia enviada con su diagnóstico) | US8 | P3 |
 | `#/contacto` | `contacto` | Resumen del proyecto | US7 | P3 |
 | `#/contacto/encuesta` | `contacto` | Encuesta simulada | US7 | P3 |
 
@@ -49,7 +49,8 @@ Los avisos se anuncian en una región `aria-live` y se pueden cerrar.
 
 | Pantalla | Condición de bloqueo | Qué se muestra |
 |---|---|---|
-| Estrategia (US5) | diagnóstico del proyecto no emitido | Pantalla con explicación y enlace a la revisión (FR-023) |
+| Estrategia (US5) | diagnóstico del proyecto no emitido | Pantalla con explicación y enlace a la revisión; sin botón «Generar estrategia» (FR-023) |
+| Estrategia (US5) | diagnóstico emitido y estrategia sin generar | Pantalla con el botón «Generar estrategia» (simulación de 1,5 s «Simulada») y sin contenido de estrategia (FR-024) |
 | Informe (US8) | diagnóstico no emitido | Pantalla con explicación y enlace a la revisión |
 | Generar diagnóstico (US3) | proyecto sin evidencia | Botón deshabilitado con motivo y enlace a la captura (FR-015) |
 | Panel de revisión (US4) | diagnóstico sin generar | Pantalla con enlace a «Generar diagnóstico» |

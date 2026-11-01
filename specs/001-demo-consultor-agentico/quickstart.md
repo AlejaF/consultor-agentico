@@ -24,7 +24,7 @@ Para probar la publicación bajo subruta: `BASE_PATH=/mi-repo/ npm run build` y 
 ```bash
 npm run typecheck      # tipos
 npm test               # Vitest: reglas, derivación, rúbrica, archivos, persistencia, acceso, contrastes
-npm run check          # nombres reales (src, docs, specs, .specify, .claude, dist…), referencias/ no versionada, colores fuera de tokens, PDF en dist/
+npm run check          # nombres reales (src, docs, specs, .specify, .claude, dist si existe), referencias/ no versionada, colores fuera de tokens (incluidos public/*.svg), PDF en dist/. Antes de cada push: npm run build && npm run check
 npm run test:e2e       # Playwright + axe: 320, 768 y 1280 px y recorrido P1
 ```
 
@@ -36,7 +36,7 @@ Resultado esperado: todo en verde; axe sin violaciones `wcag2a`, `wcag2aa`, `wca
 1. Abrir la aplicación: se ve «DEMO · datos ficticios» y las tres cuentas.
 2. Entrar como **Consultor** → proyectos. Abrir el proyecto **P-A**.
 3. En «Captura de evidencia»: leer el aviso de privacidad; agregar un `.pdf` válido y un `.exe` (rechazado con motivo).
-4. «Generar diagnóstico»: indicador «Simulada», reporte con citas; abrir una cita y ver el extracto ficticio.
+4. «Generar diagnóstico»: indicador «Simulada», reporte con citas; abrir una cita y ver el extracto ficticio con el rótulo «Evidencia de ejemplo (ficticia)».
 5. «Revisión»: aceptar, editar y rechazar hallazgos; comprobar «N de M revisados»; intentar emitir con pendientes (impedido); emitir.
 6. Recargar la página **inmediatamente después de emitir** (sin esperar): el progreso sigue y el archivo propio muestra «Contenido no conservado en esta demo».
 7. Abrir **P-D** (sin evidencia): «Generar diagnóstico» está bloqueado con explicación.
@@ -44,7 +44,7 @@ Resultado esperado: todo en verde; axe sin violaciones `wcag2a`, `wcag2aa`, `wca
 **Esperado**: FR-001 a FR-022, SC-002, SC-004.
 
 ### Escenario 2 · Estrategia y Líder (historias 5 y 6)
-1. Con el diagnóstico de P-B emitido: abrir «Estrategia», ver riesgos y ruta con «Deriva de…»; sector y mercado con «NO VERIFICADO · contenido ilustrativo».
+1. Con el diagnóstico de P-B emitido: abrir «Estrategia», pulsar «Generar estrategia» (simulación de 1,5 s «Simulada»), ver riesgos y ruta con «Deriva de…» (un hallazgo aceptado pero NO VERIFICADO no figura como respaldo); sector y mercado con «NO VERIFICADO · contenido ilustrativo».
 2. «Enviar a revisión». Cambiar a **Líder** con el selector.
 3. En el tablero, abrir la entrega, asignar nivel 1–5 a los 4 criterios (rotulados «Criterios de ejemplo…»), comentar, «Guardar calificación».
 4. Verificar el promedio con coma decimal y «Meta del programa (ilustrativa): 4,2 de 5».
@@ -72,7 +72,7 @@ Resultado esperado: todo en verde; axe sin violaciones `wcag2a`, `wcag2aa`, `wca
 
 ### Escenario 6 · Privacidad y contenido
 1. Abrir las herramientas del navegador (pestaña de red) y repetir el Escenario 1: ninguna solicitud lleva los archivos ni sale a otro origen.
-2. `npm run check`: sin nombres reales ni PDF en `dist/`.
+2. `npm run build && npm run check`: sin nombres reales ni PDF en `dist/`.
 
 **Esperado**: SC-003, SC-010.
 
