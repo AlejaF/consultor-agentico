@@ -13,6 +13,7 @@ La demo no tiene API ni servidor. Sus «interfaces» son las rutas por hash. El 
 | `#/consultor/proyectos/:projectId/revision` | `consultor` | Panel de revisión y emisión | US4 | P1 |
 | `#/consultor/proyectos/:projectId/estrategia` | `consultor` | Estrategia | US5 | P2 |
 | `#/lider` | `lider` | Tablero | US6 | P2 |
+| `#/lider/entregas` | `lider` | Entregas por revisar (lista; destino de «Entregas por revisar (n)» en la navegación) | US6 | P2 |
 | `#/lider/entregas/:tipo/:projectId` | `lider` | Revisión y calificación de una entrega (`tipo` = `dx` diagnóstico o `st` estrategia) | US6 | P2 |
 | `#/consultor/proyectos/:projectId/informe` | `consultor` | Informe imprimible | US8 | P3 |
 | `#/lider/entregas/:tipo/:projectId/informe` | `lider` | Informe imprimible de la entrega (`dx`: solo diagnóstico; `st`: estrategia enviada con su diagnóstico) | US8 | P3 |
@@ -55,6 +56,16 @@ Los avisos se anuncian en una región `aria-live` y se pueden cerrar.
 | Generar diagnóstico (US3) | proyecto sin evidencia | Botón deshabilitado con motivo y enlace a la captura (FR-015) |
 | Panel de revisión (US4) | diagnóstico sin generar | Pantalla con enlace a «Generar diagnóstico» |
 | Entrega del Líder ya calificada | entrega en estado `calificada` | Vista de solo lectura (FR-031) |
+
+## Navegación lateral (FR-049)
+
+| Rol | Elementos | Notas |
+|---|---|---|
+| Consultor | «Proyectos» (`#/consultor`); dentro de un proyecto (cualquier ruta con `:projectId`), un bloque con la empresa y 4 pasos: Evidencia, Diagnóstico, Revisión, Estrategia | Cada paso lleva su estado en texto: Pendiente, En curso, Completado o Bloqueado. **Un paso Bloqueado enlaza a su pantalla, que explica el bloqueo; no redirige.** |
+| Líder | «Tablero» (`#/lider`), «Entregas por revisar (n)» (`#/lider/entregas`) | `n` = entregas existentes sin calificación |
+| Contacto | «Resumen» (`#/contacto`), «Encuesta» (`#/contacto/encuesta`) | — |
+
+Al pie de la navegación, en todos los roles: tarjeta de cuenta («Nombre · cuenta ficticia») y, separada por una línea, «Restablecer demo». En celular el menú contiene los mismos elementos; al abrirlo con teclado se cierra con Escape devolviendo el foco al botón «Menú», y al elegir un enlace se cierra y el foco pasa al `h1` de la nueva pantalla.
 
 ## Selector de rol
 

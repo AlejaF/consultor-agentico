@@ -212,7 +212,7 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 
 - **FR-008**: El sistema MUST ofrecer, por proyecto, una pantalla de captura con preguntas de diagnóstico, lista de entrevistas/transcripciones, lista de documentos y un panel de progreso de captura.
 - **FR-009**: El sistema MUST permitir agregar archivos desde el equipo tanto arrastrando como mediante un botón de selección operable con teclado.
-- **FR-010**: El sistema MUST aceptar solo documentos y transcripciones en los formatos y tamaño máximo indicados en la pantalla (formatos: PDF, DOCX, TXT, VTT y SRT; máximo 25 MB por archivo; nombre de archivo de hasta 150 caracteres) y rechazar con explicación los vacíos, los no permitidos, los demasiado grandes y los de nombre más largo que 150 caracteres.
+- **FR-010**: El sistema MUST aceptar solo documentos y transcripciones en los formatos y tamaño máximo indicados en la pantalla (formatos: PDF, DOCX, TXT, VTT, SRT y XLSX; máximo 25 MB por archivo; nombre de archivo de hasta 150 caracteres) y rechazar con explicación los vacíos, los no permitidos, los demasiado grandes y los de nombre más largo que 150 caracteres.
 - **FR-011**: Los archivos agregados MUST permanecer únicamente en el navegador de la persona y nunca transmitirse a un servidor; el sistema MUST decirlo antes y durante la carga.
 - **FR-012**: El sistema MUST rotular los archivos propios como «Cargado localmente · no analizado», añadir la nota «Contenido no conservado en esta demo» cuando tras recargar su contenido ya no esté disponible, y distinguirlos de la evidencia de ejemplo ficticia.
 - **FR-013**: El sistema MUST permitir quitar archivos propios, con confirmación.
@@ -270,6 +270,11 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 - **FR-047**: Cada página del informe MUST llevar el aviso «DEMO · datos ficticios», y los rótulos «Simulada» y «NO VERIFICADO» MUST ser legibles en blanco y negro (con texto, no solo con color).
 - **FR-048**: El informe MUST omitir la navegación y los controles de la aplicación, MUST poder abrirse y activarse solo con teclado, y su generación MUST ocurrir en el navegador sin enviar datos a ningún servidor.
 
+**Navegación y textos (transversal)**
+
+- **FR-049**: El sistema MUST ofrecer una navegación lateral por rol (en celular, un menú con los mismos elementos). **Consultor**: «Proyectos» y, dentro de un proyecto, un bloque con el nombre de la empresa y los cuatro pasos del flujo en orden (Evidencia, Diagnóstico, Revisión, Estrategia), cada uno con su estado en texto (Pendiente, En curso, Completado o Bloqueado); un paso bloqueado MUST llevar a su pantalla con la explicación del bloqueo, sin redirigir. **Líder**: «Tablero» y «Entregas por revisar (n)». **Contacto**: «Resumen» y «Encuesta». Al pie, en todos los roles, MUST mostrar una tarjeta con la cuenta de demostración («Nombre · cuenta ficticia») y, separada por una línea, la acción «Restablecer demo». Cada lote añade a la navegación los elementos de sus pantallas.
+- **FR-050**: Los textos MUST concordar en número («1 archivo», «4 proyectos», «Se agregó 1 archivo», «No se agregaron 2 archivos») y MUST mostrar el tipo de archivo de forma legible («PDF · 47 B», no el tipo técnico).
+
 ### Key Entities *(include if feature involves data)*
 
 - **Cuenta de demostración**: persona ficticia asociada a un rol; no tiene credenciales.
@@ -317,7 +322,7 @@ Solo se aprobó un extra; entró al spec como historia P3 (historia 8) con los r
 ## Fuera de la demo (pertenece al sistema completo)
 
 - IA real: análisis de documentos y transcripciones, generación de diagnóstico y estrategia, citas calculadas sobre la evidencia real del usuario.
-- Transcripción de audio, procesamiento de planillas y lectura del contenido de los archivos cargados.
+- Transcripción de audio, lectura o procesamiento del contenido de los archivos cargados (incluidas las hojas de cálculo XLSX, que solo se listan).
 - Cuentas reales, autenticación, permisos, invitación de empresas y envío de correos o recordatorios.
 - Almacenamiento compartido entre personas o dispositivos, multiusuario y sincronización.
 - Administración de la plataforma: bancos de preguntas, metodología, analítica global, alta y baja de empresas, creación de proyectos nuevos.
@@ -355,12 +360,16 @@ Solo se aprobó un extra; entró al spec como historia P3 (historia 8) con los r
   - Las secciones de la referencia que exceden el flujo Evidencia → Diagnóstico → Estrategia quedan fuera de esta versión (ver «Fuera de la demo»).
 - **Evidencia y citas**: dado que los archivos del usuario no se analizan, cada proyecto precargado incluye evidencia de ejemplo ficticia y las citas del diagnóstico simulado apuntan a esa evidencia de ejemplo. Los archivos propios cuentan como evidencia para habilitar la generación, pero no cambian su contenido. Un proyecto precargado sin evidencia sirve para probar el bloqueo; si la persona carga un archivo, se habilita la generación y el diagnóstico simulado cita evidencia de ejemplo, y cada cita se rotula «Evidencia de ejemplo (ficticia)» para que no se confunda con los archivos propios.
 - **Rúbrica del Líder** (propuesta inicial, ajustable): 4 criterios (trazabilidad de la evidencia, calidad del análisis, coherencia entre diagnóstico y estrategia, claridad de la comunicación) con niveles de 1 a 5 por criterio; el puntaje total es el promedio de los criterios, con formato 1,0 a 5,0 y coma decimal, y se muestra junto a «Meta del programa (ilustrativa): 4,2 de 5». Los criterios se rotulan siempre «Criterios de ejemplo (pendientes de definir por el profesor)» y se muestran antes de calificar.
+- **Avance de captura**: es (preguntas respondidas + un paso por tener al menos un elemento de evidencia) sobre el total de pasos (preguntas + 1).
+- **Avance del proyecto**: se reparte en tres fases de un tercio cada una (Evidencia, Diagnóstico y Estrategia): la evidencia se completa con al menos un elemento, el diagnóstico al emitirse y la estrategia al enviarse. La etapa actual es la primera fase sin completar.
+- **Evidencia en estado «Procesando»**: cuenta como elemento de evidencia para habilitar «Generar diagnóstico» (FR-015).
+- **Nombres de equipos**: los equipos se llaman «Equipo 1» a «Equipo 4» (el del Consultor es «Equipo 1») para no confundirlos con las empresas ficticias «Empresa Ficticia Alfa», «Beta», «Gamma» y «Delta».
 - **Entregas**: se generan dos tipos por proyecto, el diagnóstico emitido (automática al emitir) y la estrategia (al pulsar «Enviar a revisión»); cada una se califica por separado.
 - **Aprobación del diagnóstico**: la hace el propio Consultor; el Líder no aprueba ni edita contenido, solo califica la calidad del entregable.
 - **Alcance**: la demo cubre solo el flujo Evidencia → Diagnóstico → Estrategia (constitución, principio VII). Orden de corte dentro de P3, de lo primero a lo último: vista del Contacto, informe imprimible.
 - **Usuarios y acceso**: una cuenta ficticia por rol, sin contraseña; el control por rol ordena la experiencia, no protege información.
 - **Un solo navegador**: los tres roles comparten el mismo estado local del navegador, de modo que lo que el Consultor emite es lo que el Líder ve y califica y la calificación que el Consultor ve guardada.
-- **Formatos**: se aceptan PDF, DOCX, TXT, VTT y SRT hasta 25 MB (tomados de la referencia); el audio y las planillas quedan fuera.
+- **Formatos**: se aceptan PDF, DOCX, TXT, VTT, SRT y XLSX hasta 25 MB. Los formatos salen de las **dos** referencias: PDF, DOCX, TXT, VTT y SRT de la de estudiantes y de la de profesorado, y XLSX porque la referencia de estudiantes muestra una hoja de cálculo como evidencia. Un XLSX se trata como documento y se rotula «Cargado localmente · no analizado», igual que los demás. El audio queda fuera: la referencia lo muestra ya transcrito, y esa transcripción es procesamiento del sistema completo.
 - **Idioma**: toda la interfaz en español.
 - **Dispositivos**: navegadores modernos actuales en celular, tableta y computador; sin soporte de navegadores antiguos.
 - **Dimensiones y escala**: seis dimensiones (Estrategia, Infraestructura, Datos, Gobernanza, Talento, Cultura) y escala de 1 a 5, como términos genéricos; no se citan marcos ni fuentes reales.

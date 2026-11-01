@@ -18,6 +18,7 @@ describe('tabla de rutas (contracts/routes.md)', () => {
     ['#/consultor/proyectos/P-B/estrategia', 'consultor.strategy', { projectId: 'P-B' }],
     ['#/consultor/proyectos/P-B/informe', 'consultor.report', { projectId: 'P-B' }],
     ['#/lider', 'lider.dashboard', {}],
+    ['#/lider/entregas', 'lider.deliveries', {}],
     ['#/lider/entregas/dx/P-B', 'lider.delivery', { tipo: 'dx', projectId: 'P-B' }],
     ['#/lider/entregas/st/P-C/informe', 'lider.deliveryReport', { tipo: 'st', projectId: 'P-C' }],
     ['#/contacto', 'contacto.summary', {}],
@@ -97,6 +98,10 @@ describe('regla de redirección (5 reglas)', () => {
     if (r.kind === 'allow') expect(r.route.params).toEqual({ tipo: 'dx', projectId: 'P-B' });
     expect(accessDecision('#/consultor/proyectos/P-D/evidencia', 'consultor', ctx).kind).toBe('allow');
     expect(accessDecision('#/contacto/encuesta', 'contacto', ctx).kind).toBe('allow');
+  });
+  it('5a. la lista de entregas es del Líder', () => {
+    expect(accessDecision('#/lider/entregas', 'lider', ctx).kind).toBe('allow');
+    expect(accessDecision('#/lider/entregas', 'consultor', ctx)).toMatchObject({ notice: 'Esa vista pertenece al rol Líder. Estás como Consultor.' });
   });
   it('5b. el informe exige el mismo permiso', () => {
     expect(accessDecision('#/lider/entregas/dx/P-B/informe', 'consultor', ctx)).toMatchObject({

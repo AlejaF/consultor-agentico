@@ -2,7 +2,7 @@ import { extensionOf } from './fileValidation';
 
 export type EvidenceKind = 'documento' | 'transcripcion' | 'entrevista';
 
-/** txt, vtt y srt se tratan como transcripciones; pdf y docx, como documentos. */
+/** txt, vtt y srt se tratan como transcripciones; pdf, docx y xlsx, como documentos. */
 export function kindOfFile(name: string): 'documento' | 'transcripcion' {
   return ['txt', 'vtt', 'srt'].includes(extensionOf(name)) ? 'transcripcion' : 'documento';
 }

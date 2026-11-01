@@ -1,4 +1,5 @@
-import type { ProjectState } from '../state/types';
+import type { Decision, ProjectState } from '../state/types';
+import { DIAGNOSIS } from './diagnosis';
 
 import type { Slot } from './evidence';
 
@@ -30,12 +31,36 @@ export function emptyProjectState(): ProjectState {
   return { answers: {}, localFiles: [], diagnosis: { status: 'none', decisions: {} }, strategy: { status: 'none' } };
 }
 
+const SEED_GENERATED_AT = '2026-10-19T14:00:00.000Z';
+const SEED_ISSUED_AT = '2026-10-20T15:00:00.000Z';
+const UNVERIFIED_ID = DIAGNOSIS.findings.find((f) => !f.verified)!.id;
+
+function issuedState(overrides: Record<string, Decision> = {}): ProjectState {
+  const decisions: Record<string, Decision> = Object.fromEntries(DIAGNOSIS.findings.map((f) => [f.id, { state: 'accepted' } as Decision]));
+  return {
+    ...emptyProjectState(),
+    diagnosis: { status: 'issued', generatedAt: SEED_GENERATED_AT, issuedAt: SEED_ISSUED_AT, decisions: { ...decisions, ...overrides } },
+  };
+}
+
 /**
- * Estado inicial de cada proyecto. En L1 todos parten vacíos; los estados sembrados
- * (P-B emitido, P-C enviado y calificado, equipos del Líder) se completan en L3 y L4.
+ * Estado inicial de cada proyecto (datos ficticios).
+ * - P-A: evidencia completa, diagnóstico sin generar. P-D: sin evidencia.
+ * - P-B: diagnóstico emitido con un aceptado NO VERIFICADO, uno editado y uno rechazado (lo usa la prueba de estrategia de L4).
+ * - P-C y los equipos 2 a 4: diagnóstico emitido. La estrategia enviada y las calificaciones sembradas llegan en L4.
  */
-export const INITIAL_PROJECT_STATES: Record<string, ProjectState> = Object.fromEntries(
-  PROJECTS.map((p) => [p.id, emptyProjectState()]),
-);
+export const INITIAL_PROJECT_STATES: Record<string, ProjectState> = {
+  'P-A': emptyProjectState(),
+  'P-B': issuedState({
+    [UNVERIFIED_ID]: { state: 'accepted' },
+    H2: { state: 'edited', text: 'La dirección quiere crecer, pero hoy no puede estimar el costo de atender a un cliente nuevo; conviene medirlo antes de decidir inversiones.' },
+    H4: { state: 'rejected' },
+  }),
+  'P-C': issuedState(),
+  'P-D': emptyProjectState(),
+  'E-1': issuedState({ H8: { state: 'rejected' } }),
+  'E-2': issuedState(),
+  'E-3': issuedState(),
+};
 
 export const CONSULTOR_PROJECT_IDS: readonly string[] = PROJECTS.filter((p) => p.ownedByDemoConsultor).map((p) => p.id);

@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CONSULTOR_PROJECT_IDS } from '../data/projects';
+import { Diagnosis } from '../screens/consultor/Diagnosis';
 import { Evidence } from '../screens/consultor/Evidence';
+import { Review } from '../screens/consultor/Review';
+import { Strategy } from '../screens/consultor/Strategy';
+import { Deliveries } from '../screens/lider/Deliveries';
 import { Projects } from '../screens/consultor/Projects';
 import { Summary } from '../screens/contacto/Summary';
 import { Dashboard } from '../screens/lider/Dashboard';
 import { Login } from '../screens/Login';
 import { StateProvider, useAppState } from '../state/context';
+import { UnsavedProvider } from '../state/unsaved';
 import { accessDecision, type AccessContext } from './access';
 import { AppShell } from './AppShell';
 import { replaceHash, useHashRoute, type RouteMatch } from './router';
@@ -18,6 +23,14 @@ function Screen({ route }: { route: RouteMatch }) {
       return <Projects />;
     case 'consultor.evidence':
       return <Evidence projectId={route.params.projectId} />;
+    case 'consultor.diagnosis':
+      return <Diagnosis projectId={route.params.projectId} />;
+    case 'consultor.review':
+      return <Review projectId={route.params.projectId} />;
+    case 'consultor.strategy':
+      return <Strategy projectId={route.params.projectId} />;
+    case 'lider.deliveries':
+      return <Deliveries />;
     case 'lider.dashboard':
       return <Dashboard />;
     case 'contacto.summary':
@@ -66,7 +79,9 @@ function Routed() {
 export function App() {
   return (
     <StateProvider>
-      <Routed />
+      <UnsavedProvider>
+        <Routed />
+      </UnsavedProvider>
     </StateProvider>
   );
 }

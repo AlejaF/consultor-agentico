@@ -1,5 +1,5 @@
-export const ALLOWED_EXTENSIONS = ['pdf', 'docx', 'txt', 'vtt', 'srt'] as const;
-export const ALLOWED_LABEL = 'PDF, DOCX, TXT, VTT y SRT';
+export const ALLOWED_EXTENSIONS = ['pdf', 'docx', 'txt', 'vtt', 'srt', 'xlsx'] as const;
+export const ALLOWED_LABEL = 'PDF, DOCX, TXT, VTT, SRT y XLSX';
 export const MAX_SIZE_BYTES = 26_214_400; // 25 MB
 export const MAX_NAME_LENGTH = 150;
 

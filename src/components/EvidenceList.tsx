@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { EvidenceItem } from '../domain/evidence';
-import { formatSize } from '../domain/format';
+import { fileTypeLabel, formatSize } from '../domain/format';
 import { addedThisSession } from '../state/session';
 import { ConfirmDialog } from './ConfirmDialog';
 
@@ -19,7 +19,7 @@ function Item({ item, onAskRemove }: { item: EvidenceItem; onAskRemove: (i: Evid
           <strong>{item.name}</strong>
         </p>
         <p className="subtitle">
-          {own ? `${item.file!.type || 'Archivo'} · ${formatSize(item.file!.size)}` : item.detail}
+          {own ? `${fileTypeLabel(item.file!.name)} · ${formatSize(item.file!.size)}` : item.detail}
         </p>
         <p>
           {own ? (

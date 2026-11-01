@@ -5,3 +5,5 @@ export const PDF_VALIDO = { name: 'informe-ejemplo.pdf', mimeType: 'application/
 export const TXT_VALIDO = { name: 'entrevista-ejemplo.txt', mimeType: 'text/plain', buffer: Buffer.from('Transcripción ficticia de ejemplo.') };
 export const EXE_NO_PERMITIDO = { name: 'programa.exe', mimeType: 'application/octet-stream', buffer: Buffer.from('MZ ficticio') };
 export const VACIO = { name: 'vacio.txt', mimeType: 'text/plain', buffer: Buffer.alloc(0) };
+export const XLSX_VALIDO = { name: 'indicadores-ejemplo.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('PK ficticio') };
+export const MP3_NO_PERMITIDO = { name: 'entrevista.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from('ID3 ficticio') };

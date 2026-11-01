@@ -27,7 +27,7 @@ Solo `{ id, name, type, size, addedAt }`. El contenido **nunca** se lee, de modo
 
 ## Versión y migración
 
-- `SCHEMA_VERSION` es una constante entera (hoy `1`).
+- `SCHEMA_VERSION` es una constante entera (hoy `2`; subió de 1 a 2 en L3 porque los estados iniciales sembrados cambiaron: diagnósticos emitidos y decisiones).
 - **No hay migración incremental**: si `schemaVersion` de lo guardado no coincide, se **descarta todo y se usa el estado inicial** (decisión del responsable). Se muestra una sola vez el aviso «Se restableció la demo porque la versión de los datos cambió».
 - Se debe subir `SCHEMA_VERSION` siempre que cambie la forma de `PersistedState` o un identificador estático al que apunte (por ejemplo, ids de proyectos u hallazgos).
 

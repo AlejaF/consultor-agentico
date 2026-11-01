@@ -11,7 +11,7 @@ export function Projects() {
   return (
     <>
       <h1>Proyectos</h1>
-      <p>Proyectos del Equipo Demo Alfa. Todos los datos son ficticios.</p>
+      <p>Proyectos del Equipo 1. Todos los datos son ficticios.</p>
       <ul className="cards list-plain">
         {mine.map((p) => {
           const company = COMPANIES.find((c) => c.id === p.companyId)!;

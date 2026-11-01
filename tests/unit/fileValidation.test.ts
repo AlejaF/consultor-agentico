@@ -4,20 +4,20 @@ import { MAX_NAME_LENGTH, MAX_SIZE_BYTES, validateFiles } from '../../src/domain
 const f = (name: string, size = 1000, type = '') => ({ name, type, size });
 
 describe('validateFiles', () => {
-  it('acepta pdf, docx, txt, vtt y srt sin distinguir mayúsculas', () => {
-    const files = ['a.pdf', 'b.DOCX', 'c.Txt', 'd.vtt', 'e.SRT'].map((n) => f(n));
+  it('acepta pdf, docx, txt, vtt, srt y xlsx sin distinguir mayúsculas', () => {
+    const files = ['a.pdf', 'b.DOCX', 'c.Txt', 'd.vtt', 'e.SRT', 'f.xlsx', 'g.XLSX'].map((n) => f(n));
     const r = validateFiles(files, []);
-    expect(r.accepted).toHaveLength(5);
+    expect(r.accepted).toHaveLength(7);
     expect(r.rejected).toEqual([]);
   });
 
   it('rechaza formatos no permitidos con motivo y lista de formatos', () => {
-    const r = validateFiles([f('programa.exe'), f('sin-extension'), f('foto.png')], []);
+    const r = validateFiles([f('programa.exe'), f('sin-extension'), f('foto.png'), f('nota.mp3'), f('hoja.xls')], []);
     expect(r.accepted).toEqual([]);
-    expect(r.rejected).toHaveLength(3);
+    expect(r.rejected).toHaveLength(5); // el audio y el formato XLS antiguo siguen fuera
     for (const x of r.rejected) {
       expect(x.reason).toMatch(/formato no permitido/i);
-      expect(x.reason).toMatch(/PDF, DOCX, TXT, VTT y SRT/);
+      expect(x.reason).toMatch(/PDF, DOCX, TXT, VTT, SRT y XLSX/);
     }
   });
 

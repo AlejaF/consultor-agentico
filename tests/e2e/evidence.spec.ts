@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
-import { EXE_NO_PERMITIDO, PDF_VALIDO, TXT_VALIDO, VACIO } from './fixtures/archivos';
+import { EXE_NO_PERMITIDO, MP3_NO_PERMITIDO, PDF_VALIDO, TXT_VALIDO, VACIO, XLSX_VALIDO } from './fixtures/archivos';
 
 async function openEvidence(page: Page, projectId: string) {
   await page.goto('/');
@@ -58,15 +58,43 @@ test.describe('Captura de evidencia', () => {
     await expect(page.getByText('entrevista-ejemplo.txt')).toBeVisible();
     await expect(page.getByText('Cargado localmente · no analizado')).toHaveCount(2);
     const result = page.getByTestId('upload-result');
-    await expect(result).toContainText('Se agregaron 2 archivo(s).');
+    await expect(result).toContainText('Se agregaron 2 archivos.')
+    await expect(result).toContainText('No se agregaron 2 archivos:');
     await expect(result).toContainText('programa.exe');
-    await expect(result).toContainText('Formato no permitido (.exe). Formatos permitidos: PDF, DOCX, TXT, VTT y SRT.');
+    await expect(result).toContainText('Formato no permitido (.exe). Formatos permitidos: PDF, DOCX, TXT, VTT, SRT y XLSX.');
     await expect(result).toContainText('vacio.txt');
     await expect(result).toContainText('El archivo está vacío.');
     await expect(page.getByText('programa.exe', { exact: true }).locator('visible=true')).toHaveCount(1); // solo en el aviso, no en la lista
     await expectNoAxeViolations(page);
     await expectNoHorizontalScroll(page);
     await expectTargetsAtLeast44(page);
+  });
+
+  test('plurales y tipo legible: «Se agregó 1 archivo», «No se agregó 1 archivo», «PDF · …»', async ({ page }) => {
+    await openEvidence(page, 'P-D');
+    await page.locator('input[type=file]').setInputFiles(PDF_VALIDO);
+    await expect(page.getByTestId('upload-result')).toContainText('Se agregó 1 archivo.');
+    await expect(page.getByText(/^PDF · \d+ B$/)).toBeVisible();
+    await expect(page.getByText('application/pdf')).toHaveCount(0);
+    await page.locator('input[type=file]').setInputFiles(EXE_NO_PERMITIDO);
+    await expect(page.getByTestId('upload-result')).toContainText('No se agregó 1 archivo:');
+  });
+
+  test('XLSX se acepta como documento, «Cargado localmente · no analizado»; el audio sigue fuera', async ({ page }) => {
+    await openEvidence(page, 'P-D');
+    await page.locator('input[type=file]').setInputFiles([XLSX_VALIDO, MP3_NO_PERMITIDO]);
+    const result = page.getByTestId('upload-result');
+    await expect(result).toContainText('Se agregó 1 archivo.');
+    await expect(result).toContainText('No se agregó 1 archivo:');
+    await expect(result).toContainText('entrevista.mp3');
+    await expect(result).toContainText('Formato no permitido (.mp3)');
+    const docs = page.getByRole('region', { name: 'Documentos' });
+    await expect(docs.getByText('indicadores-ejemplo.xlsx')).toBeVisible();
+    await expect(docs.getByText(/^XLSX · \d+ B$/)).toBeVisible();
+    await expect(docs.getByText('Cargado localmente · no analizado')).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Entrevistas y transcripciones' }).getByText('indicadores-ejemplo.xlsx')).toHaveCount(0);
+    await expect(page.getByTestId('privacy-notice')).toBeVisible();
+    await expect(page.locator('.dropzone').getByText('Formatos permitidos: PDF, DOCX, TXT, VTT, SRT y XLSX.')).toBeVisible();
   });
 
   test('un nombre repetido se rechaza', async ({ page }) => {

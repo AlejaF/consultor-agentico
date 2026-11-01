@@ -1,6 +1,6 @@
 import type { Role } from '../app/router';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export interface LocalFileMeta {
   id: string;

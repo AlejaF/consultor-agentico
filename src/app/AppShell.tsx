@@ -1,22 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { DemoBanner } from '../components/DemoBanner';
 import { Notice } from '../components/Notice';
-import { ResetDemoButton } from '../components/ResetDemoButton';
 import { RoleSwitcher } from '../components/RoleSwitcher';
+import { SideNav } from '../components/SideNav';
 import { NOTICE_TEXT, useAppState } from '../state/context';
-import { homeOf, ROLE_LABEL, type Role, type RouteId, type RouteMatch } from './router';
-
-const HOME_ID: Record<Role, RouteId> = {
-  consultor: 'consultor.projects',
-  lider: 'lider.dashboard',
-  contacto: 'contacto.summary',
-};
-
-const NAV: Record<Role, { label: string; hash: string }[]> = {
-  consultor: [{ label: 'Proyectos', hash: homeOf('consultor') }],
-  lider: [{ label: 'Tablero', hash: homeOf('lider') }],
-  contacto: [{ label: 'Resumen del proyecto', hash: homeOf('contacto') }],
-};
+import type { Role, RouteMatch } from './router';
 
 /** Al cambiar de ruta: título, anuncio y foco en el h1 (FR-038, FR-040). */
 function useRouteAnnouncer(route: RouteMatch) {
@@ -53,11 +41,20 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
   const announcement = useRouteAnnouncer(route);
   const [menuOpen, setMenuOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => setMenuOpen(false), [route.id]);
 
   return (
-    <>
+    <div
+      className="app"
+      onKeyDown={(e) => {
+        if (e.key === 'Escape' && menuOpen) {
+          setMenuOpen(false);
+          toggleRef.current?.focus();
+        }
+      }}
+    >
       <a
         className="skip-link"
         href="#contenido"
@@ -78,6 +75,7 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
           <RoleSwitcher role={role} />
           <button
             type="button"
+            ref={toggleRef}
             className="menu-toggle"
             aria-expanded={menuOpen}
             aria-controls="navegacion"
@@ -88,23 +86,7 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
         </header>
       )}
       <div className={role ? 'shell-body' : undefined}>
-        {role && (
-          <nav id="navegacion" className={menuOpen ? 'sidenav open' : 'sidenav'} aria-label="Navegación principal">
-            <ul>
-              {NAV[role].map((n) => (
-                <li key={n.hash}>
-                  <a href={n.hash} aria-current={route.id === HOME_ID[role] ? 'page' : undefined}>
-                    {n.label}
-                  </a>
-                </li>
-              ))}
-              <li>
-                <ResetDemoButton />
-              </li>
-            </ul>
-            <p className="subtitle">Estás como {ROLE_LABEL[role]}.</p>
-          </nav>
-        )}
+        {role && <SideNav role={role} route={route} open={menuOpen} onNavigate={() => setMenuOpen(false)} />}
         <main id="contenido" ref={mainRef} tabIndex={-1} className={role ? 'main' : undefined}>
           <div aria-live="polite" role="status" data-testid="notices">
             {memoryMode && <Notice>{NOTICE_TEXT.memory}</Notice>}
@@ -117,6 +99,6 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
       <div className="visually-hidden" aria-live="polite" role="status" data-testid="route-announcer">
         {announcement}
       </div>
-    </>
+    </div>
   );
 }

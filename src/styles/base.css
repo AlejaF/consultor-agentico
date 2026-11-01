@@ -169,3 +169,6 @@ button[aria-disabled='true']:hover { background: var(--color-surface-muted); }
 .facts div { display: flex; justify-content: space-between; gap: var(--space-3); align-items: center; }
 .facts dt { color: var(--color-text-muted); font-size: var(--font-size-sm); }
 .facts dd { margin: 0; font-weight: var(--weight-bold); }
+
+.badge-blocked { color: var(--color-text-muted); background: var(--color-surface-muted); }
+hr { border: 0; border-top: 1px solid var(--color-border-subtle); margin: var(--space-3) 0; width: 100%; }

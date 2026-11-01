@@ -85,7 +85,7 @@ describe('carga', () => {
     expect(r.state).toEqual(initial());
   });
   it('forma inválida (tipo incorrecto) → dañado', () => {
-    const r = make(memoryStorage(JSON.stringify({ schemaVersion: 1, session: 5 }))).p.load();
+    const r = make(memoryStorage(JSON.stringify({ schemaVersion: SCHEMA_VERSION, session: 5 }))).p.load();
     expect(r.notice).toBe('corrupt');
   });
   it('getItem lanza → modo memoria + aviso permanente', () => {

@@ -8,6 +8,7 @@ describe('kindOfFile', () => {
     expect(kindOfFile('a.srt')).toBe('transcripcion');
     expect(kindOfFile('a.pdf')).toBe('documento');
     expect(kindOfFile('a.docx')).toBe('documento');
+    expect(kindOfFile('a.XLSX')).toBe('documento'); // la hoja de cálculo se trata como documento
   });
 });
 

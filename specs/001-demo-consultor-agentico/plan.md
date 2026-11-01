@@ -2,7 +2,7 @@
 
 **Branch**: `001-demo-consultor-agentico` (carpeta del spec; no hay extensión de git que cree ramas) | **Date**: 2026-11-01 | **Spec**: [spec.md](./spec.md)
 
-**Input**: Feature specification from `specs/001-demo-consultor-agentico/spec.md` (8 historias, FR-001 a FR-048, SC-001 a SC-015)
+**Input**: Feature specification from `specs/001-demo-consultor-agentico/spec.md` (8 historias, FR-001 a FR-050, SC-001 a SC-015)
 
 > Convención: toda cifra de tiempo es una **estimación NO VERIFICADO**. Todo lo que se comprobó en esta máquina el 2026-11-01 lo indica con «verificado» y su evidencia está en [research.md](./research.md).
 
@@ -159,7 +159,7 @@ specs/001-demo-consultor-agentico/
 Detalle completo en [data-model.md](./data-model.md) y [contracts/persisted-state.md](./contracts/persisted-state.md). Resumen:
 
 - **Estático** (no se persiste): cuentas, empresas, equipos, proyectos y su estado inicial, **UNA plantilla de diagnóstico** (8 hallazgos, 6 dimensiones, 1 con respaldo insuficiente) y **UNA plantilla de estrategia** (riesgos, ruta, sector/mercado) **compartidas por todos los proyectos**, **5 elementos de evidencia por ranura (1 a 5)** con sus extractos, de modo que las citas resuelven en cualquier proyecto; rúbrica (4 criterios, niveles 1–5), encuesta, preguntas de captura. Los equipos adicionales del Líder reutilizan las mismas plantillas con otros nombres ficticios de empresa. Cada hallazgo gana un campo `plainText` (texto no técnico para el Contacto, FR-035) **en L5b, no en L3**.
-- **Persistido** (`PersistedState`, `schemaVersion: 1`): `session.role`; por proyecto: `answers`, `localFiles[]` (`id`, `name`, `type`, `size`, `addedAt`), `diagnosis` (`status`, `generatedAt`, `issuedAt`, decisión por hallazgo con texto editado), `strategy` (`status`, `sentAt`); `gradings` por entrega (clave `dx/<projectId>` o `st/<projectId>`); `surveys`; `activity[]`.
+- **Persistido** (`PersistedState`, `schemaVersion: 2`): `session.role`; por proyecto: `answers`, `localFiles[]` (`id`, `name`, `type`, `size`, `addedAt`), `diagnosis` (`status`, `generatedAt`, `issuedAt`, decisión por hallazgo con texto editado), `strategy` (`status`, `sentAt`); `gradings` por entrega (clave `dx/<projectId>` o `st/<projectId>`); `surveys`; `activity[]`.
 - **Derivado en ejecución**: entregas (el diagnóstico emitido y la estrategia enviada, más las precargadas de otros equipos), estrategia (de las decisiones), avance, contadores, promedio.
 - **Migración**: si `schemaVersion` difiere, el JSON está dañado o la forma no valida, se descarta y se usa el estado inicial, con un aviso «Se restableció la demo (versión de datos distinta)». Si el almacenamiento falla, se trabaja en memoria con aviso (FR-007).
 
@@ -177,6 +177,7 @@ Detalle en [contracts/routes.md](./contracts/routes.md). Rutas por hash (`#/…`
 | `#/consultor/proyectos/:projectId/estrategia` | Consultor | Estrategia: bloqueada sin diagnóstico emitido; con él, botón «Generar estrategia» (1,5 s, «Simulada») | US5 |
 | `#/consultor/proyectos/:projectId/informe` | Consultor | Informe imprimible | US8 |
 | `#/lider` | Líder | Tablero | US6 |
+| `#/lider/entregas` | Líder | Entregas por revisar (lista; destino de la navegación) | US6 |
 | `#/lider/entregas/:tipo/:projectId` (`tipo` = `dx` o `st`) | Líder | Revisión y calificación | US6 |
 | `#/lider/entregas/:tipo/:projectId/informe` | Líder | Informe imprimible de la entrega (`dx`: solo diagnóstico; `st`: estrategia enviada con su diagnóstico) | US8 |
 | `#/contacto` | Contacto | Resumen del proyecto | US7 |
@@ -192,7 +193,7 @@ Al cambiar de ruta, el foco pasa al encabezado principal, se actualiza el títul
 
 ## Componentes principales
 
-`AppShell` (cabecera, `DemoBanner`, `RoleSwitcher`, navegación lateral que pasa a menú en celular, «Saltar al contenido», región `aria-live` de avisos); `SimBadge` («Simulada»); `UnverifiedBadge` («NO VERIFICADO»); `Notice`; `ConfirmDialog` (`<dialog>` nativo); `ProgressBar`; `StatusBadge` (estado con texto, no solo color); `ResponsiveTable` (tabla que se reorganiza); `ProjectCard`; `FileDropzone` (arrastrar + botón de selección con teclado); `EvidenceList`; `CaptureProgress`; `QuestionForm`; `GenerateButton` (con bloqueo y simulación de 1,5 s; se reutiliza para «Generar estrategia»); `FindingCard` (aceptar/editar/rechazar con edición en línea); `CitationButton` + `EvidencePanel` (extracto ficticio; debajo del hallazgo en celular); `ReviewSummary` (N de M, emitir); `StrategyView` (`RiskCard`, `RouteTimeline`, `DerivedFrom`); `KpiCard`; `TeamsTable`; `ReviewQueue`; `RubricForm` (grupos de radio con nivel 1–5, rótulo «Criterios de ejemplo…», promedio y meta); `GradeSummary`; `SurveyForm`; `PrintReport` (compartido por Consultor y Líder; estilos de impresión).
+`SideNav` (navegación por rol, pasos del flujo del proyecto y pie con cuenta y «Restablecer demo»; FR-049); `AppShell` (cabecera, `DemoBanner`, `RoleSwitcher`, navegación lateral que pasa a menú en celular, «Saltar al contenido», región `aria-live` de avisos); `SimBadge` («Simulada»); `UnverifiedBadge` («NO VERIFICADO»); `Notice`; `ConfirmDialog` (`<dialog>` nativo); `ProgressBar`; `StatusBadge` (estado con texto, no solo color); `ResponsiveTable` (tabla que se reorganiza); `ProjectCard`; `FileDropzone` (arrastrar + botón de selección con teclado); `EvidenceList`; `CaptureProgress`; `QuestionForm`; `GenerateButton` (con bloqueo y simulación de 1,5 s; se reutiliza para «Generar estrategia»); `FindingCard` (aceptar/editar/rechazar con edición en línea); `CitationButton` + `EvidencePanel` (extracto ficticio; debajo del hallazgo en celular); `ReviewSummary` (N de M, emitir); `StrategyView` (`RiskCard`, `RouteTimeline`, `DerivedFrom`); `KpiCard`; `TeamsTable`; `ReviewQueue`; `RubricForm` (grupos de radio con nivel 1–5, rótulo «Criterios de ejemplo…», promedio y meta); `GradeSummary`; `SurveyForm`; `PrintReport` (compartido por Consultor y Líder; estilos de impresión).
 
 ## Estrategia de pruebas por prioridad
 

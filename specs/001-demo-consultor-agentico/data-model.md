@@ -1,6 +1,6 @@
 # Modelo de datos (Fase 1): DEMO navegable Consultor Agéntico
 
-Todos los datos son **ficticios** (principio I). Los nombres son inventados y evidentemente falsos («Empresa Ficticia Alfa», «Equipo Demo 1», «Consultora Demo»). Los tipos se escriben en TypeScript solo como notación; el código real sale de aquí en `/speckit-tasks`.
+Todos los datos son **ficticios** (principio I). Los nombres son inventados y evidentemente falsos («Empresa Ficticia Alfa», «Equipo 1», «Consultora Demo»). Los tipos se escriben en TypeScript solo como notación; el código real sale de aquí en `/speckit-tasks`.
 
 ## 1. Dos capas
 
@@ -18,7 +18,7 @@ type Dimension = 'estrategia' | 'infraestructura' | 'datos' | 'gobernanza' | 'ta
 
 interface Account { role: Role; displayName: string; subtitle: string }       // 3 cuentas, sin credenciales
 interface Company { id: string; name: string; sector: string; size: string }  // nombres ficticios
-interface Team { id: string; name: string; projectIds: string[] }             // 'Equipo Demo Alfa' = el del Consultor
+interface Team { id: string; name: string; projectIds: string[] }             // 'Equipo 1' = el del Consultor; los otros son «Equipo 2» a «Equipo 4»
 interface Project { id: string; teamId: string; companyId: string;
   ownedByDemoConsultor: boolean; initial: ProjectState; lastActivityLabel: string;
   sampleSlots: Slot[] /* ranuras visibles en su lista de evidencia; P-D: [] */ }
@@ -58,11 +58,11 @@ Proyectos del Consultor (estado inicial):
 - **P-D**: **sin evidencia** (probar el bloqueo, FR-014).
 Equipos para el Líder: tres equipos más con diagnóstico emitido; **uno tiene `dx` calificado y los otros dos quedan por revisar** (FR-033). El estado inicial incluye, por tanto, `gradings` para `dx/P-C`, `st/P-C` y `dx/<proyecto del equipo calificado>`.
 
-## 3. Capa persistida (`PersistedState`, versión 1)
+## 3. Capa persistida (`PersistedState`, versión 2)
 
 ```ts
 interface PersistedState {
-  schemaVersion: 1
+  schemaVersion: 2   // 1 en L1 y L2; subió a 2 en L3 (estados iniciales sembrados)
   session: { role: Role | null }
   projects: Record<string /* ProjectId */, ProjectState>
   gradings: Record<string /* 'dx/<projectId>' | 'st/<projectId>' */, Grading>
@@ -112,7 +112,7 @@ Lo que **no** se persiste: contenido de archivos, extractos, hallazgos, estrateg
 
 ## 5. Reglas de validación (de los requisitos)
 
-- **Archivo** (FR-010): extensión en `pdf, docx, txt, vtt, srt` (sin distinguir mayúsculas); tamaño `> 0` y `≤ 25 MB` (26 214 400 bytes); nombre `≤ 150` caracteres; nombre repetido en el mismo proyecto → rechazado. Cada rechazo lleva un motivo en español; los válidos de una misma selección se aceptan.
+- **Archivo** (FR-010): extensión en `pdf, docx, txt, vtt, srt, xlsx` (sin distinguir mayúsculas; `xlsx` se trata como documento); tamaño `> 0` y `≤ 25 MB` (26 214 400 bytes); nombre `≤ 150` caracteres; nombre repetido en el mismo proyecto → rechazado. Cada rechazo lleva un motivo en español; los válidos de una misma selección se aceptan.
 - **Generar** (FR-015): al menos 1 elemento de evidencia (de ejemplo o archivo propio).
 - **Decisión** (FR-019/020): `edited` exige texto con contenido; una edición vacía no se guarda.
 - **Emitir** (FR-021): todos los hallazgos con decisión distinta de `pending`, y al menos un `accepted` o `edited`. Un hallazgo `verified: false` puede aceptarse y conserva «NO VERIFICADO».

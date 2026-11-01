@@ -1,4 +1,5 @@
 import { TEAMS } from '../../data/teams';
+import { countOf } from '../../domain/format';
 
 /** Provisional (L1): lista de equipos. El tablero real se completa en L4. */
 export function Dashboard() {
@@ -10,7 +11,7 @@ export function Dashboard() {
         {TEAMS.map((t) => (
           <li key={t.id} className="card">
             <h2>{t.name}</h2>
-            <p>{t.projectIds.length} proyecto(s)</p>
+            <p>{countOf(t.projectIds.length, 'proyecto', 'proyectos')}</p>
           </li>
         ))}
       </ul>

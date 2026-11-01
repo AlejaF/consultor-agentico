@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { countOf, plural } from '../domain/format';
 import { ALLOWED_LABEL, validateFiles, type FileInfo, type Rejection } from '../domain/fileValidation';
 
 export const PRIVACY_NOTICE =
@@ -59,17 +60,21 @@ export function FileDropzone({ existingNames, onAccepted, buttonRef }: Props) {
           type="file"
           multiple
           hidden
-          accept=".pdf,.docx,.txt,.vtt,.srt"
+          accept=".pdf,.docx,.txt,.vtt,.srt,.xlsx"
           onChange={(e) => handle(e.target.files)}
         />
         <p className="subtitle">Formatos permitidos: {ALLOWED_LABEL}. Máximo 25 MB por archivo; nombre de hasta 150 caracteres.</p>
       </div>
       <div aria-live="polite" role="status" data-testid="upload-result">
-        {addedCount !== null && addedCount > 0 && <p className="ok-text">Se agregaron {addedCount} archivo(s).</p>}
+        {addedCount !== null && addedCount > 0 && <p className="ok-text">
+            Se {plural(addedCount, 'agregó', 'agregaron')} {countOf(addedCount, 'archivo', 'archivos')}.
+          </p>}
         {rejected.length > 0 && (
           <div className="rejections">
             <p>
-              <strong>No se agregaron {rejected.length} archivo(s):</strong>
+              <strong>
+                No se {plural(rejected.length, 'agregó', 'agregaron')} {countOf(rejected.length, 'archivo', 'archivos')}:
+              </strong>
             </p>
             <ul>
               {rejected.map((r, i) => (

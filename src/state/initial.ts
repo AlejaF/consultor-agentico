@@ -1,3 +1,4 @@
+import { FINDING_IDS } from '../data/diagnosis';
 import { INITIAL_PROJECT_STATES, PROJECTS } from '../data/projects';
 import { SCHEMA_VERSION, type Catalogs, type PersistedState } from './types';
 
@@ -12,9 +13,9 @@ export function createInitialState(): PersistedState {
   };
 }
 
-/** Catálogos para validar lo guardado. Hallazgos (L3) y criterios (L4) se añaden en sus lotes. */
+/** Catálogos para validar lo guardado. Los criterios (L4) se añaden en sus lotes. */
 export const CATALOGS: Catalogs = {
   projectIds: PROJECTS.map((p) => p.id),
-  findingIds: [],
+  findingIds: FINDING_IDS,
   criterionIds: [],
 };

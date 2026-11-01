@@ -1,4 +1,4 @@
-import { EVIDENCE_SLOTS, resolveName } from '../data/evidence';
+import { EVIDENCE_SLOTS, resolveName, type Slot } from '../data/evidence';
 import type { Project } from '../data/projects';
 import type { LocalFileMeta } from '../state/types';
 import { kindOfFile, type EvidenceKind } from './progress';
@@ -33,4 +33,22 @@ export function buildEvidenceItems(project: Project, companyName: string, localF
     file: f,
   }));
   return [...sample, ...own];
+}
+
+export interface ResolvedCitation {
+  excerptId: string;
+  slot: Slot;
+  sourceName: string;
+  locator: string;
+  text: string;
+  label: string;
+}
+
+/** Resuelve una cita a su elemento de evidencia y extracto; funciona en cualquier proyecto (FR-017). */
+export function resolveCitation(c: { slot: Slot; excerptId: string }, companyName: string): ResolvedCitation | null {
+  const slot = EVIDENCE_SLOTS.find((s) => s.slot === c.slot);
+  const excerpt = slot?.excerpts.find((e) => e.id === c.excerptId);
+  if (!slot || !excerpt) return null;
+  const sourceName = resolveName(slot.name, companyName);
+  return { excerptId: excerpt.id, slot: slot.slot, sourceName, locator: excerpt.locator, text: excerpt.text, label: `${sourceName} · ${excerpt.locator}` };
 }

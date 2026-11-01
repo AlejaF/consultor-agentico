@@ -11,7 +11,6 @@ export function Summary() {
         <p>
           {company?.sector} · {company?.size}
         </p>
-        <p>Vista de ejemplo: el contenido se completa en un lote posterior.</p>
       </div>
     </>
   );

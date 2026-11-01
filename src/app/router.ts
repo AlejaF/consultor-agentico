@@ -17,6 +17,7 @@ export type RouteId =
   | 'consultor.strategy'
   | 'consultor.report'
   | 'lider.dashboard'
+  | 'lider.deliveries'
   | 'lider.delivery'
   | 'lider.deliveryReport'
   | 'contacto.summary'
@@ -40,6 +41,7 @@ export const ROUTES: readonly RouteDef[] = [
   { id: 'consultor.strategy', pattern: '#/consultor/proyectos/:projectId/estrategia', role: 'consultor', title: 'Estrategia' },
   { id: 'consultor.report', pattern: '#/consultor/proyectos/:projectId/informe', role: 'consultor', title: 'Informe' },
   { id: 'lider.dashboard', pattern: '#/lider', role: 'lider', title: 'Tablero' },
+  { id: 'lider.deliveries', pattern: '#/lider/entregas', role: 'lider', title: 'Entregas por revisar' },
   { id: 'lider.delivery', pattern: '#/lider/entregas/:tipo/:projectId', role: 'lider', title: 'Revisión de entrega' },
   { id: 'lider.deliveryReport', pattern: '#/lider/entregas/:tipo/:projectId/informe', role: 'lider', title: 'Informe de entrega' },
   { id: 'contacto.summary', pattern: '#/contacto', role: 'contacto', title: 'Resumen del proyecto' },
