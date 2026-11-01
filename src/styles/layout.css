@@ -67,3 +67,46 @@
   .sidenav { display: block; min-height: calc(100vh - 6rem); border-bottom: 0; border-right: 1px solid var(--color-border-subtle); }
   .cards { grid-template-columns: repeat(3, 1fr); }
 }
+
+.project-card h2 { margin-bottom: var(--space-1); }
+.cards.list-plain > li { display: block; }
+
+.evidence-layout { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+.evidence-main, .evidence-side { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+.form-grid { display: grid; gap: var(--space-4); }
+.field { display: grid; gap: var(--space-1); }
+.field select, .field input { width: 100%; }
+
+.privacy {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
+}
+.dropzone {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-5);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+.dropzone.over { background: var(--color-primary-soft); border-color: var(--color-primary); }
+.dropzone p { margin: 0; }
+.rejections { margin-top: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--color-danger-bg); color: var(--color-danger-text); border-radius: var(--radius-sm); overflow-wrap: anywhere; }
+.rejections ul { margin: 0; padding-left: var(--space-5); }
+
+.evidence-item { display: flex; gap: var(--space-3); justify-content: space-between; align-items: flex-start; padding: var(--space-3) 0; border-top: 1px solid var(--color-border-subtle); overflow-wrap: anywhere; }
+.evidence-item:first-child { border-top: 0; }
+.evidence-item p { margin: 0 0 var(--space-1); }
+
+@media (min-width: 1024px) {
+  .evidence-layout { grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); }
+  .evidence-side { position: sticky; top: var(--space-4); }
+}
+
+.evidence-item > button { flex-shrink: 0; white-space: nowrap; }
+.evidence-item > div { min-width: 0; }

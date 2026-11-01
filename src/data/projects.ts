@@ -1,6 +1,8 @@
 import type { ProjectState } from '../state/types';
 
-export type Slot = 1 | 2 | 3 | 4 | 5;
+import type { Slot } from './evidence';
+
+export type { Slot };
 
 export interface Project {
   id: string;
@@ -10,16 +12,18 @@ export interface Project {
   lastActivityLabel: string;
   /** Ranuras de evidencia de ejemplo visibles en su lista; P-D: ninguna. */
   sampleSlots: Slot[];
+  /** Ranuras de ejemplo con procesamiento pendiente (se muestran «Procesando»). */
+  pendingSlots: Slot[];
 }
 
 export const PROJECTS: readonly Project[] = [
-  { id: 'P-A', teamId: 'T-0', companyId: 'C-A', ownedByDemoConsultor: true, lastActivityLabel: 'Hace 2 días (ejemplo)', sampleSlots: [1, 2, 3, 4, 5] },
-  { id: 'P-B', teamId: 'T-0', companyId: 'C-B', ownedByDemoConsultor: true, lastActivityLabel: 'Hace 1 semana (ejemplo)', sampleSlots: [1, 2, 3, 4] },
-  { id: 'P-C', teamId: 'T-0', companyId: 'C-C', ownedByDemoConsultor: true, lastActivityLabel: 'Hace 3 semanas (ejemplo)', sampleSlots: [1, 2, 3, 4, 5] },
-  { id: 'P-D', teamId: 'T-0', companyId: 'C-D', ownedByDemoConsultor: true, lastActivityLabel: 'Sin actividad (ejemplo)', sampleSlots: [] },
-  { id: 'E-1', teamId: 'T-1', companyId: 'C-E1', ownedByDemoConsultor: false, lastActivityLabel: 'Hace 4 días (ejemplo)', sampleSlots: [1, 2, 3, 4] },
-  { id: 'E-2', teamId: 'T-2', companyId: 'C-E2', ownedByDemoConsultor: false, lastActivityLabel: 'Hace 5 días (ejemplo)', sampleSlots: [1, 2, 3, 4] },
-  { id: 'E-3', teamId: 'T-3', companyId: 'C-E3', ownedByDemoConsultor: false, lastActivityLabel: 'Hace 1 día (ejemplo)', sampleSlots: [1, 2, 3, 4] },
+  { id: 'P-A', teamId: 'T-0', companyId: 'C-A', ownedByDemoConsultor: true, lastActivityLabel: 'Hace 2 días (ejemplo)', sampleSlots: [1, 2, 3, 4, 5], pendingSlots: [5] },
+  { id: 'P-B', teamId: 'T-0', companyId: 'C-B', ownedByDemoConsultor: true, lastActivityLabel: 'Hace 1 semana (ejemplo)', sampleSlots: [1, 2, 3, 4], pendingSlots: [] },
+  { id: 'P-C', teamId: 'T-0', companyId: 'C-C', ownedByDemoConsultor: true, lastActivityLabel: 'Hace 3 semanas (ejemplo)', sampleSlots: [1, 2, 3, 4, 5], pendingSlots: [] },
+  { id: 'P-D', teamId: 'T-0', companyId: 'C-D', ownedByDemoConsultor: true, lastActivityLabel: 'Sin actividad (ejemplo)', sampleSlots: [], pendingSlots: [] },
+  { id: 'E-1', teamId: 'T-1', companyId: 'C-E1', ownedByDemoConsultor: false, lastActivityLabel: 'Hace 4 días (ejemplo)', sampleSlots: [1, 2, 3, 4, 5], pendingSlots: [5] },
+  { id: 'E-2', teamId: 'T-2', companyId: 'C-E2', ownedByDemoConsultor: false, lastActivityLabel: 'Hace 5 días (ejemplo)', sampleSlots: [1, 2, 3, 4], pendingSlots: [] },
+  { id: 'E-3', teamId: 'T-3', companyId: 'C-E3', ownedByDemoConsultor: false, lastActivityLabel: 'Hace 1 día (ejemplo)', sampleSlots: [1, 2, 3, 4], pendingSlots: [] },
 ];
 
 export function emptyProjectState(): ProjectState {

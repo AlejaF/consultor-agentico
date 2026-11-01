@@ -1,21 +1,29 @@
 import { COMPANIES } from '../../data/companies';
 import { PROJECTS } from '../../data/projects';
+import { ProjectCard } from '../../components/ProjectCard';
+import { buildEvidenceItems } from '../../domain/evidence';
+import { projectProgress } from '../../domain/progress';
+import { useAppState } from '../../state/context';
 
-/** Provisional (L1): lista simple de proyectos. La pantalla real se completa en L2. */
 export function Projects() {
+  const { state } = useAppState();
   const mine = PROJECTS.filter((p) => p.ownedByDemoConsultor);
   return (
     <>
       <h1>Proyectos</h1>
-      <p>Proyectos del Equipo Demo Alfa (datos ficticios).</p>
-      <ul className="cards" style={{ listStyle: 'none', padding: 0 }}>
-        {mine.map((p) => (
-          <li key={p.id} className="card">
-            <h2>{COMPANIES.find((c) => c.id === p.companyId)?.name}</h2>
-            <p>Proyecto {p.id}</p>
-            <p className="subtitle">{p.lastActivityLabel}</p>
-          </li>
-        ))}
+      <p>Proyectos del Equipo Demo Alfa. Todos los datos son ficticios.</p>
+      <ul className="cards list-plain">
+        {mine.map((p) => {
+          const company = COMPANIES.find((c) => c.id === p.companyId)!;
+          const ps = state.projects[p.id];
+          const evidenceCount = buildEvidenceItems(p, company.name, ps.localFiles).length;
+          const progress = projectProgress({ evidenceCount, diagnosis: ps.diagnosis.status, strategy: ps.strategy.status });
+          return (
+            <li key={p.id}>
+              <ProjectCard project={p} company={company} progress={progress} />
+            </li>
+          );
+        })}
       </ul>
     </>
   );

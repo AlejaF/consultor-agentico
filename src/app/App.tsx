@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CONSULTOR_PROJECT_IDS } from '../data/projects';
+import { Evidence } from '../screens/consultor/Evidence';
 import { Projects } from '../screens/consultor/Projects';
 import { Summary } from '../screens/contacto/Summary';
 import { Dashboard } from '../screens/lider/Dashboard';
@@ -15,6 +16,8 @@ function Screen({ route }: { route: RouteMatch }) {
       return <Login />;
     case 'consultor.projects':
       return <Projects />;
+    case 'consultor.evidence':
+      return <Evidence projectId={route.params.projectId} />;
     case 'lider.dashboard':
       return <Dashboard />;
     case 'contacto.summary':

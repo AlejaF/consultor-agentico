@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 
 interface Props {
   open: boolean;
@@ -13,6 +13,7 @@ interface Props {
 /** Diálogo con el elemento nativo <dialog>. */
 export function ConfirmDialog({ open, title, children, confirmLabel, cancelLabel = 'Cancelar', onConfirm, onCancel }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -22,13 +23,13 @@ export function ConfirmDialog({ open, title, children, confirmLabel, cancelLabel
   return (
     <dialog
       ref={ref}
-      aria-labelledby="confirm-title"
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         onCancel();
       }}
     >
-      <h2 id="confirm-title">{title}</h2>
+      <h2 id={titleId}>{title}</h2>
       <div>{children}</div>
       <div className="actions">
         <button type="button" onClick={onCancel}>
