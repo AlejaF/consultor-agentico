@@ -2,3 +2,9 @@ referencias/
 node_modules/
 dist/
 .env*
+
+# locales
+.local/
+test-results/
+playwright-report/
+.claude/settings.local.json
