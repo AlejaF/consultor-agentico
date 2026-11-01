@@ -6,6 +6,5 @@ export default defineConfig({
   plugins: [react()],
   test: {
     include: ['tests/unit/**/*.test.ts'],
-    passWithNoTests: true, // provisional: permite el primer despliegue (T003) antes de existir pruebas; se quita en T017
   },
 });

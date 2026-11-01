@@ -1,0 +1,58 @@
+/* Único lugar con colores y tipografía (constitución V; contracts/design-tokens.md).
+   Ningún otro archivo de src/ ni public/ puede tener colores literales. */
+:root {
+  /* Color */
+  --color-bg: #f7f6fb;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f0f0f0;
+  --color-ink: #0d0b19;
+  --color-text: #2a2a2a;
+  --color-text-muted: #5a5365;
+  --color-placeholder: #666666;
+  --color-primary: #5046e5;
+  --color-on-primary: #ffffff;
+  --color-primary-strong: #4338ca;
+  --color-primary-soft: #eeedfb;
+  --color-border: #88898b;
+  --color-border-subtle: #e4e2ed;
+  --color-track: #efedf8;
+  --color-bar-low: #d04a20;
+  --color-warn-text: #a34700;
+  --color-warn-bg: #fdf3e7;
+  --color-ok-text: #06702d;
+  --color-ok-bg: #e8f5ec;
+  --color-danger-text: #c11217;
+  --color-danger-bg: #fce8e7;
+  --color-pending-text: #5c5867;
+  --color-pending-bg: #f2f0fb;
+  --color-chip-yellow: #e4eb61;
+  --color-chip-green: #4cb978;
+  --color-chip-orange: #e8683b;
+  --color-focus: #0d0b19;
+  --color-focus-on-primary: #ffffff;
+
+  /* Tipografía (NO VERIFICADO que coincida con las referencias) */
+  --font-sans: "Plus Jakarta Sans Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-h2: 1.5rem;
+  --font-size-h1: clamp(1.5rem, 4vw, 2rem);
+  --line-height: 1.5;
+  --weight-regular: 400;
+  --weight-bold: 700;
+
+  /* Espaciado, forma y objetivos táctiles */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --target-min: 44px;
+  --gutter: 16px;
+  --bp-sm: 640px;
+  --bp-md: 1024px;
+}
