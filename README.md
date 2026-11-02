@@ -16,6 +16,17 @@ La cabecera de toda pantalla lleva la marca, «Inicio» (vuelve al ingreso **sin
 
 Muestra si el recorrido se entiende, si queda claro qué es simulado y si el flujo de revisión y calificación tiene sentido. No valida la calidad de ningún análisis, porque no hay análisis real.
 
+## Cómo se usó Spec Kit
+
+El proyecto se construyó con desarrollo guiado por especificación (Spec Kit): **constitución → especificación → plan → tareas → implementación por lotes**, con revisión humana al cerrar cada lote. Una divergencia con lo especificado se corrige primero en la especificación y después en el plan, las tareas y el código.
+
+- Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
+- Especificación: [`specs/001-demo-consultor-agentico/spec.md`](specs/001-demo-consultor-agentico/spec.md)
+- Plan: [`specs/001-demo-consultor-agentico/plan.md`](specs/001-demo-consultor-agentico/plan.md)
+- Tareas: [`specs/001-demo-consultor-agentico/tasks.md`](specs/001-demo-consultor-agentico/tasks.md)
+- Registro de decisiones y verificaciones: [`docs/decisiones.md`](docs/decisiones.md)
+- Qué se tomó de las interfaces de referencia y qué no: [`docs/cobertura-referencias.md`](docs/cobertura-referencias.md)
+
 ## Qué es simulado, qué es real y qué queda fuera
 
 | Elemento | ¿Real o simulado? |
@@ -45,27 +56,6 @@ PDF, DOCX, TXT, VTT, SRT y XLSX, hasta 25 MB y nombres de hasta 150 caracteres. 
 ### Qué significa «NO VERIFICADO»
 
 Se usa en dos sentidos: (1) un **hallazgo** con respaldo insuficiente se marca «NO VERIFICADO»; puede aceptarse, pero **no cuenta como respaldo de la estrategia**; (2) en este README y en `docs/`, una **afirmación** que nadie ha comprobado todavía (ver la lista más abajo).
-
-## Decisión sobre el alcance de P3 (2026-11-02)
-
-Se incluyen L5a (informe imprimible) y L5b (vista de la Empresa y encuesta simulada), y tres ampliaciones de P3: el tablero del Líder con madurez y buscador (E), los datos de la empresa en la captura de evidencia (F), y el análisis de sector y de mercado de solo lectura (G). Quedó registrado en el spec, `tasks.md`, `docs/decisiones.md` y `docs/cobertura-referencias.md`, y la constitución se enmendó (1.0.1).
-
-## Alcance: qué se incluyó y qué se recortó
-
-- **Vista de la Empresa y encuesta simulada** (historia 7): **incluida el 2026-11-02** (L5b). La Empresa Ficticia Beta ve su ruta de adopción en tres pasos, el próximo paso, una actividad de ejemplo, el informe de diagnóstico en solo lectura y una encuesta simulada de 3 preguntas que se guarda solo en el navegador.
-- **Informe imprimible** (historia 8): **incluido** (lotes L6f y L6g). Desde un diagnóstico emitido, «Ver informe imprimible» abre una vista que se imprime o se guarda como PDF con la función del navegador; lleva «DEMO · datos ficticios» en cada página y los rótulos «Simulada» y «NO VERIFICADO». La impresión real en papel o PDF queda por revisar a mano (tarea T071).
-- Qué se tomó de las interfaces de referencia y qué no (con resumen de conteos por estado): [`docs/cobertura-referencias.md`](docs/cobertura-referencias.md).
-- Fuera de la demo por pertenecer al sistema completo: IA real, transcripción de audio, lectura del contenido de los archivos, cuentas y permisos reales, envío de correos, almacenamiento compartido, administración de la plataforma, exportaciones oficiales, fuentes reales de sector y mercado, estrategia conversacional por etapas, portafolio de casos de uso y la devolución de un entregable para corregirlo (el Líder solo califica).
-
-## Límites conocidos y cosas NO VERIFICADO
-
-- **No evaluado en esta versión de demostración** — SC-001 (completar el recorrido P1 en 10 minutos o menos) y SC-005 («9 de cada 10» identifican lo simulado) se mantienen como metas del spec; no hay ningún resultado y no se afirma ninguno.
-- **NO VERIFICADO** — La revisión manual con **lector de pantalla** no se hizo (`docs/evidencia/revision-manual.md`). La revisión manual con **teclado** sí se hizo el 2026-11-02 en Chrome para Windows: todo funcionó salvo el foco visible del diálogo de «Restablecer demo», ya corregido. Axe automatiza solo una parte de WCAG 2.2 AA: que axe no encuentre violaciones **no** equivale a cumplir WCAG.
-- **NO VERIFICADO** — La tipografía (Plus Jakarta Sans) es una aproximación a la de las referencias.
-- **NO VERIFICADO** — Los tiempos y metas del plan (horas por lote, paquete menor de 150 kB comprimidos) son estimaciones; el tamaño medido está en `docs/evidencia/sc-checklist.md`.
-- **NO VERIFICADO** — Conformidad legal sobre tratamiento de datos personales: no se ha evaluado. La demo no pide datos personales.
-- Los datos viven solo en el navegador: borrar los datos del sitio o usar otro navegador reinicia la demo. Con el almacenamiento bloqueado la demo avisa y funciona en memoria.
-- Un hallazgo editado o una calificación guardada no se pueden deshacer, salvo con «Restablecer demo» (botón «Restablecer demo» de la cabecera; pide una confirmación).
 
 ## Cómo ejecutarla
 
@@ -97,17 +87,6 @@ Las capturas y los resultados de axe están en `docs/evidencia/` (ver su `README
 ## Cómo se despliega
 
 GitHub Actions compila con `BASE_PATH=/<nombre-del-repositorio>/` y publica `dist/` en GitHub Pages (`.github/workflows/`). La app usa rutas con `#` (`#/consultor`), así que no necesita configuración de servidor. Una prueba (`tests/e2e/base-path.spec.ts`) compila bajo una subruta y comprueba que no hay recursos rotos.
-
-## Cómo se usó Spec Kit
-
-El proyecto se construyó con desarrollo guiado por especificación (Spec Kit): **constitución → especificación → plan → tareas → implementación por lotes**, con revisión humana al cerrar cada lote y **commit y publicación hechos siempre por la persona** (nunca por el agente). Una divergencia con lo especificado se corrige primero en la especificación y después en el plan, las tareas y el código.
-
-- Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
-- Especificación: [`specs/001-demo-consultor-agentico/spec.md`](specs/001-demo-consultor-agentico/spec.md)
-- Plan: [`specs/001-demo-consultor-agentico/plan.md`](specs/001-demo-consultor-agentico/plan.md)
-- Tareas: [`specs/001-demo-consultor-agentico/tasks.md`](specs/001-demo-consultor-agentico/tasks.md)
-- Registro de decisiones y verificaciones: [`docs/decisiones.md`](docs/decisiones.md)
-- Qué se tomó de las interfaces de referencia y qué no: [`docs/cobertura-referencias.md`](docs/cobertura-referencias.md)
 
 ## Contenido, créditos y licencias
 
