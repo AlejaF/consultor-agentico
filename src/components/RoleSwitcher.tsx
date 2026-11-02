@@ -19,9 +19,9 @@ export function RoleSwitcher({ role }: { role: Role }) {
 
   return (
     <>
-      <label>
-        Rol activo
-        <select
+      <label htmlFor="rol-activo">Rol activo</label>
+      <select
+          id="rol-activo"
           value={role}
           onChange={(e) => {
             const next = e.target.value as Role;
@@ -35,7 +35,6 @@ export function RoleSwitcher({ role }: { role: Role }) {
             </option>
           ))}
         </select>
-      </label>
       <ConfirmDialog
         open={pending !== null}
         title="Hay una edición sin guardar"

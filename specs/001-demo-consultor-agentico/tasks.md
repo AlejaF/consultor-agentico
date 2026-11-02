@@ -266,6 +266,11 @@ En ambos casos, actualizar spec → plan → tareas antes del código y dejar co
 - [X] T104 [US1] Ingreso: cada cuenta es una sola tarjeta-control, sin botones anidados (FR-001).
 - [X] T105 [US6] El puntaje «Calificada · N de 5» de la tarjeta de proyecto no se parte a 320, 768 y 1280 px.
 
+## L6c — Encabezado y capturas faltantes
+
+- [X] T106 [US1] Encabezado a 320 px: el texto del rol seleccionado se ve completo en los tres roles (320, 360 y 768 px); disposición en tres filas (marca + «Inicio»; «Rol activo» + «Restablecer»; selector a todo el ancho). FR-051, «Pantalla pequeña».
+- [X] T107 [P] Capturas faltantes (a 320, 768 y 1280 px): diálogo de «Restablecer demo»; calificación guardada sin comentario con «Sin comentario» (vista del Líder y vista del Consultor).
+
 ## Dependencias y orden
 
 - **Orden de ejecución**: L1 → L2 → L3 → L4 → L6 → L5a → L5b (ver «Reglas del trabajo»).

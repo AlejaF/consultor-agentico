@@ -35,9 +35,9 @@ test.describe('Corrección A: niveles de la rúbrica en una sola fila', () => {
   });
 });
 
-test.describe('Corrección B: cabecera de como máximo 2 filas', () => {
+test.describe('Corrección B (revisada en L6c): cabecera de como máximo 3 filas', () => {
   for (const role of ['Consultor', 'Líder', 'Contacto'] as const) {
-    test(`${role}: ≤ 2 filas y «Rol activo» visible`, async ({ page }) => {
+    test(`${role}: ≤ 3 filas y «Rol activo» visible`, async ({ page }) => {
       await page.goto('/');
       await page.getByRole('button', { name: `Entrar como ${role}` }).click();
       const header = page.locator('header.topbar');
@@ -56,7 +56,7 @@ test.describe('Corrección B: cabecera de como máximo 2 filas', () => {
         const cs = getComputedStyle(label);
         return { filas, visible: cs.display !== 'none' && cs.visibility !== 'hidden', altoLabel: label.getBoundingClientRect().height };
       });
-      expect(info.filas).toBeLessThanOrEqual(2);
+      expect(info.filas).toBeLessThanOrEqual(3);
       expect(info.visible).toBe(true);
       expect(info.altoLabel).toBeGreaterThan(0);
       await expectNoHorizontalScroll(page);

@@ -8,7 +8,7 @@
 EVIDENCIA=1 npx playwright test
 ```
 
-Resultado de la última corrida: 325 pruebas pasadas y 8 omitidas (pruebas que solo aplican a un ancho concreto). Las pruebas unitarias (`npm test`) son 231.
+Resultado de la última corrida: 375 pruebas pasadas y 15 omitidas (pruebas que solo aplican a un ancho concreto). Las pruebas unitarias (`npm test`) son 232.
 
 ## Qué cubre
 
@@ -37,6 +37,7 @@ Resultado de la última corrida: 325 pruebas pasadas y 8 omitidas (pruebas que s
 | Capturas de diagnóstico y revisión (L3) | `capturas/L3/` |
 | Capturas de estrategia, tablero del Líder y calificación (L4; el aviso por ruta desconocida está en `tablero-aviso-ruta-desconocida-*`) | `capturas/L4/` |
 | Capturas de los ajustes F a I (pestañas de cada rol, ventana de emisión, banner «Emitido», pilar con NO VERIFICADO) | `capturas/ajustes/` |
+| Capturas de L6c: diálogo de «Restablecer demo» y calificación guardada sin comentario («Sin comentario»), vista del Líder y del Consultor | `capturas/L6c/` |
 | Lista de comprobación manual de teclado y lector de pantalla (sin completar) | `revision-manual.md` |
 | Checklist de criterios de éxito SC-001 a SC-015 | `sc-checklist.md` |
 | Guion y tabla de pruebas con usuarios (sin completar) | `pruebas-usuarios.md` |

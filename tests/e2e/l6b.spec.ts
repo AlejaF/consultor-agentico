@@ -153,24 +153,23 @@ test.describe('3. «Inicio» y la marca llevan al ingreso sin borrar el estado',
     await expect(page).toHaveURL(/#\/consultor$/);
   });
 
-  test('a 320 px: ≤ 2 filas; fila 1 = marca + Inicio; fila 2 = «Rol activo» + Restablecer', async ({ page }) => {
-    test.skip(width(page) >= 480, 'La distribución de dos filas es para pantallas pequeñas');
+  test('a 320 px: fila 1 = marca + Inicio; fila 2 = «Rol activo» + Restablecer; fila 3 = selector', async ({ page }) => {
+    test.skip(width(page) >= 480, 'La distribución por filas es para pantallas pequeñas');
     await login(page, 'Líder');
-    const filas = await page.locator('header.topbar').evaluate((h) => {
-      const top = (el: Element | null) => Math.round(el!.getBoundingClientRect().top);
+    const f = await page.locator('header.topbar').evaluate((h) => {
       const centro = (el: Element | null) => { const r = el!.getBoundingClientRect(); return Math.round(r.top + r.height / 2); };
       const brand = h.querySelector('a.brand');
-      const inicio = [...h.querySelectorAll('a')].find((a) => a.textContent?.trim() === 'Inicio');
+      const inicio = [...h.querySelectorAll('a')].find((a) => a.textContent?.trim() === 'Inicio') ?? null;
       const label = h.querySelector('label');
       const reset = h.querySelector('button.reset-demo');
-      const labelVisible = getComputedStyle(label!).display !== 'none' && label!.getBoundingClientRect().height > 0;
-      return { f1: [centro(brand), centro(inicio ?? null)], f2: [centro(label), centro(reset)], tops: [top(brand), top(label)], labelVisible, texto: label!.textContent };
+      const select = h.querySelector('select');
+      return { f1: [centro(brand), centro(inicio)], f2: [centro(label), centro(reset)], f3: centro(select), texto: label!.textContent?.trim() };
     });
-    expect(Math.abs(filas.f1[0] - filas.f1[1])).toBeLessThanOrEqual(6);
-    expect(Math.abs(filas.f2[0] - filas.f2[1])).toBeLessThanOrEqual(6);
-    expect(filas.f2[0]).toBeGreaterThan(filas.f1[0] + 10);
-    expect(filas.labelVisible).toBe(true);
-    expect(filas.texto).toContain('Rol activo');
+    expect(Math.abs(f.f1[0] - f.f1[1])).toBeLessThanOrEqual(6);
+    expect(Math.abs(f.f2[0] - f.f2[1])).toBeLessThanOrEqual(6);
+    expect(f.f2[0]).toBeGreaterThan(f.f1[0] + 10);
+    expect(f.f3).toBeGreaterThan(f.f2[0] + 10);
+    expect(f.texto).toBe('Rol activo');
     await expectNoHorizontalScroll(page);
   });
 });

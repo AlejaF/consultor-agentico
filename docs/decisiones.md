@@ -222,6 +222,15 @@ Pedidos por la persona que prueba la demo. Orden: spec (FR-001, FR-002, FR-006, 
 
 Otros cambios menores: la prueba pesada «axe … en las pantallas P1» de `p1-journey.spec.ts` pasó a un límite de 90 s (con la suite en paralelo superó los 30 s por defecto en una corrida; sola tarda unos 8 s). La navegación ya no deja una columna lateral vacía cuando el rol no tiene pantallas (Contacto de la empresa).
 
+## Lote L6c: encabezado a 320 px y capturas faltantes (T106 y T107)
+
+Inicio: 2026-11-01 20:53:57. Spec primero (FR-051 y «Pantalla pequeña»), tareas, pruebas que fallaron (3 de 4 pruebas nuevas a 320 px: el selector tenía 29 px de espacio útil y mostraba «Cons») y después el código.
+
+- **Disposición del encabezado a 320 px** (tres filas): fila 1, marca + «Inicio»; fila 2, la etiqueta «Rol activo» + «Restablecer»; fila 3, el selector a todo el ancho. Se priorizó (1) el texto del rol completo, (2) «Inicio» y «Restablecer» con 44 px y (3) la etiqueta «Rol activo» visible. La etiqueta pasó a ser un `label` hermano del `select` (con `htmlFor`) y no su contenedor. Desde 768 px todo va en una sola fila y el selector tiene un ancho mínimo de 15 rem para que «Contacto de la empresa» no se recorte.
+- **Prueba** (`tests/e2e/l6c.spec.ts`): en cada rol, a 320, 360 y 768 px, mide el texto del rol seleccionado con la misma fuente del selector y exige que quepa en el espacio interior (reservando 24 px para la flecha), que el selector esté dentro de la pantalla, que la fuente sea ≥ 14 px, que «Inicio» y «Restablecer» midan ≥ 44 px, que «Rol activo» sea visible y que no haya desplazamiento horizontal. **Límite**: es una medición del ancho del texto, no una captura de pantalla del selector abierto; la reserva de 24 px para la flecha es una aproximación, por eso hay margen extra. `labels.spec.ts` comprueba además, en todas las pantallas, el rol seleccionado completo y la etiqueta visible.
+- La prueba de L6 que exigía «como máximo 2 filas» (`correcciones-l6.spec.ts`) pasó a «como máximo 3 filas», según lo pedido.
+- **Capturas nuevas** (`docs/evidencia/capturas/L6c/`, cada una a 320, 768 y 1280 px): `restablecer-dialogo-<ancho>.png`, `calificacion-sin-comentario-lider-<ancho>.png` y `calificacion-sin-comentario-consultor-<ancho>.png`.
+
 ## Lista de pulido (para L6)
 
 Observaciones de las revisiones humanas de L1 y L2. Se atienden en la pasada de pulido de L6 (T095) salvo lo ya resuelto. Cualquier cambio de comportamiento se corrige primero en el spec.

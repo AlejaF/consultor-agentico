@@ -21,7 +21,7 @@
 .topbar .brand { display: flex; align-items: center; gap: var(--space-2); font-weight: var(--weight-bold); margin-right: auto; text-decoration: none; min-height: var(--target-min); min-width: 0; }
 .topbar .brand img { width: 28px; height: 28px; }
 .topbar .home-link { display: inline-flex; align-items: center; justify-content: center; min-height: var(--target-min); min-width: var(--target-min); padding: 0 var(--space-3); font-weight: var(--weight-bold); }
-.topbar label { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); min-width: 0; }
+.topbar label { font-size: var(--font-size-sm); font-weight: var(--weight-bold); }
 .topbar select { color: var(--color-ink); min-width: 0; }
 .topbar .reset-demo { background: transparent; color: var(--color-on-primary); border-color: var(--color-on-primary); white-space: nowrap; }
 .topbar .reset-demo:hover { background: var(--color-primary-strong); }
@@ -196,14 +196,14 @@ button[aria-pressed='true'] { background: var(--color-primary-soft); border-colo
 .grade-levels strong { white-space: nowrap; flex-shrink: 0; }
 .grade-levels span { min-width: 0; overflow-wrap: anywhere; }
 
-/* Cabecera en pantallas pequeñas: dos filas (marca + «Inicio»; «Rol activo» + «Restablecer») */
+/* Cabecera en pantallas pequeñas, en tres filas (FR-051): marca + «Inicio»; «Rol activo» + «Restablecer»; selector a todo el ancho */
 @media (max-width: 767px) {
   .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-1) var(--space-2); }
   .topbar .brand { grid-column: 1; grid-row: 1; }
   .topbar .home-link { grid-column: 2; grid-row: 1; }
-  .topbar label { grid-column: 1; grid-row: 2; }
-  .topbar label select { flex: 1; }
+  .topbar label { grid-column: 1; grid-row: 2; align-self: center; }
   .topbar .reset-demo { grid-column: 2; grid-row: 2; }
+  .topbar select { grid-column: 1 / -1; grid-row: 3; width: 100%; }
 }
 @media (max-width: 479px) {
   .topbar .brand { font-size: var(--font-size-sm); }
@@ -221,3 +221,6 @@ button[aria-pressed='true'] { background: var(--color-primary-soft); border-colo
 .grade-comment.empty { color: var(--color-text-muted); font-style: italic; }
 .delivery-score { white-space: nowrap; }
 .shell-body:not(:has(.sidebar)) { display: block; }
+@media (min-width: 768px) {
+  .topbar select { min-width: 15rem; }
+}
