@@ -36,7 +36,7 @@ test.describe('Corrección A: niveles de la rúbrica en una sola fila', () => {
 });
 
 test.describe('Corrección B (revisada en L6c): cabecera de como máximo 3 filas', () => {
-  for (const role of ['Consultor', 'Líder', 'Contacto'] as const) {
+  for (const role of ['Consultor', 'Líder', 'Empresa'] as const) {
     test(`${role}: ≤ 3 filas y «Rol activo» visible`, async ({ page }) => {
       await page.goto('/');
       await page.getByRole('button', { name: `Entrar como ${role}` }).click();

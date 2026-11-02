@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 
-type Role = 'Consultor' | 'Líder' | 'Contacto';
-const ROLES: Role[] = ['Consultor', 'Líder', 'Contacto'];
+type Role = 'Consultor' | 'Líder' | 'Empresa';
+const ROLES: Role[] = ['Consultor', 'Líder', 'Empresa'];
 const CRITERIOS = ['Trazabilidad de la evidencia', 'Calidad del análisis', 'Coherencia entre diagnóstico y estrategia', 'Claridad de la comunicación'];
 
 async function goto(page: Page, hash: string) {
@@ -74,7 +74,7 @@ test.describe('2. Un único «Restablecer demo» en la cabecera', () => {
     await boton.click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toContainText('¿Restablecer la demo?');
-    await expect(dialog).toContainText('Se borrarán tus cambios en este navegador.');
+    await expect(dialog).toContainText('Se borrarán tus cambios en este navegador y la demo volverá a su estado inicial, con los datos de ejemplo.');
     // foco atrapado
     for (let i = 0; i < 6; i++) {
       await page.keyboard.press('Tab');
@@ -97,10 +97,11 @@ test.describe('2. Un único «Restablecer demo» en la cabecera', () => {
     await expect(page.getByRole('button', { name: 'Generar diagnóstico' })).toBeVisible(); // volvió al estado inicial
   });
 
-  test('el botón muestra siempre el texto completo «Restablecer demo», que es también su nombre accesible', async ({ page }) => {
+  test('el nombre accesible es siempre «Restablecer demo»; en menos de 768 px la etiqueta visible es «Restablecer»', async ({ page }) => {
     await login(page, 'Líder');
     const boton = page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' });
-    await expect(boton).toHaveText('Restablecer demo');
+    const visible = width(page) < 768 ? 'Restablecer' : 'Restablecer demo';
+    expect((await boton.innerText()).trim()).toBe(visible);
     const caja = await boton.boundingBox();
     expect(caja!.height).toBeGreaterThanOrEqual(44);
     expect(caja!.width).toBeGreaterThanOrEqual(44);
@@ -151,8 +152,8 @@ test.describe('3. «Inicio» y la marca llevan al ingreso sin borrar el estado',
     await expect(page).toHaveURL(/#\/consultor$/);
   });
 
-  test('bajo 520 px: fila 1 = marca + Inicio; fila 2 = «Rol activo» + selector; fila 3 = «Restablecer demo» a la derecha', async ({ page }) => {
-    test.skip(width(page) >= 520, 'La distribución de tres filas es para menos de 520 px');
+  test('bajo 768 px: fila 1 = marca + Inicio; fila 2 = «Rol activo» + selector + Restablecer', async ({ page }) => {
+    test.skip(width(page) >= 768, 'La distribución de dos filas es para menos de 768 px');
     await login(page, 'Líder');
     const f = await page.locator('header.topbar').evaluate((h) => {
       const caja = (el: Element | null) => el!.getBoundingClientRect();
@@ -162,17 +163,13 @@ test.describe('3. «Inicio» y la marca llevan al ingreso sin borrar el estado',
       const label = h.querySelector('label');
       const select = h.querySelector('select');
       const reset = h.querySelector('button.reset-demo');
-      const hr = caja(h);
-      return { f1: [centro(brand), centro(inicio)], f2: [centro(label), centro(select)], f3: centro(reset), selectAncho: caja(select).width, labelDerecha: caja(label).right, selectIzq: caja(select).left, resetDerecha: caja(reset).right, resetAncho: caja(reset).width, cabAncho: hr.width, cabDerecha: hr.right };
+      return { f1: [centro(brand), centro(inicio)], f2: [centro(label), centro(select), centro(reset)], texto: label!.textContent?.trim(), orden: caja(label).right <= caja(select).left && caja(select).right <= caja(reset).left };
     });
     expect(Math.abs(f.f1[0] - f.f1[1])).toBeLessThanOrEqual(6);
-    expect(Math.abs(f.f2[0] - f.f2[1])).toBeLessThanOrEqual(6);
+    expect(Math.max(...f.f2) - Math.min(...f.f2)).toBeLessThanOrEqual(6);
     expect(f.f2[0]).toBeGreaterThan(f.f1[0] + 10);
-    expect(f.f3).toBeGreaterThan(f.f2[0] + 10);
-    expect(f.selectIzq).toBeGreaterThanOrEqual(f.labelDerecha); // el selector va junto a su etiqueta, a su derecha
-    expect(f.selectAncho).toBeGreaterThan(150); // ocupa el ancho restante
-    expect(f.cabDerecha - f.resetDerecha, 'alineado a la derecha').toBeLessThanOrEqual(20);
-    expect(f.resetAncho / f.cabAncho, 'no ocupa todo el ancho').toBeLessThan(0.7);
+    expect(f.orden, 'etiqueta, selector y botón en ese orden, de izquierda a derecha').toBe(true);
+    expect(f.texto).toBe('Rol activo');
     await expectNoHorizontalScroll(page);
   });
 });
@@ -182,13 +179,17 @@ test.describe('4. Ingreso: cada cuenta es una sola tarjeta-control', () => {
     await page.goto('/');
     const tarjetas = page.locator('.account-link');
     await expect(tarjetas).toHaveCount(3);
-    for (const [i, rol] of ['Consultor', 'Líder', 'Contacto de la empresa'].entries()) {
+    for (const [i, rol] of ['Consultor', 'Líder', 'Empresa'].entries()) {
       const t = tarjetas.nth(i);
       expect(await t.evaluate((el) => el.querySelectorAll('button, a, input, select, textarea, [role=button]').length), 'controles anidados').toBe(0);
       const nombre = (await t.getAttribute('aria-label')) ?? '';
       expect(nombre).toContain(`Entrar como ${rol}`);
       expect(nombre).toMatch(/Demo/); // el nombre de la cuenta
       await expect(t).toContainText('Entrar →');
+      if (rol === 'Empresa') {
+        await expect(t).toContainText('Contacto Demo');
+        await expect(t).toContainText('Persona de contacto de la empresa cliente.');
+      }
       const caja = await t.boundingBox();
       const li = await t.locator('xpath=..').boundingBox();
       expect(caja!.height).toBeGreaterThanOrEqual(44);

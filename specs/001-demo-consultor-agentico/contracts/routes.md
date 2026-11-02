@@ -63,7 +63,7 @@ Los avisos se anuncian en una región `aria-live` y se pueden cerrar.
 |---|---|---|
 | Consultor | «Proyectos» (`#/consultor`); dentro de un proyecto (cualquier ruta con `:projectId`), un bloque con la empresa y 4 pasos: Evidencia, Diagnóstico, Revisión, Estrategia | Cada paso lleva su estado en texto: Pendiente, En curso, Completado, Bloqueado o Disponible (Estrategia con el diagnóstico emitido y sin generar). **Un paso Bloqueado enlaza a su pantalla, que explica el bloqueo; no redirige.** |
 | Líder | «Tablero» (`#/lider`), «Entregas por revisar (n)» (`#/lider/entregas`) | `n` = entregas existentes sin calificación |
-| Contacto de la empresa | «Resumen» (`#/contacto`) y «Encuesta» (`#/contacto/encuesta`), **solo cuando existan sus pantallas** (`src/app/features.ts`); hoy, ninguno y sin barra | Mientras no exista su vista, el rol muestra un mensaje claro, sin menús vacíos ni enlaces rotos |
+| Empresa | «Resumen» (`#/contacto`) y «Encuesta» (`#/contacto/encuesta`), **solo cuando existan sus pantallas** (`src/app/features.ts`); hoy, ninguno y sin barra | Mientras no exista su vista, el rol muestra un mensaje claro, sin menús vacíos ni enlaces rotos |
 
 La navegación no incluye tarjeta de cuenta ni «Restablecer demo»: «Restablecer demo» es un botón de la cabecera (FR-006) y la cabecera lleva también «Inicio» y la marca, ambos hacia `#/` sin borrar el estado (FR-051). Bajo 1024 px la navegación es una barra de pestañas siempre visible bajo la cabecera (en la lista de proyectos del Consultor no hace falta). Al elegir un enlace, el foco pasa al `h1` de la nueva pantalla.
 

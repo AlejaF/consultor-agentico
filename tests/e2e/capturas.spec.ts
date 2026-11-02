@@ -7,7 +7,7 @@ test.skip(!process.env.EVIDENCIA, 'Solo con EVIDENCIA=1');
 const roles = [
   ['consultor', 'Consultor'],
   ['lider', 'Líder'],
-  ['contacto', 'Contacto'],
+  ['contacto', 'Empresa'],
 ] as const;
 
 test('capturas del ingreso y del inicio de cada rol', async ({ page }, info) => {

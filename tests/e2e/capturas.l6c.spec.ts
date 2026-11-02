@@ -19,7 +19,7 @@ test('capturas de L6c', async ({ page }, info) => {
   await goto(page, '#/consultor/proyectos/P-B/diagnostico');
   await page.getByRole('heading', { level: 1, name: 'Diagnóstico' }).waitFor();
   await page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' }).click();
-  await page.getByRole('dialog').getByText('Se borrarán tus cambios en este navegador.').waitFor();
+  await page.getByRole('dialog').getByText('Se borrarán tus cambios en este navegador y la demo volverá a su estado inicial, con los datos de ejemplo.').waitFor();
   await shot('restablecer-dialogo');
   await page.getByRole('dialog').getByRole('button', { name: 'Cancelar' }).click();
 

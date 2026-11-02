@@ -1,15 +1,16 @@
 import { expect, test, type Page } from '@playwright/test';
 import { expectNoHorizontalScroll } from './helpers/axe';
 
-type Role = 'Consultor' | 'Líder' | 'Contacto';
+type Role = 'Consultor' | 'Líder' | 'Empresa';
 const ROLES: { boton: Role; valor: string; texto: string }[] = [
   { boton: 'Consultor', valor: 'consultor', texto: 'Consultor' },
   { boton: 'Líder', valor: 'lider', texto: 'Líder' },
-  { boton: 'Contacto', valor: 'contacto', texto: 'Contacto de la empresa' },
+  { boton: 'Empresa', valor: 'contacto', texto: 'Empresa' },
 ];
-/** Anchos por tramos de la cabecera: < 520 px → 3 filas; 520 a 767 → 2 filas; ≥ 768 → 1 fila. */
-const ANCHOS = [320, 360, 399, 400, 500, 519, 520, 600, 767, 768, 1024, 1280];
-const filasEsperadas = (w: number) => (w < 520 ? 3 : w < 768 ? 2 : 1);
+/** Anchos por tramos de la cabecera: menos de 768 px → 2 filas; desde 768 px → 1 fila. */
+const ANCHOS = [320, 360, 399, 400, 520, 600, 767, 768, 1024, 1280];
+const filasEsperadas = (w: number) => (w < 768 ? 2 : 1);
+const etiquetaVisibleEsperada = (w: number) => (w < 768 ? 'Restablecer' : 'Restablecer demo');
 
 /** Mide el texto del rol seleccionado frente al espacio interior del selector, la etiqueta, los controles y las filas. */
 async function medidas(page: Page) {
@@ -43,13 +44,29 @@ async function medidas(page: Page) {
       fuente: parseFloat(cs.fontSize),
       etiquetaVisible: labCs.display !== 'none' && labCs.visibility !== 'hidden' && rect(lab).height > 0 && (lab.textContent ?? '').trim() === 'Rol activo',
       inicio: { w: rect(inicio).width, h: rect(inicio).height },
-      reset: { w: rect(reset).width, h: rect(reset).height, texto: reset.textContent?.trim(), nombre: reset.getAttribute('aria-label') ?? reset.textContent?.trim() },
+      reset: {
+        w: rect(reset).width,
+        h: rect(reset).height,
+        texto: [...reset.querySelectorAll<HTMLElement>('span')].filter((x) => getComputedStyle(x).display !== 'none').map((x) => x.textContent).join('').trim(),
+        nombre: reset.getAttribute('aria-label') ?? reset.textContent?.trim(),
+        separacion: rect(reset).left - rect(select).right,
+        aLaDerecha: rect(reset).left >= rect(select).right,
+        fondo: getComputedStyle(reset).backgroundColor,
+        borde: parseFloat(getComputedStyle(reset).borderTopWidth),
+        contraste: (() => {
+          const rgb = (c: string) => (c.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+          const lum = (c: number[]) => { const [r, g, b] = c.map((v) => { const x = v / 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+          const a = lum(rgb(getComputedStyle(reset).color));
+          const b = lum(rgb(getComputedStyle(cab).backgroundColor));
+          return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+        })(),
+      },
       filas,
     };
   });
 }
 
-test.describe('L6c/L6d: el rol activo se ve completo y la cabecera se acomoda por tramos de ancho', () => {
+test.describe('L6c/L6e: el rol activo se ve completo y la cabecera se acomoda por tramos de ancho', () => {
   for (const rol of ROLES) {
     test(`${rol.texto}: texto sin recorte, controles de 44 px y filas según el ancho`, async ({ page }, info) => {
       test.skip(info.project.name !== '320', 'Recorre todos los anchos en una sola ejecución');
@@ -69,8 +86,15 @@ test.describe('L6c/L6d: el rol activo se ve completo y la cabecera se acomoda po
         expect(m.inicio.w).toBeGreaterThanOrEqual(44);
         expect(m.reset.h, `«Restablecer demo» ${donde}`).toBeGreaterThanOrEqual(44);
         expect(m.reset.w).toBeGreaterThanOrEqual(44);
-        expect(m.reset.texto, `texto completo ${donde}`).toBe('Restablecer demo');
-        expect(m.reset.nombre).toBe('Restablecer demo');
+        expect(m.reset.texto, `etiqueta visible ${donde}`).toBe(etiquetaVisibleEsperada(w));
+        expect(m.reset.nombre, `nombre accesible ${donde}`).toBe('Restablecer demo');
+        expect(m.reset.nombre!.toLowerCase(), 'la etiqueta visible está contenida en el nombre accesible').toContain(m.reset.texto.toLowerCase());
+        expect(m.reset.aLaDerecha, `«Restablecer» a la derecha del selector ${donde}`).toBe(true);
+        expect(m.reset.separacion, `separación selector–botón ${donde}`).toBeGreaterThanOrEqual(12);
+        expect(m.reset.fondo, `estilo secundario (sin relleno) ${donde}`).toBe('rgba(0, 0, 0, 0)');
+        expect(m.reset.borde, `borde fino ${donde}`).toBeGreaterThanOrEqual(1);
+        expect(m.reset.borde).toBeLessThanOrEqual(2);
+        expect(m.reset.contraste, `contraste ${donde}`).toBeGreaterThanOrEqual(4.5);
         expect(m.filas, `filas de la cabecera ${donde}`).toBe(filasEsperadas(w));
         await expectNoHorizontalScroll(page);
       }
@@ -105,7 +129,7 @@ test.describe('L6c/L6d: el rol activo se ve completo y la cabecera se acomoda po
     await page.getByLabel('Rol activo').selectOption('contacto');
     await expect(page).toHaveURL(/#\/contacto$/);
     const m = await medidas(page);
-    expect(m.texto).toBe('Contacto de la empresa');
+    expect(m.texto).toBe('Empresa');
     expect(m.ancho).toBeLessThanOrEqual(m.interior);
   });
 });

@@ -50,7 +50,7 @@ description: "Lista de tareas de la DEMO navegable Consultor Agéntico (6 lotes)
 
 **Si se corta L5b (historia 7; FR-034 a FR-036):**
 - **Rutas**: quitar `#/contacto/encuesta` de `src/app/router.ts`; **conservar `#/contacto`**, que ya muestra el mensaje «Esta vista es para la persona de la empresa cliente que recibe el informe. Aún no está disponible en esta demostración.» (`src/screens/contacto/Summary.tsx`); borrar `src/data/survey.ts` y `tests/e2e/contacto.spec.ts` si existen.
-- **Interfaz**: el rol «Contacto de la empresa» se mantiene en el ingreso y el selector con ese mensaje; sin navegación (`FEATURES.contactSummary` y `FEATURES.survey` en `false`). No hace falta deshabilitar la cuenta.
+- **Interfaz**: el rol «Empresa» se mantiene en el ingreso y el selector con ese mensaje; sin navegación (`FEATURES.contactSummary` y `FEATURES.survey` en `false`). No hace falta deshabilitar la cuenta.
 - **README**: como L6 se ejecuta antes, el README ya trae la vista del Contacto y la encuesta en «Fuera de esta versión» («no construidas por tiempo»); solo pasan a «Qué incluye» si L5b se construye.
 - **Spec**: marcar la historia 7 y FR-034 a FR-036 como «fuera de esta versión» y moverlas a «Fuera de la demo»; ajustar la fila del Contacto en «Quién hace qué» y las referencias de SC que la mencionen; reflejarlo antes en el spec (principio VI) y propagar a plan y tareas.
 
@@ -180,7 +180,7 @@ En ambos casos, actualizar spec → plan → tareas antes del código y dejar co
 - [X] T062 [CIERRE] Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `npm run check` y `npm run test:e2e`; todo en verde. **Cierra P2.** Actualizar la sección «Estado de la sesión» de `docs/decisiones.md` (lote cerrado, horas reales, qué sigue).
 - [ ] T063 [PERSONA] **Revisión humana del L4** con capturas de Estrategia, Tablero y Calificación en **320, 768 y 1280 px**; confirmar el vocabulario «Guardar calificación», los rótulos «Simulada» y «NO VERIFICADO» y que no hay nombres reales.
 - [ ] T064 [PERSONA] **Commit del L4** (el agente no lo hace); `npm run build && npm run check` en local con la lista de nombres antes de cada push; push y comprobación del despliegue.
-- [X] T064A [US5, US6, US1] **Siete ajustes previos al commit de L4** (spec primero, luego pruebas que fallan, luego código): (1) puntaje de la rúbrica en solo lectura en una sola línea a 320 px; (2) destino del bloqueo de Estrategia según el estado («Ir al diagnóstico» / «Ir a la revisión»; FR-023); (3) prueba de que el «Promedio de calificaciones» incluye las calificaciones guardadas en la sesión y usa coma; (4) una sola insignia «Simulada» en la vista del Líder; (5) captura del aviso por ruta desconocida con nombre explícito; (6) botón «Opciones» y tarjeta «Sesión de demostración · [nombre] (cuenta ficticia)» (FR-049); (7) rol «Contacto de la empresa» con mensaje claro mientras su vista no exista (FR-049, historia 7).
+- [X] T064A [US5, US6, US1] **Siete ajustes previos al commit de L4** (spec primero, luego pruebas que fallan, luego código): (1) puntaje de la rúbrica en solo lectura en una sola línea a 320 px; (2) destino del bloqueo de Estrategia según el estado («Ir al diagnóstico» / «Ir a la revisión»; FR-023); (3) prueba de que el «Promedio de calificaciones» incluye las calificaciones guardadas en la sesión y usa coma; (4) una sola insignia «Simulada» en la vista del Líder; (5) captura del aviso por ruta desconocida con nombre explícito; (6) botón «Opciones» y tarjeta «Sesión de demostración · [nombre] (cuenta ficticia)» (FR-049); (7) rol «Empresa» con mensaje claro mientras su vista no exista (FR-049, historia 7).
 - [X] T064B [US6] **Corrección A (antes de L6)**: los 5 niveles de la rúbrica en una sola fila de 44 px a 320 px (FR-030, «Pantalla pequeña»). Prueba e2e primero (`tests/e2e/correcciones-l6.spec.ts`).
 - [X] T064C [US1] **Corrección B (antes de L6)**: la cabecera a 320 px ocupa como máximo 2 filas y mantiene visible «Rol activo» («Pantalla pequeña»). Prueba e2e primero.
 - [X] T064D [US1] **Corrección C (antes de L6)**: investigación de la prueba intermitente «el primer elemento enfocable es Saltar al contenido» (320 px). Causa: la prueba pulsaba Tab justo tras `load`, antes de que React pintara el ingreso; se estabilizó esperando la condición. Ver `docs/decisiones.md`.
@@ -208,7 +208,7 @@ En ambos casos, actualizar spec → plan → tareas antes del código y dejar co
 
 ## L5b — Vista del Contacto y encuesta simulada (P3 · 0,75 h NO VERIFICADO) · RECORTABLE (se corta primero) · **pendiente de decisión al cerrar L6** (T100); si se decide hacerla, se ejecuta DESPUÉS de L5a y solo si el cierre de L5a ≤ 10,5 h
 
-**Objetivo (US7)**: el Contacto de la empresa ve el resumen de su proyecto y responde una encuesta simulada.
+**Objetivo (US7)**: la Empresa ve el resumen de su proyecto y responde una encuesta simulada.
 
 **Criterio de salida**: encuesta con obligatorias; axe; Playwright de Contacto.
 
@@ -276,6 +276,14 @@ En ambos casos, actualizar spec → plan → tareas antes del código y dejar co
 - [X] T108 [US1] **Defecto grave**: tras «Restablecer demo» los datos cambiados no volvían al estado de ejemplo. Reproducción y causas en `docs/decisiones.md`. Spec (FR-006, `contracts/persisted-state.md`) → pruebas que fallan (`tests/e2e/restablecer.spec.ts`, `tests/unit/persistence.test.ts`) → código: el restablecimiento cancela guardados pendientes y las demás pestañas adoptan el estado restablecido (evento `storage`).
 - [X] T109 [US1] La marca «Consultor Agéntico» deja de ser un enlace; «Inicio» es el único control hacia el ingreso (FR-051).
 - [X] T110 [US1] Encabezado por ancho: tres filas bajo 400 px, dos de 400 a 767 px y una desde 768 px; «Restablecer demo» con el texto completo; orden de Tab visual (FR-051; pruebas L6c).
+
+## L6e — Rol «Empresa», encabezado en dos filas y textos de restablecer
+
+- [X] T111 [US1] Renombrar el rol «Contacto de la empresa» a «Empresa» (selector, avisos, título de su vista); la cuenta del ingreso sigue siendo «Contacto Demo» con la descripción «Persona de contacto de la empresa cliente.» (FR-001, FR-051).
+- [X] T112 [US1] Encabezado en dos filas por debajo de 768 px (marca + «Inicio»; «Rol activo» + selector + «Restablecer», nombre accesible «Restablecer demo») y en una fila desde 768 px; botón secundario a la derecha del selector con ≥ 12 px de separación, 44 px y contraste ≥ 4,5:1; el rol completo a 320 y 360 px (FR-051; pruebas L6c).
+- [X] T113 [US1] Textos de restablecer: diálogo y aviso posterior con la mención de los datos de ejemplo (FR-006).
+- [X] T114 [US5, US6] Subtítulo aclaratorio en «Proyectos» y «Tablero» sobre los ejemplos precargados (FR-052).
+- [X] T115 [P] Documentar la cobertura frente a las referencias en `docs/cobertura-referencias.md` (solo documentación).
 
 ## Dependencias y orden
 

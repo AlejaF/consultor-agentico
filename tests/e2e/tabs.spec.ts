@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 
-async function loginAs(page: Page, role: 'Consultor' | 'Líder' | 'Contacto') {
+async function loginAs(page: Page, role: 'Consultor' | 'Líder' | 'Empresa') {
   await page.goto('/');
   await page.getByRole('button', { name: `Entrar como ${role}` }).click();
 }
@@ -64,8 +64,8 @@ test.describe('pestañas de navegación bajo 1024 px (FR-049)', () => {
     await expect(nav(page).getByRole('link', { name: /^Entregas por revisar \(\d+\)$/ })).toBeVisible();
   });
 
-  test('Contacto de la empresa: sin barra de pestañas mientras no exista ninguna pantalla', async ({ page }) => {
-    await loginAs(page, 'Contacto');
+  test('Empresa: sin barra de pestañas mientras no exista ninguna pantalla', async ({ page }) => {
+    await loginAs(page, 'Empresa');
     await expect(nav(page)).toHaveCount(0);
     await expect(page.getByRole('link', { name: /Resumen|Encuesta/ })).toHaveCount(0);
   });
@@ -93,12 +93,12 @@ test.describe('pestañas de navegación bajo 1024 px (FR-049)', () => {
   for (const [role, hash] of [
     ['Consultor', '#/consultor/proyectos/P-B/revision'],
     ['Líder', '#/lider'],
-    ['Contacto', '#/contacto'],
+    ['Empresa', '#/contacto'],
   ] as const) {
     test(`${role}: sin desplazamiento horizontal, objetivos ≥ 44 px y axe`, async ({ page }) => {
       await loginAs(page, role);
       await goto(page, hash);
-      if (role !== 'Contacto') await expect(nav(page)).toBeVisible();
+      if (role !== 'Empresa') await expect(nav(page)).toBeVisible();
       await expectNoHorizontalScroll(page);
       await expectTargets44(page);
       await expectNoAxeViolations(page);

@@ -28,4 +28,4 @@ export function coveredRouteIds(): Set<RouteId> {
   return ids;
 }
 
-export const ROLE_BUTTON: Record<Role, string> = { consultor: 'Consultor', lider: 'Líder', contacto: 'Contacto' };
+export const ROLE_BUTTON: Record<Role, string> = { consultor: 'Consultor', lider: 'Líder', contacto: 'Empresa' };

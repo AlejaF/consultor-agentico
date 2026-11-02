@@ -255,6 +255,34 @@ Inicio: 2026-11-01 21:16:14. Fin: 21:28:04. Orden: reproducción → causas → 
 
 **Verificación**: `typecheck` sin errores; `npm test` 236 en verde; `build` y `check` correctos; `EVIDENCIA=1 npx playwright test` 379 pasadas y 23 omitidas (pruebas de un solo ancho y capturas); capturas regeneradas (132) y salidas de axe sin violaciones.
 
+## Investigación adicional del defecto de «Restablecer demo» (2026-11-01, 21:46)
+
+Contexto: la persona lo probó con una pestaña en el celular y otra en el computador (dispositivos distintos, sin almacenamiento compartido), así que la causa de las dos pestañas (L6d) **no lo explica**. No se cambió código de producción: ninguna de las hipótesis siguientes reprodujo el fallo.
+
+**Qué se probó** (`tests/e2e/restablecer-movil.spec.ts`, emulación de un Pixel 7 sobre Chromium, build de producción con `vite preview`; el escenario sucio es el de siempre: estrategia de P-B enviada, calificación `st/P-B`, diagnóstico y PDF en P-A):
+1. **Vaciado en `visibilitychange` (hidden) y `pagehide` justo después de restablecer** (sin esperar los 200 ms): el almacenamiento queda con el estado de ejemplo (el vaciado escribe el estado **actual**, no uno capturado antes: `flush` lee la variable `pending` al ejecutarse, no al registrarse). También con el diálogo abierto, ocultando la página y confirmando al volver.
+2. **`pageshow` con `persisted`** tras restablecer: sin efecto (la aplicación no tiene manejador de `pageshow`; la memoria es la de ejemplo). **Límite**: Chromium sin interfaz de Playwright no entregó una restauración real desde la caché de avance y retroceso (`persisted` fue falso al volver con «atrás» en un intento con la caché habilitada), así que solo se probó el evento emulado.
+3. **Pestaña descartada y reabierta** justo después de restablecer (se cierra la pestaña sin esperar el guardado y se abre otra): el almacenamiento y la interfaz quedan de ejemplo, también tras recargar.
+4. **Cambiar de rol con el selector y pulsar «Inicio» de inmediato**, y luego atrás y adelante del historial: el almacenamiento y la interfaz quedan de ejemplo.
+
+**Causa: sigue NO CONFIRMADA.** Lo que no se pudo hacer: probar en un celular real, con Safari/iOS o con la caché de avance y retroceso real, ni conocer los pasos exactos de la persona ni la versión desplegada en ese momento.
+
+**Hipótesis sin confirmar (f), a verificar con la persona**: los datos de ejemplo del estado restablecido se parecen mucho a lo que la persona describió como «datos que siguen». Tras restablecer, la demo trae **por diseño** 3 calificaciones (`dx/P-C`, `st/P-C`, `dx/E-1`), la estrategia de P-C enviada, las decisiones del diagnóstico de P-B (aceptado, editado, rechazado y un hallazgo NO VERIFICADO aceptado) y evidencia de ejemplo en todos los proyectos. Si la persona esperaba una demo «en blanco», ese contenido puede parecer que no se restableció. Esta hipótesis **no está probada**; la prueba que la distingue es que lo que la persona cambió (p. ej., una calificación nueva, una estrategia generada en P-B) desaparezca mientras lo sembrado permanezca, y eso es lo que comprueban `restablecer.spec.ts` y `restablecer-movil.spec.ts`. Se propone preguntarle qué dato concreto vio, y decidir (primero en el spec) si conviene rotular el contenido sembrado («Dato de ejemplo») o ofrecer un estado en blanco.
+
+## Lote L6e: rol «Empresa», encabezado en dos filas, textos de restablecer y cobertura (T111 a T115)
+
+Inicio: 2026-11-01 22:15:51. Fin: 22:25:41. Spec primero (FR-001, FR-006, FR-051, nuevo FR-052), tareas, pruebas que fallaron (2 unitarias y varias e2e) y después el código.
+
+- **3a. «Restablecer demo» funciona**: la persona verificó que funciona correctamente. Con eso, la hipótesis (f) de la investigación anterior (el contenido de ejemplo precargado se confundía con datos que «no se restablecían») pasa de **sin confirmar** a **compatible con lo informado**; sigue sin ser una confirmación de causa del defecto original. Por eso se añadieron los textos y subtítulos que dicen que el estado inicial incluye datos de ejemplo.
+- **Rol «Empresa»**: reemplaza a «Contacto de la empresa» en el selector, los avisos («Esa vista pertenece al rol Empresa. Estás como …»), el título de su vista y la lista «Quién hace qué». La cuenta del ingreso sigue siendo «Contacto Demo», con la descripción «Persona de contacto de la empresa cliente.». El botón de entrada se llama ahora «Entrar como Empresa: Contacto Demo. …».
+- **Encabezado** (FR-051): menos de 768 px, dos filas (marca + «Inicio»; «Rol activo» + selector + «Restablecer»); desde 768 px, una fila. «Restablecer» a la derecha del selector, con ≥ 12 px de separación, estilo secundario (borde fino, sin relleno), 44 px de área táctil y contraste ≥ 4,5:1 (medidos en `l6c.spec.ts`); nombre accesible siempre «Restablecer demo» (la etiqueta visible abreviada está contenida en él); texto completo desde 768 px.
+- **Comprobación del rol completo a 320 y 360 px** (pedida): con el diseño anterior de la fila 2, **fallaba a 320 px**: «Consultor» aparecía recortado («Consultc») porque el selector medía 104 px y necesitaba ≈ 110 px. Se resolvió sin cambiar la disposición pedida, ajustando: botón «Restablecer» de 13 px con menos relleno lateral, separación de 12 px conservada (4 px de la cuadrícula + 8 px de margen) y etiqueta «Rol activo» de 12 px. A 320 px el selector queda en ≈ 111 px: **cabe, pero con ~1 px de holgura sobre el mínimo medido**; cualquier aumento de fuente del navegador o de relleno lo volvería a recortar. Alternativa si se quiere más holgura: pasar «Restablecer» a una tercera fila solo por debajo de 340 px (no implementado). A 360 px y más hay holgura amplia.
+- **Textos de restablecer**: diálogo «¿Restablecer la demo? Se borrarán tus cambios en este navegador y la demo volverá a su estado inicial, con los datos de ejemplo.» y aviso «Se restableció la demo. Volvió al estado inicial, que incluye datos de ejemplo.» (también al adoptar un restablecimiento hecho en otra pestaña).
+- **Subtítulos (FR-052)**: «Proyectos» y «Tablero» añaden «Los proyectos, calificaciones y entregas iniciales son ejemplos precargados; «Restablecer demo» los recupera.». `labels.spec.ts` lo comprueba en ambas pantallas.
+- **Cobertura frente a las referencias**: `docs/cobertura-referencias.md` (solo documentación; ninguna decisión nueva). 6 brechas propuestas con costo estimado (NO VERIFICADO), ordenadas por valor.
+
+**Verificación**: `typecheck` sin errores; `npm test` 236 en verde; `build` y `check` correctos; `EVIDENCIA=1 npx playwright test` 384 pasadas y 33 omitidas; 132 capturas regeneradas con la interfaz final y salidas de axe sin violaciones.
+
 ## Lista de pulido (para L6)
 
 Observaciones de las revisiones humanas de L1 y L2. Se atienden en la pasada de pulido de L6 (T095) salvo lo ya resuelto. Cualquier cambio de comportamiento se corrige primero en el spec.

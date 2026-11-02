@@ -26,7 +26,7 @@ describe('Ajuste 3: promedio de calificaciones del tablero', () => {
 });
 
 describe('Ajuste 7: nombre del rol', () => {
-  it('«Contacto de la empresa»', () => {
-    expect(ROLE_LABEL.contacto).toBe('Contacto de la empresa');
+  it('«Empresa»', () => {
+    expect(ROLE_LABEL.contacto).toBe('Empresa');
   });
 });

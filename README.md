@@ -8,7 +8,9 @@ Una sola aplicación web (página estática) que une las dos interfaces de refer
 
 - **Consultor**: carga evidencia, genera y revisa el diagnóstico (acepta, edita o rechaza cada hallazgo), lo emite y genera y envía la estrategia.
 - **Líder**: ve un tablero de equipos ficticios, abre las entregas y las califica con una rúbrica de ejemplo.
-- **Contacto de la empresa**: la vista de este rol **no está disponible todavía** (ver «Qué no se construyó»).
+- **Empresa**: la vista de este rol **no está disponible todavía** (ver «Qué no se construyó»).
+
+Las pantallas «Proyectos» y «Tablero» avisan que los proyectos, calificaciones y entregas iniciales son ejemplos precargados que «Restablecer demo» recupera.
 
 La cabecera de toda pantalla lleva la marca, «Inicio» (vuelve al ingreso **sin borrar** tu progreso), el selector «Rol activo» (al cambiar de rol vas a la pantalla de inicio del nuevo rol y tu progreso se conserva) y «Restablecer demo» (borra todo el progreso y vuelve a los datos de ejemplo, con confirmación; si tienes la demo abierta en otras pestañas del mismo navegador, también se restablecen). En la calificación, el comentario es opcional.
 
@@ -41,7 +43,7 @@ Se usa en dos sentidos: (1) un **hallazgo** con respaldo insuficiente se marca �
 
 ## Qué no se construyó o se recortó
 
-- **Vista del Contacto de la empresa y encuesta simulada**: no incluido todavía (pendiente de decisión al cerrar esta etapa). Hoy ese rol muestra un mensaje de «Vista no disponible».
+- **Vista de la Empresa y encuesta simulada**: no incluido todavía (pendiente de decisión al cerrar esta etapa). Hoy ese rol muestra un mensaje de «Vista no disponible».
 - **Informe imprimible** del diagnóstico y la estrategia: no incluido todavía (pendiente de decisión al cerrar esta etapa).
 - Fuera de la demo por pertenecer al sistema completo: IA real, transcripción de audio, lectura del contenido de los archivos, cuentas y permisos reales, envío de correos, almacenamiento compartido, administración de la plataforma, exportaciones oficiales, fuentes reales de sector y mercado, estrategia conversacional por etapas, portafolio de casos de uso y la devolución de un entregable para corregirlo (el Líder solo califica).
 
@@ -95,6 +97,7 @@ El proyecto se construyó con desarrollo guiado por especificación (Spec Kit): 
 - Plan: [`specs/001-demo-consultor-agentico/plan.md`](specs/001-demo-consultor-agentico/plan.md)
 - Tareas: [`specs/001-demo-consultor-agentico/tasks.md`](specs/001-demo-consultor-agentico/tasks.md)
 - Registro de decisiones y verificaciones: [`docs/decisiones.md`](docs/decisiones.md)
+- Qué se tomó de las interfaces de referencia y qué no: [`docs/cobertura-referencias.md`](docs/cobertura-referencias.md)
 
 ## Contenido, créditos y licencias
 

@@ -23,7 +23,7 @@
 .topbar .home-link { display: inline-flex; align-items: center; justify-content: center; min-height: var(--target-min); min-width: var(--target-min); padding: 0 var(--space-3); font-weight: var(--weight-bold); }
 .topbar label { font-size: var(--font-size-sm); font-weight: var(--weight-bold); }
 .topbar select { color: var(--color-ink); min-width: 0; padding-inline: var(--space-2) var(--space-1); }
-.topbar .reset-demo { background: transparent; color: var(--color-on-primary); border-color: var(--color-on-primary); white-space: nowrap; }
+.topbar .reset-demo { background: transparent; color: var(--color-on-primary); border: 1px solid var(--color-on-primary); white-space: nowrap; }
 .topbar .reset-demo:hover { background: var(--color-primary-strong); }
 
 .app { min-height: 100vh; display: flex; flex-direction: column; }
@@ -196,22 +196,16 @@ button[aria-pressed='true'] { background: var(--color-primary-soft); border-colo
 .grade-levels strong { white-space: nowrap; flex-shrink: 0; }
 .grade-levels span { min-width: 0; overflow-wrap: anywhere; }
 
-/* Cabecera por tramos (FR-051): < 520 px, 3 filas; 520 a 767 px, 2 filas; desde 768 px, una fila */
+/* Cabecera (FR-051): menos de 768 px, dos filas (marca + «Inicio»; «Rol activo» + selector + «Restablecer»); desde 768 px, una fila */
 @media (max-width: 767px) {
-  .topbar label { font-size: 0.75rem; }
-  .topbar .reset-demo { padding-inline: var(--space-2); }
-  .topbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-1) var(--space-2); }
+  .topbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: var(--space-1); row-gap: var(--space-1); }
   .topbar .brand { grid-column: 1 / 3; grid-row: 1; }
   .topbar .home-link { grid-column: 3; grid-row: 1; justify-self: end; }
-  .topbar label { grid-column: 1; grid-row: 2; align-self: center; }
+  .topbar label { grid-column: 1; grid-row: 2; align-self: center; font-size: 0.75rem; }
   .topbar select { grid-column: 2; grid-row: 2; width: 100%; }
-  .topbar .reset-demo { grid-column: 3; grid-row: 2; }
-}
-@media (max-width: 519px) {
-  .topbar { column-gap: var(--space-1); }
+  .topbar .reset-demo { grid-column: 3; grid-row: 2; margin-left: var(--space-2); padding-inline: 6px; font-size: 0.8125rem; }
+  .topbar .reset-more { display: none; }
   .topbar .brand { font-size: var(--font-size-sm); }
-  .topbar select { grid-column: 2 / 4; }
-  .topbar .reset-demo { grid-column: 1 / -1; grid-row: 3; justify-self: end; }
 }
 
 /* Ingreso: cada cuenta es una sola tarjeta-control */

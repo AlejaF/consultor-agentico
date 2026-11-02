@@ -64,7 +64,7 @@ async function comprobarInicial(page: Page, donde: string) {
   await goto(page, '#/lider/entregas');
   await expect(page.getByRole('link', { name: /^Abrir entrega/ })).toHaveCount(3);
   await page.getByLabel('Rol activo').selectOption('contacto');
-  await expect(page.getByRole('heading', { level: 1, name: 'Contacto de la empresa' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Empresa' })).toBeVisible();
 }
 function sinRol(s: Record<string, any> | null) {
   if (!s) return null;
@@ -76,7 +76,7 @@ test.describe('Restablecer demo devuelve TODO el estado a los datos de ejemplo',
     test.skip(info.project.name !== '1280', 'El escenario no depende del ancho');
     await ensuciar(page);
     await restablecer(page);
-    await expect(page.getByTestId('notices')).toContainText('Se restableció la demo.');
+    await expect(page.getByTestId('notices')).toContainText('Se restableció la demo. Volvió al estado inicial, que incluye datos de ejemplo.');
     // memoria: lo que se ve; almacenamiento: nada de la sesión anterior (sin clave o igual al estado de ejemplo, sin rol)
     await expect.poll(async () => JSON.stringify(sinRol(await guardado(page))) === JSON.stringify(sinRol(INICIAL)) || (await guardado(page)) === null).toBe(true);
     await comprobarInicial(page, 'sin recargar');

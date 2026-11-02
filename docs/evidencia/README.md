@@ -8,7 +8,7 @@
 EVIDENCIA=1 npx playwright test
 ```
 
-Resultado de la última corrida: 379 pruebas pasadas y 23 omitidas (pruebas que solo aplican a un ancho concreto). Las pruebas unitarias (`npm test`) son 236.
+Resultado de la última corrida: 384 pruebas pasadas y 33 omitidas (pruebas que solo aplican a un ancho concreto). Las pruebas unitarias (`npm test`) son 236.
 
 ## Qué cubre
 
@@ -23,7 +23,7 @@ Resultado de la última corrida: 379 pruebas pasadas y 23 omitidas (pruebas que 
 - Teclado y lector de pantalla **no se han revisado a mano**: ver `revision-manual.md` (sin completar).
 - Solo se prueba Chromium; no se probaron Firefox ni Safari ni dispositivos reales.
 - Solo se prueban los anchos 320, 768 y 1280 px (no 1920 px ni anchos intermedios).
-- No se prueban las pantallas aún no construidas (informes, encuesta y resumen del Contacto de la empresa).
+- No se prueban las pantallas aún no construidas (informes, encuesta y resumen dla Empresa).
 - Las pruebas con usuarios **no se han hecho**: ver `pruebas-usuarios.md`.
 
 ## Índice
@@ -32,7 +32,7 @@ Resultado de la última corrida: 379 pruebas pasadas y 23 omitidas (pruebas que 
 |---|---|
 | Salida de axe por pantalla y ancho (un JSON cada una) | `axe/<pantalla>-<ancho>.json` y `axe/ingreso-<ancho>.json` |
 | Capturas de cada pantalla existente por ancho (matriz) | `capturas/320/`, `capturas/768/`, `capturas/1280/` |
-| Capturas del ingreso y del inicio de cada rol (L1; incluye la vista del Contacto de la empresa) | `capturas/L1/` |
+| Capturas del ingreso y del inicio de cada rol (L1; incluye la vista de la Empresa) | `capturas/L1/` |
 | Capturas de proyectos y captura de evidencia (L2) | `capturas/L2/` |
 | Capturas de diagnóstico y revisión (L3) | `capturas/L3/` |
 | Capturas de estrategia, tablero del Líder y calificación (L4; el aviso por ruta desconocida está en `tablero-aviso-ruta-desconocida-*`) | `capturas/L4/` |
@@ -42,3 +42,4 @@ Resultado de la última corrida: 379 pruebas pasadas y 23 omitidas (pruebas que 
 | Checklist de criterios de éxito SC-001 a SC-015 | `sc-checklist.md` |
 | Guion y tabla de pruebas con usuarios (sin completar) | `pruebas-usuarios.md` |
 | Escenarios de `quickstart.md` y su correspondencia con pruebas | `quickstart-resultados.md` |
+| Cobertura frente a las interfaces de referencia | `../cobertura-referencias.md` |

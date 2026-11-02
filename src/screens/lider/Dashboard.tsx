@@ -28,7 +28,10 @@ export function Dashboard() {
   return (
     <>
       <h1>Tablero</h1>
-      <p>Equipos del programa. Todos los datos son ficticios.</p>
+      <p>
+        Equipos del programa. Todos los datos son ficticios. Los proyectos, calificaciones y entregas iniciales son ejemplos precargados;
+        «Restablecer demo» los recupera.
+      </p>
       <section aria-label="Indicadores" className="cards">
         <KpiCard testId="kpi-equipos" label="Equipos activos" value={String(activeTeams)} />
         <KpiCard testId="kpi-por-revisar" label="Entregas por revisar" value={String(pending.length)} />

@@ -18,6 +18,8 @@ const EXPECT: Record<string, { simulada: boolean; noVerificado: boolean }> = {
   '#/contacto': { simulada: false, noVerificado: false },
 };
 
+const SUBTITULO = 'Todos los datos son ficticios. Los proyectos, calificaciones y entregas iniciales son ejemplos precargados; «Restablecer demo» los recupera.';
+
 test('la tabla de expectativas cubre todas las pantallas existentes', () => {
   const hashes = Object.values(SAMPLE_HASHES).flat().map((x) => x.hash);
   expect(Object.keys(EXPECT).sort()).toEqual([...hashes].sort());
@@ -42,11 +44,13 @@ for (const role of Object.keys(SAMPLE_HASHES) as Role[]) {
       // cabecera única en todas las pantallas con rol: «Inicio» y «Restablecer demo»
       await expect(page.locator('header.topbar').getByRole('link', { name: 'Inicio' }), `«Inicio» en ${hash}`).toBeVisible();
       await expect(page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' }), `«Restablecer demo» en ${hash}`).toBeVisible();
+      // «Proyectos» y «Tablero» aclaran que los datos iniciales son ejemplos precargados (FR-052)
+      if (hash === '#/consultor' || hash === '#/lider') await expect(page.locator('main')).toContainText(SUBTITULO);
       // la marca es logo y texto, no un enlace; «Inicio» es el único enlace de la cabecera
       await expect(page.locator('header.topbar').getByRole('link')).toHaveCount(1);
       // el rol activo se ve completo, con su etiqueta «Rol activo» visible
       await expect(page.locator('header.topbar label')).toHaveText('Rol activo');
-      await expect(page.locator('header.topbar select').locator('option:checked')).toHaveText(role === 'contacto' ? 'Contacto de la empresa' : role === 'lider' ? 'Líder' : 'Consultor');
+      await expect(page.locator('header.topbar select').locator('option:checked')).toHaveText(role === 'contacto' ? 'Empresa' : role === 'lider' ? 'Líder' : 'Consultor');
       const want = EXPECT[hash];
       const sim = page.locator('main').getByText('Simulada', { exact: true });
       const nv = page.locator('main').getByText('NO VERIFICADO');

@@ -46,7 +46,7 @@ Probar al menos con un lector (anotar cuál y su versión en «Resultado»). Nav
 | B8 | Las citas se anuncian como botones expandibles y el extracto abierto lleva su rótulo «Evidencia de ejemplo (ficticia)». | | | |
 | B9 | La rúbrica se anuncia como grupo con el nombre del criterio, su descripción y el nivel elegido; el motivo por el que «Guardar calificación» está impedido se lee. | | | |
 | B10 | Las barras de progreso tienen nombre y valor; las tablas anuncian encabezados de fila y de columna (también bajo 640 px). | | | |
-| B11 | La vista «Contacto de la empresa» anuncia su mensaje y no ofrece enlaces ni menús vacíos. | | | |
+| B11 | La vista «Empresa» anuncia su mensaje y no ofrece enlaces ni menús vacíos. | | | |
 | B12 | Ningún control queda sin nombre accesible (iconos, botones de cierre, selector de rol). | | | |
 
 ## Resultado global

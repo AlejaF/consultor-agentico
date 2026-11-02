@@ -8,7 +8,7 @@ export const NOTICE_TEXT = {
   version: 'Se restableció la demo porque la versión de los datos cambió.',
   corrupt: 'Los datos guardados estaban dañados. Se restableció la demo.',
   memory: 'No se puede guardar el progreso en este navegador. Puedes seguir, pero se perderá al recargar.',
-  reset: 'Se restableció la demo.',
+  reset: 'Se restableció la demo. Volvió al estado inicial, que incluye datos de ejemplo.',
 } as const;
 
 interface Ctx {

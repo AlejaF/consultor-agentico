@@ -4,7 +4,7 @@ import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 async function goto(page: Page, hash: string) {
   await page.evaluate((h) => (window.location.hash = h), hash);
 }
-async function login(page: Page, role: 'Consultor' | 'Líder' | 'Contacto') {
+async function login(page: Page, role: 'Consultor' | 'Líder' | 'Empresa') {
   await page.goto('/');
   await page.getByRole('button', { name: `Entrar como ${role}` }).click();
 }
@@ -85,17 +85,17 @@ test.describe('Ajuste 4: una sola insignia «Simulada» en la vista del Líder',
   });
 });
 
-test.describe('Ajuste 7: Contacto de la empresa', () => {
+test.describe('Ajuste 7: rol Empresa', () => {
   test('el selector y el ingreso usan el nombre nuevo', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('button', { name: 'Entrar como Contacto de la empresa' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Entrar como Empresa' })).toBeVisible();
     await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
-    await expect(page.getByLabel('Rol activo').locator('option', { hasText: 'Contacto de la empresa' })).toHaveCount(1);
+    await expect(page.getByLabel('Rol activo').locator('option', { hasText: 'Empresa' })).toHaveCount(1);
     await expect(page.getByLabel('Rol activo').locator('option', { hasText: /^Contacto$/ })).toHaveCount(0);
   });
   test('sin vista propia: mensaje claro, sin menús vacíos ni enlaces rotos', async ({ page }) => {
-    await login(page, 'Contacto');
-    await expect(page.getByRole('heading', { level: 1, name: 'Contacto de la empresa' })).toBeVisible();
+    await login(page, 'Empresa');
+    await expect(page.getByRole('heading', { level: 1, name: 'Empresa' })).toBeVisible();
     await expect(
       page.getByText('Esta vista es para la persona de la empresa cliente que recibe el informe. Aún no está disponible en esta demostración.'),
     ).toBeVisible();
@@ -105,8 +105,8 @@ test.describe('Ajuste 7: Contacto de la empresa', () => {
     await expectNoAxeViolations(page);
   });
   test('el aviso al abrir una ruta de otro rol usa el nombre nuevo', async ({ page }) => {
-    await login(page, 'Contacto');
+    await login(page, 'Empresa');
     await goto(page, '#/lider');
-    await expect(page.getByTestId('notices')).toContainText('Esa vista pertenece al rol Líder. Estás como Contacto de la empresa.');
+    await expect(page.getByTestId('notices')).toContainText('Esa vista pertenece al rol Líder. Estás como Empresa.');
   });
 });

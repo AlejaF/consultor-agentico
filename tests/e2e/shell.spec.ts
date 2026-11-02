@@ -4,7 +4,7 @@ import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 const HOME: Record<string, { hash: string; h1: string }> = {
   Consultor: { hash: '#/consultor', h1: 'Proyectos' },
   Líder: { hash: '#/lider', h1: 'Tablero' },
-  Contacto: { hash: '#/contacto', h1: 'Contacto de la empresa' },
+  Empresa: { hash: '#/contacto', h1: 'Empresa' },
 };
 
 test.describe('ingreso', () => {
@@ -102,7 +102,7 @@ test('«Restablecer demo» pide confirmación y vuelve al ingreso', async ({ pag
   await page.getByRole('dialog').getByRole('button', { name: 'Sí, restablecer' }).click();
   await expect(page).toHaveURL(/#\/$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Consultor Agéntico' })).toBeVisible();
-  await expect(page.getByTestId('notices')).toContainText('Se restableció la demo.');
+  await expect(page.getByTestId('notices')).toContainText('Se restableció la demo. Volvió al estado inicial, que incluye datos de ejemplo.');
 });
 
 test('con el almacenamiento bloqueado se avisa y la demo sigue funcionando (FR-007)', async ({ page }) => {

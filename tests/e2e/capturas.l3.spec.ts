@@ -16,7 +16,7 @@ test('capturas de L3', async ({ page, browser }, info) => {
   for (const [id, label, hash] of [
     ['consultor', 'Consultor', '#/consultor/proyectos/P-B/revision'],
     ['lider', 'Líder', '#/lider'],
-    ['contacto', 'Contacto', '#/contacto'],
+    ['contacto', 'Empresa', '#/contacto'],
   ] as const) {
     const ctx = await browser.newContext({ viewport: page.viewportSize() ?? undefined, baseURL: info.project.use.baseURL });
     const p = await ctx.newPage();

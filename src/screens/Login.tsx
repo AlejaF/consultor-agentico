@@ -55,7 +55,7 @@ export function Login() {
           <strong>Líder:</strong> revisa y califica las entregas de los equipos.
         </li>
         <li>
-          <strong>Contacto de la empresa:</strong> recibe el informe de la empresa ficticia (vista aún no disponible en esta demostración).
+          <strong>Empresa:</strong> recibe el informe de la empresa ficticia (vista aún no disponible en esta demostración).
         </li>
       </ul>
     </div>

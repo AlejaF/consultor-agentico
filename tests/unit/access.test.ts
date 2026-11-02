@@ -63,7 +63,7 @@ describe('regla de redirección (5 reglas)', () => {
     expect(accessDecision('#/consultor', 'contacto', ctx)).toEqual({
       kind: 'redirect',
       to: '#/contacto',
-      notice: 'Esa vista pertenece al rol Consultor. Estás como Contacto de la empresa.',
+      notice: 'Esa vista pertenece al rol Consultor. Estás como Empresa.',
     });
   });
   it('4. ruta desconocida → inicio con aviso', () => {

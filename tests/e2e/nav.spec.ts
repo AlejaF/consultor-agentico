@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 
-async function loginAs(page: Page, role: 'Consultor' | 'Líder' | 'Contacto') {
+async function loginAs(page: Page, role: 'Consultor' | 'Líder' | 'Empresa') {
   await page.goto('/');
   await page.getByRole('button', { name: `Entrar como ${role}` }).click();
 }
@@ -74,15 +74,15 @@ test.describe('navegación lateral por rol', () => {
     await expect(page.getByRole('link', { name: /^Abrir entrega/ })).toHaveCount(n);
   });
 
-  test('Contacto de la empresa: sin pantallas no hay menú ni enlaces, solo el mensaje', async ({ page }) => {
-    await loginAs(page, 'Contacto');
+  test('Empresa: sin pantallas no hay menú ni enlaces, solo el mensaje', async ({ page }) => {
+    await loginAs(page, 'Empresa');
     await expect(page.getByRole('navigation', { name: 'Navegación principal' })).toHaveCount(0);
     await expect(page.getByRole('link', { name: /Resumen|Encuesta/ })).toHaveCount(0);
     await expect(page.locator('main').getByRole('link')).toHaveCount(0);
     await expect(page.getByText('se completa en un lote posterior')).toHaveCount(0);
   });
 
-  for (const role of ['Consultor', 'Líder', 'Contacto'] as const) {
+  for (const role of ['Consultor', 'Líder', 'Empresa'] as const) {
     test(`${role}: la navegación no lleva tarjeta de cuenta ni «Restablecer demo»; sin «Estás como…»`, async ({ page }) => {
       await loginAs(page, role);
       await expect(page.getByText(/Sesión de demostración|cuenta ficticia/)).toHaveCount(0);

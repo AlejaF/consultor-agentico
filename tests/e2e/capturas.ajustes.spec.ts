@@ -16,7 +16,7 @@ test('capturas de los ajustes F a I', async ({ page, browser }, info) => {
   for (const [id, label, hash] of [
     ['consultor', 'Consultor', '#/consultor/proyectos/P-B/diagnostico'],
     ['lider', 'Líder', '#/lider'],
-    ['contacto', 'Contacto', '#/contacto'],
+    ['contacto', 'Empresa', '#/contacto'],
   ] as const) {
     const ctx = await browser.newContext({ viewport: page.viewportSize() ?? undefined, baseURL: info.project.use.baseURL });
     const p = await ctx.newPage();
@@ -24,7 +24,7 @@ test('capturas de los ajustes F a I', async ({ page, browser }, info) => {
     await p.getByRole('button', { name: `Entrar como ${label}` }).click();
     await p.waitForURL(new RegExp(`#/${id}$`));
     await goto(p, hash);
-    if (id === 'contacto') await p.getByRole('heading', { level: 1, name: 'Contacto de la empresa' }).waitFor();
+    if (id === 'contacto') await p.getByRole('heading', { level: 1, name: 'Empresa' }).waitFor();
     else await p.getByRole('navigation', { name: 'Navegación principal' }).waitFor();
     await shot(`pestanas-${id}`, p);
     await ctx.close();
