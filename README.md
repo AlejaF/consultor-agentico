@@ -10,7 +10,7 @@ Una sola aplicación web (página estática) que une las dos interfaces de refer
 - **Líder**: ve un tablero de equipos ficticios, abre las entregas y las califica con una rúbrica de ejemplo.
 - **Contacto de la empresa**: la vista de este rol **no está disponible todavía** (ver «Qué no se construyó»).
 
-La cabecera de toda pantalla lleva la marca y «Inicio» (vuelven al ingreso **sin borrar** tu progreso), el selector «Rol activo» (al cambiar de rol vas a la pantalla de inicio del nuevo rol y tu progreso se conserva) y «Restablecer demo» (borra el progreso, con confirmación). En la calificación, el comentario es opcional.
+La cabecera de toda pantalla lleva la marca, «Inicio» (vuelve al ingreso **sin borrar** tu progreso), el selector «Rol activo» (al cambiar de rol vas a la pantalla de inicio del nuevo rol y tu progreso se conserva) y «Restablecer demo» (borra todo el progreso y vuelve a los datos de ejemplo, con confirmación; si tienes la demo abierta en otras pestañas del mismo navegador, también se restablecen). En la calificación, el comentario es opcional.
 
 Valida, con personas reales, si el recorrido se entiende, si queda claro qué es simulado y si el flujo de revisión y calificación tiene sentido. No valida la calidad de ningún análisis, porque no hay análisis.
 

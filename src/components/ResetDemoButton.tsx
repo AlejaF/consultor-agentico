@@ -4,17 +4,15 @@ import { useAppState } from '../state/context';
 import { ConfirmDialog } from './ConfirmDialog';
 
 /**
- * Único «Restablecer demo» (FR-006), en la cabecera. Si no cabe el texto completo (320 px) se muestra «Restablecer»;
- * el nombre accesible es siempre «Restablecer demo» y contiene la etiqueta visible.
+ * Único «Restablecer demo» (FR-006), en la cabecera, siempre con el texto completo (que es también su nombre accesible).
  */
 export function ResetDemoButton() {
   const { resetDemo } = useAppState();
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" className="reset-demo" aria-label="Restablecer demo" onClick={() => setOpen(true)}>
-        <span>Restablecer</span>
-        <span className="reset-more"> demo</span>
+      <button type="button" className="reset-demo" onClick={() => setOpen(true)}>
+        Restablecer demo
       </button>
       <ConfirmDialog
         open={open}

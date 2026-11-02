@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from 'react';
 import { createInitialState, CATALOGS } from './initial';
-import { attachFlush, createPersistence, type LoadNotice, type Persistence } from './persistence';
+import { attachFlush, attachStorageSync, createPersistence, type LoadNotice, type Persistence } from './persistence';
 import { reducer, type Action } from './reducer';
 import type { PersistedState } from './types';
 
@@ -66,9 +66,27 @@ export function StateProvider({ children }: { children: ReactNode }) {
     if (loadedRef.current!.notice === 'memory') setMemoryMode(true);
   }, []);
 
+  // Un estado adoptado de otra pestaña no se vuelve a escribir (evita bucles y no reescribe datos viejos).
+  const skipSave = useRef(false);
   useEffect(() => {
+    if (skipSave.current) {
+      skipSave.current = false;
+      return;
+    }
     persistence.save(state);
   }, [state, persistence]);
+
+  // Otra pestaña guardó o restableció: esta adopta ese estado y cancela su guardado pendiente (FR-006).
+  useEffect(
+    () =>
+      attachStorageSync(window as unknown as Parameters<typeof attachStorageSync>[0], ({ removed }) => {
+        const loaded = persistence.adopt();
+        skipSave.current = true;
+        rawDispatch({ type: 'reset', state: loaded.state });
+        if (removed) setLoadNotice('reset');
+      }),
+    [persistence],
+  );
 
   useEffect(
     () => attachFlush(window, persistence.flush, () => document.visibilityState),

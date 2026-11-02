@@ -58,10 +58,10 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
       <DemoBanner />
       {role && (
         <header className="topbar">
-          <a className="brand" href="#/">
+          <span className="brand">
             <img src={`${import.meta.env.BASE_URL}emblema.svg`} alt="" />
             Consultor Agéntico
-          </a>
+          </span>
           <a className="home-link" href="#/">
             Inicio
           </a>

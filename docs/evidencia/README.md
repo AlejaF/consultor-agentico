@@ -8,7 +8,7 @@
 EVIDENCIA=1 npx playwright test
 ```
 
-Resultado de la última corrida: 375 pruebas pasadas y 15 omitidas (pruebas que solo aplican a un ancho concreto). Las pruebas unitarias (`npm test`) son 232.
+Resultado de la última corrida: 379 pruebas pasadas y 23 omitidas (pruebas que solo aplican a un ancho concreto). Las pruebas unitarias (`npm test`) son 236.
 
 ## Qué cubre
 

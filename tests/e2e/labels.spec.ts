@@ -42,6 +42,8 @@ for (const role of Object.keys(SAMPLE_HASHES) as Role[]) {
       // cabecera única en todas las pantallas con rol: «Inicio» y «Restablecer demo»
       await expect(page.locator('header.topbar').getByRole('link', { name: 'Inicio' }), `«Inicio» en ${hash}`).toBeVisible();
       await expect(page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' }), `«Restablecer demo» en ${hash}`).toBeVisible();
+      // la marca es logo y texto, no un enlace; «Inicio» es el único enlace de la cabecera
+      await expect(page.locator('header.topbar').getByRole('link')).toHaveCount(1);
       // el rol activo se ve completo, con su etiqueta «Rol activo» visible
       await expect(page.locator('header.topbar label')).toHaveText('Rol activo');
       await expect(page.locator('header.topbar select').locator('option:checked')).toHaveText(role === 'contacto' ? 'Contacto de la empresa' : role === 'lider' ? 'Líder' : 'Consultor');

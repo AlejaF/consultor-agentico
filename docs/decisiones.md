@@ -231,6 +231,30 @@ Inicio: 2026-11-01 20:53:57. Spec primero (FR-051 y «Pantalla pequeña»), tare
 - La prueba de L6 que exigía «como máximo 2 filas» (`correcciones-l6.spec.ts`) pasó a «como máximo 3 filas», según lo pedido.
 - **Capturas nuevas** (`docs/evidencia/capturas/L6c/`, cada una a 320, 768 y 1280 px): `restablecer-dialogo-<ancho>.png`, `calificacion-sin-comentario-lider-<ancho>.png` y `calificacion-sin-comentario-consultor-<ancho>.png`.
 
+## Lote L6d: defecto de «Restablecer demo» y encabezado (T108 a T110)
+
+Inicio: 2026-11-01 21:16:14. Fin: 21:28:04. Orden: reproducción → causas → spec (FR-006, FR-051, `contracts/persisted-state.md`) → tareas → pruebas que fallan → código.
+
+**1. Reproducción (navegador real de Playwright, build de producción con `vite preview`, con y sin `BASE_PATH=/mi-repo/`)**: como Consultor se generó y envió la estrategia de P-B, se generó el diagnóstico de P-A y se cargó un PDF; como Líder se calificó `st/P-B`; se pulsó «Restablecer demo» y se confirmó; se entró a cada rol sin recargar y luego recargando. **En una sola pestaña no se reprodujo el fallo**, con ni sin `BASE_PATH`: el almacenamiento quedó sin clave justo tras restablecer y con el estado de ejemplo (rol nulo, estrategia de P-B «none», sin `st/P-B`, diagnóstico de P-A «none», sin archivos) a los 600 ms; la interfaz mostró «Generar estrategia», «Generar diagnóstico», sin el PDF, 3 entregas por revisar y promedio 4,2, sin recargar y recargando.
+
+**2. Causas candidatas**
+- **Confirmada (d), otra pestaña con datos viejos**: con dos pestañas del mismo navegador, la pestaña A restablece (almacenamiento limpio) pero la pestaña B conserva el estado viejo en memoria. En cuanto B guarda cualquier cambio (por ejemplo, cambiar de rol), escribe **todo su estado viejo** en el almacenamiento: reaparecen la estrategia enviada, la calificación `st/P-B`, etc., y al recargar A los datos «siguen como estaban». Reproducido y medido (antes y después en el almacenamiento).
+- **Descartada (a), el estado en memoria no se reinicia**: tras restablecer, la memoria quedó en el estado de ejemplo (la interfaz lo mostró sin recargar).
+- **Descartada (b), el guardado con retraso o el vaciado en `pagehide`/`visibilitychange` reescribe lo viejo**: restablecer a menos de 200 ms de un cambio dejó el almacenamiento en «none»; `reset()` cancela el temporizador y el guardado pendiente. (El vaciado en `pagehide` solo escribe lo pendiente, que tras restablecer es el estado de ejemplo.)
+- **Descartada (c), la carga mezcla lo guardado con los datos de ejemplo**: `load()` devuelve el estado guardado entero, sin mezclar; tras recargar solo había datos de ejemplo.
+- **Descartada (e), otras causas revisadas**: el único estado a nivel de módulo es el conjunto de identificadores de archivos añadidos (no son datos); el estado inicial se clona (`structuredClone`) y los reductores no mutan.
+- **No confirmada**: que el defecto informado en la demo publicada ocurriera con una sola pestaña. No pude reproducirlo así. Lo más probable es que haya sido la causa (d) (varias pestañas abiertas), pero **no puedo afirmar** que sea la que vio la persona; tampoco comprobé qué versión estaba desplegada en ese momento.
+
+**3. Corrección**: `persistence.adopt()` (cancela el guardado propio pendiente y lee el almacenamiento sin escribir) y `attachStorageSync`: cuando otra pestaña guarda o restablece, esta adopta el estado y **no** lo reescribe (evita bucles y que los datos viejos resuciten). Con la clave borrada adopta el estado de ejemplo y muestra «Se restableció la demo.». `reset()` ya cancelaba el temporizador y el guardado pendiente; ahora está probado. Límite conocido: dos pestañas que editan a la vez siguen siendo «gana la última que guarda» para el resto de cambios.
+
+**4. Comprobación de que no queda nada de la sesión anterior** (`tests/e2e/restablecer.spec.ts`, `tests/unit/persistence.test.ts`): tras restablecer, sin recargar y recargando, el almacenamiento (sin clave o igual al estado de ejemplo sin rol) y la interfaz muestran las calificaciones, estrategias, diagnóstico y evidencia de ejemplo; entregas por revisar = 3; sin `st/P-B`. Con dos pestañas, la pestaña vieja vuelve al ingreso y no reescribe nada; la prueba falló antes de la corrección.
+
+**5. La marca «Consultor Agéntico» deja de ser un enlace** (logo y texto sin subrayado ni foco); «Inicio» es el único control hacia el ingreso (prueba en `l6b.spec.ts` y `labels.spec.ts`).
+
+**6. Encabezado por tramos de ancho** (FR-051; pruebas en `l6c.spec.ts` y `l6b.spec.ts`): menos de 520 px, tres filas (marca + «Inicio»; «Rol activo» junto a su selector; «Restablecer demo» a la derecha, sin ocupar todo el ancho); de 520 a 767 px, dos filas; desde 768 px, una fila. Orden de Tab: Inicio, selector, Restablecer demo. «Restablecer demo» con el texto completo en todos los anchos. **Desvío de lo pedido, y por qué**: se pidió que las dos filas empezaran en 400 px; medido, con menos de unos 520 px no caben en una sola fila a la vez la etiqueta, el rol «Contacto de la empresa» completo y «Restablecer demo» (el texto necesita ≥ 184 px más la flecha). Se dio prioridad a mostrar el rol completo, como se pidió. Para llegar ahí a 320 px: etiqueta «Rol activo» de 12 px por debajo de 768 px (14 px desde 768) y menos relleno en el selector. Verificado también a ojo en capturas a 320, 520 y 768 px.
+
+**Verificación**: `typecheck` sin errores; `npm test` 236 en verde; `build` y `check` correctos; `EVIDENCIA=1 npx playwright test` 379 pasadas y 23 omitidas (pruebas de un solo ancho y capturas); capturas regeneradas (132) y salidas de axe sin violaciones.
+
 ## Lista de pulido (para L6)
 
 Observaciones de las revisiones humanas de L1 y L2. Se atienden en la pasada de pulido de L6 (T095) salvo lo ya resuelto. Cualquier cambio de comportamiento se corrige primero en el spec.

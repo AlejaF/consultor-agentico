@@ -65,3 +65,9 @@ Solo `{ id, name, type, size, addedAt }`. El contenido **nunca** se lee, de modo
 | `attachFlush`: `visibilitychange` con página oculta / visible | llama a `flush` / no llama |
 | `attachFlush`: función devuelta | quita ambos oyentes |
 | Nada en el almacenamiento | estado inicial sin aviso |
+
+
+## Restablecer y varias pestañas (FR-006)
+
+- «Restablecer demo» MUST: cancelar el guardado con retraso y el guardado pendiente, borrar la clave del almacenamiento y reemplazar el estado en memoria por el estado inicial completo.
+- Si la misma demo está abierta en otra pestaña del mismo navegador, esa pestaña MUST escuchar el evento `storage` de la clave y **adoptar** el valor nuevo (o el estado inicial si la clave se borró), cancelando su guardado pendiente y sin reescribir el valor adoptado. Una pestaña con datos viejos nunca debe volver a escribirlos tras un restablecimiento hecho en otra.

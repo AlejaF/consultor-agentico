@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { attachFlush, createPersistence, STORAGE_KEY, type StorageLike } from '../../src/state/persistence';
+import { attachFlush, attachStorageSync, createPersistence, STORAGE_KEY, type StorageLike } from '../../src/state/persistence';
 import { SCHEMA_VERSION, type PersistedState } from '../../src/state/types';
 
 const catalogs = { projectIds: ['P-A', 'P-B'], findingIds: ['H1', 'H2'], criterionIds: ['c1'] };
@@ -211,5 +211,71 @@ describe('attachFlush', () => {
     off();
     expect(t.removeEventListener).toHaveBeenCalledWith('pagehide', expect.any(Function));
     expect(t.removeEventListener).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+  });
+});
+
+describe('restablecer y varias pestañas (FR-006)', () => {
+  const viejo = (): PersistedState => {
+    const s = initial();
+    s.projects['P-B'].strategy = { status: 'sent' };
+    s.session = { role: 'lider' };
+    return s;
+  };
+
+  it('reset cancela el guardado pendiente: el estado viejo no se escribe después', () => {
+    const storage = memoryStorage();
+    const { p } = make(storage);
+    p.save(viejo()); // guardado con retraso pendiente
+    const inicial = p.reset();
+    expect(inicial).toEqual(initial());
+    vi.advanceTimersByTime(1000);
+    p.flush();
+    expect(storage.data.has(STORAGE_KEY)).toBe(false);
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+
+  it('adopt: lee lo que otra pestaña dejó en el almacenamiento y cancela el guardado propio pendiente', () => {
+    const storage = memoryStorage();
+    const { p } = make(storage);
+    p.save(viejo()); // esta pestaña tiene datos viejos pendientes
+    const otra = initial();
+    otra.projects['P-A'].diagnosis = { status: 'generated', decisions: {} };
+    storage.data.set(STORAGE_KEY, JSON.stringify(otra));
+    const r = p.adopt();
+    expect(r.state.projects['P-A'].diagnosis.status).toBe('generated');
+    expect(r.state.projects['P-B'].strategy.status).toBe('none');
+    vi.advanceTimersByTime(1000);
+    p.flush();
+    expect(storage.setItem).not.toHaveBeenCalled(); // no reescribe lo viejo
+  });
+
+  it('adopt con la clave borrada (otra pestaña restableció): estado inicial, sin escribir nada', () => {
+    const storage = memoryStorage();
+    const { p } = make(storage);
+    p.save(viejo());
+    const r = p.adopt();
+    expect(r.state).toEqual(initial());
+    vi.advanceTimersByTime(1000);
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+
+  it('attachStorageSync avisa solo de la clave de la demo (o de un borrado total) y se puede quitar', () => {
+    const handlers = new Set<(e: { key: string | null; newValue: string | null }) => void>();
+    const target = {
+      addEventListener: (_t: string, h: (e: { key: string | null; newValue: string | null }) => void) => void handlers.add(h),
+      removeEventListener: (_t: string, h: (e: { key: string | null; newValue: string | null }) => void) => void handlers.delete(h),
+    };
+    const onChange = vi.fn();
+    const off = attachStorageSync(target, onChange);
+    const emit = (key: string | null, newValue: string | null) => handlers.forEach((h) => h({ key, newValue }));
+    emit('otra-clave', 'x');
+    expect(onChange).not.toHaveBeenCalled();
+    emit(STORAGE_KEY, null);
+    emit(null, null); // localStorage.clear()
+    emit(STORAGE_KEY, '{}');
+    expect(onChange).toHaveBeenCalledTimes(3);
+    expect(onChange).toHaveBeenNthCalledWith(1, { removed: true });
+    off();
+    expect(handlers.size).toBe(0);
   });
 });

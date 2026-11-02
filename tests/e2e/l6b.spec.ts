@@ -97,18 +97,13 @@ test.describe('2. Un único «Restablecer demo» en la cabecera', () => {
     await expect(page.getByRole('button', { name: 'Generar diagnóstico' })).toBeVisible(); // volvió al estado inicial
   });
 
-  test('a 320 px se ve «Restablecer»; el nombre accesible es «Restablecer demo» y contiene la etiqueta visible', async ({ page }) => {
+  test('el botón muestra siempre el texto completo «Restablecer demo», que es también su nombre accesible', async ({ page }) => {
     await login(page, 'Líder');
     const boton = page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' });
-    const visible = await boton.evaluate((el) => {
-      const hijos = [...el.querySelectorAll<HTMLElement>('span')].filter((s) => getComputedStyle(s).display !== 'none');
-      return hijos.map((s) => s.textContent?.trim()).join(' ');
-    });
-    if (width(page) < 480) expect(visible).toBe('Restablecer');
-    else expect(visible).toBe('Restablecer demo');
-    const nombre = await boton.getAttribute('aria-label');
-    expect(nombre).toBe('Restablecer demo');
-    expect(nombre!.toLowerCase()).toContain(visible.toLowerCase()); // etiqueta visible contenida en el nombre accesible
+    await expect(boton).toHaveText('Restablecer demo');
+    const caja = await boton.boundingBox();
+    expect(caja!.height).toBeGreaterThanOrEqual(44);
+    expect(caja!.width).toBeGreaterThanOrEqual(44);
   });
 });
 
@@ -118,21 +113,24 @@ test.describe('3. «Inicio» y la marca llevan al ingreso sin borrar el estado',
       await login(page, role);
       const header = page.locator('header.topbar');
       await expect(header.getByRole('link', { name: 'Inicio' })).toBeVisible();
-      await expect(header.getByRole('link', { name: 'Consultor Agéntico' })).toBeVisible();
       await expect(header.getByRole('link', { name: 'Inicio' })).toHaveAttribute('href', '#/');
-      await expect(header.getByRole('link', { name: 'Consultor Agéntico' })).toHaveAttribute('href', '#/');
+      // «Inicio» es el único control hacia el ingreso: la marca es logo y texto, sin enlace ni foco
+      await expect(header.getByRole('link')).toHaveCount(1);
+      await expect(header.getByText('Consultor Agéntico')).toBeVisible();
+      const marca = await header.locator('.brand').evaluate((el) => ({ enlace: !!el.closest('a') || el.tagName === 'A', foco: el.tabIndex >= 0 && el.matches(':is(a,button,[tabindex])'), subrayado: getComputedStyle(el).textDecorationLine }));
+      expect(marca).toEqual({ enlace: false, foco: false, subrayado: 'none' });
       await header.getByRole('link', { name: 'Inicio' }).click();
       await expect(page).toHaveURL(/#\/$/);
       await expect(page.getByRole('heading', { level: 1, name: 'Consultor Agéntico' })).toBeVisible();
     });
   }
 
-  test('no borra el estado: el trabajo sigue al volver a entrar; el marca también lleva al ingreso', async ({ page }) => {
+  test('no borra el estado: el trabajo sigue al volver a entrar con «Inicio»', async ({ page }) => {
     await login(page, 'Consultor');
     await goto(page, '#/consultor/proyectos/P-A/diagnostico');
     await page.getByRole('button', { name: 'Generar diagnóstico' }).click();
     await expect(page.getByText('Generado — pendiente de revisión')).toBeVisible();
-    await page.locator('header.topbar').getByRole('link', { name: 'Consultor Agéntico' }).click();
+    await page.locator('header.topbar').getByRole('link', { name: 'Inicio' }).click();
     await expect(page).toHaveURL(/#\/$/);
     await expect(page.getByTestId('notices')).not.toContainText('Se restableció');
     await page.getByRole('button', { name: 'Entrar como Líder' }).click();
@@ -153,23 +151,28 @@ test.describe('3. «Inicio» y la marca llevan al ingreso sin borrar el estado',
     await expect(page).toHaveURL(/#\/consultor$/);
   });
 
-  test('a 320 px: fila 1 = marca + Inicio; fila 2 = «Rol activo» + Restablecer; fila 3 = selector', async ({ page }) => {
-    test.skip(width(page) >= 480, 'La distribución por filas es para pantallas pequeñas');
+  test('bajo 520 px: fila 1 = marca + Inicio; fila 2 = «Rol activo» + selector; fila 3 = «Restablecer demo» a la derecha', async ({ page }) => {
+    test.skip(width(page) >= 520, 'La distribución de tres filas es para menos de 520 px');
     await login(page, 'Líder');
     const f = await page.locator('header.topbar').evaluate((h) => {
-      const centro = (el: Element | null) => { const r = el!.getBoundingClientRect(); return Math.round(r.top + r.height / 2); };
-      const brand = h.querySelector('a.brand');
-      const inicio = [...h.querySelectorAll('a')].find((a) => a.textContent?.trim() === 'Inicio') ?? null;
+      const caja = (el: Element | null) => el!.getBoundingClientRect();
+      const centro = (el: Element | null) => { const r = caja(el); return Math.round(r.top + r.height / 2); };
+      const brand = h.querySelector('.brand');
+      const inicio = h.querySelector('a');
       const label = h.querySelector('label');
-      const reset = h.querySelector('button.reset-demo');
       const select = h.querySelector('select');
-      return { f1: [centro(brand), centro(inicio)], f2: [centro(label), centro(reset)], f3: centro(select), texto: label!.textContent?.trim() };
+      const reset = h.querySelector('button.reset-demo');
+      const hr = caja(h);
+      return { f1: [centro(brand), centro(inicio)], f2: [centro(label), centro(select)], f3: centro(reset), selectAncho: caja(select).width, labelDerecha: caja(label).right, selectIzq: caja(select).left, resetDerecha: caja(reset).right, resetAncho: caja(reset).width, cabAncho: hr.width, cabDerecha: hr.right };
     });
     expect(Math.abs(f.f1[0] - f.f1[1])).toBeLessThanOrEqual(6);
     expect(Math.abs(f.f2[0] - f.f2[1])).toBeLessThanOrEqual(6);
     expect(f.f2[0]).toBeGreaterThan(f.f1[0] + 10);
     expect(f.f3).toBeGreaterThan(f.f2[0] + 10);
-    expect(f.texto).toBe('Rol activo');
+    expect(f.selectIzq).toBeGreaterThanOrEqual(f.labelDerecha); // el selector va junto a su etiqueta, a su derecha
+    expect(f.selectAncho).toBeGreaterThan(150); // ocupa el ancho restante
+    expect(f.cabDerecha - f.resetDerecha, 'alineado a la derecha').toBeLessThanOrEqual(20);
+    expect(f.resetAncho / f.cabAncho, 'no ocupa todo el ancho').toBeLessThan(0.7);
     await expectNoHorizontalScroll(page);
   });
 });

@@ -271,6 +271,12 @@ En ambos casos, actualizar spec → plan → tareas antes del código y dejar co
 - [X] T106 [US1] Encabezado a 320 px: el texto del rol seleccionado se ve completo en los tres roles (320, 360 y 768 px); disposición en tres filas (marca + «Inicio»; «Rol activo» + «Restablecer»; selector a todo el ancho). FR-051, «Pantalla pequeña».
 - [X] T107 [P] Capturas faltantes (a 320, 768 y 1280 px): diálogo de «Restablecer demo»; calificación guardada sin comentario con «Sin comentario» (vista del Líder y vista del Consultor).
 
+## L6d — Defecto de «Restablecer demo» y encabezado
+
+- [X] T108 [US1] **Defecto grave**: tras «Restablecer demo» los datos cambiados no volvían al estado de ejemplo. Reproducción y causas en `docs/decisiones.md`. Spec (FR-006, `contracts/persisted-state.md`) → pruebas que fallan (`tests/e2e/restablecer.spec.ts`, `tests/unit/persistence.test.ts`) → código: el restablecimiento cancela guardados pendientes y las demás pestañas adoptan el estado restablecido (evento `storage`).
+- [X] T109 [US1] La marca «Consultor Agéntico» deja de ser un enlace; «Inicio» es el único control hacia el ingreso (FR-051).
+- [X] T110 [US1] Encabezado por ancho: tres filas bajo 400 px, dos de 400 a 767 px y una desde 768 px; «Restablecer demo» con el texto completo; orden de Tab visual (FR-051; pruebas L6c).
+
 ## Dependencias y orden
 
 - **Orden de ejecución**: L1 → L2 → L3 → L4 → L6 → L5a → L5b (ver «Reglas del trabajo»).

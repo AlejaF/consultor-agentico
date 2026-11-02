@@ -157,6 +157,15 @@ export function createPersistence(opts: PersistenceOptions) {
     flush(): void {
       write();
     },
+    /**
+     * Adopta lo que hay ahora en el almacenamiento (p. ej. tras un cambio o un restablecimiento hecho en otra pestaña):
+     * cancela el guardado propio pendiente para no reescribir datos viejos y no escribe nada.
+     */
+    adopt(): LoadResult {
+      clearTimer();
+      pending = null;
+      return this.load();
+    },
     reset(): PersistedState {
       clearTimer();
       pending = null;
@@ -194,4 +203,25 @@ export function attachFlush(
     target.removeEventListener('pagehide', onHide);
     target.removeEventListener('visibilitychange', onVisibility);
   };
+}
+
+export interface StorageEventLike {
+  key: string | null;
+  newValue: string | null;
+}
+export interface StorageTarget {
+  addEventListener(type: 'storage', handler: (e: StorageEventLike) => void): void;
+  removeEventListener(type: 'storage', handler: (e: StorageEventLike) => void): void;
+}
+
+/**
+ * Avisa cuando OTRA pestaña del mismo navegador cambia, borra (restablecer) o vacía el estado guardado de la demo
+ * (el evento `storage` solo se dispara en las demás pestañas). `removed` es true si la clave se borró.
+ */
+export function attachStorageSync(target: StorageTarget, onChange: (info: { removed: boolean }) => void): () => void {
+  const handler = (e: StorageEventLike) => {
+    if (e.key === null || e.key === STORAGE_KEY) onChange({ removed: e.newValue === null });
+  };
+  target.addEventListener('storage', handler);
+  return () => target.removeEventListener('storage', handler);
 }
