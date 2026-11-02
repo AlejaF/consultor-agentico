@@ -73,7 +73,7 @@ function Routed() {
 
   const shownNotice = routeNotice && routeNotice.at === hash ? routeNotice.text : null;
   return (
-    <AppShell route={decision.route} role={role} routeNotice={shownNotice} onDismissRouteNotice={() => setRouteNotice(null)}>
+    <AppShell route={decision.route} role={decision.route.id === 'login' ? null : role} routeNotice={shownNotice} onDismissRouteNotice={() => setRouteNotice(null)}>
       <Screen route={decision.route} />
     </AppShell>
   );

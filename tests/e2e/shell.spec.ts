@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 
 const HOME: Record<string, { hash: string; h1: string }> = {
@@ -6,11 +6,6 @@ const HOME: Record<string, { hash: string; h1: string }> = {
   Líder: { hash: '#/lider', h1: 'Tablero' },
   Contacto: { hash: '#/contacto', h1: 'Contacto de la empresa' },
 };
-
-async function openMenuIfCollapsed(page: Page) {
-  const toggle = page.getByRole('button', { name: 'Opciones' });
-  if (await toggle.isVisible()) await toggle.click();
-}
 
 test.describe('ingreso', () => {
   test('sin violaciones de axe, sin desplazamiento horizontal y con aviso de demo', async ({ page }) => {
@@ -24,6 +19,8 @@ test.describe('ingreso', () => {
 
   test('el primer elemento enfocable es «Saltar al contenido»', async ({ page }) => {
     await page.goto('/');
+    // `load` no garantiza que React ya haya pintado: se espera a que exista el enlace (condición, no una pausa) antes de pulsar Tab.
+    await expect(page.getByRole('link', { name: 'Saltar al contenido' })).toBeAttached();
     await page.keyboard.press('Tab');
     await expect(page.getByRole('link', { name: 'Saltar al contenido' })).toBeFocused();
   });
@@ -94,7 +91,6 @@ test('el progreso (rol) sobrevive a una recarga inmediata', async ({ page }) => 
 test('«Restablecer demo» pide confirmación y vuelve al ingreso', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
-  await openMenuIfCollapsed(page);
   await page.getByRole('button', { name: 'Restablecer demo' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
@@ -126,7 +122,6 @@ test('con el almacenamiento bloqueado se avisa y la demo sigue funcionando (FR-0
 test('los controles interactivos miden al menos 44 px', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
-  await openMenuIfCollapsed(page);
   const small = await page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>('button, select, input, a[href]')]
       .filter((el) => !el.classList.contains('skip-link') && el.offsetParent !== null)

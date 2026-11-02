@@ -3,10 +3,6 @@ import { test, type Page } from '@playwright/test';
 // Capturas de evidencia del L3 para la revisión humana; solo con EVIDENCIA=1.
 test.skip(!process.env.EVIDENCIA, 'Solo con EVIDENCIA=1');
 
-async function openMenuIfCollapsed(page: Page) {
-  const toggle = page.getByRole('button', { name: 'Opciones' });
-  if ((await toggle.isVisible()) && (await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
-}
 async function goto(page: Page, hash: string) {
   await page.evaluate((h) => (window.location.hash = h), hash);
 }
@@ -28,7 +24,6 @@ test('capturas de L3', async ({ page, browser }, info) => {
     await p.getByRole('button', { name: `Entrar como ${label}` }).click();
     await p.waitForURL(new RegExp(`#/${id}$`));
     await goto(p, hash);
-    await openMenuIfCollapsed(p);
     await p.screenshot({ path: `${dir}/barra-lateral-${id}-${w}.png`, fullPage: true });
     await ctx.close();
   }

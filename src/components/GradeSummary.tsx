@@ -18,7 +18,11 @@ export function GradeSummary({ grading, title = 'Calificación del Líder' }: { 
           </li>
         ))}
       </ul>
-      <p className="grade-comment">{grading.comment}</p>
+      {grading.comment.trim() === '' ? (
+        <p className="grade-comment empty">Sin comentario</p>
+      ) : (
+        <p className="grade-comment">{grading.comment}</p>
+      )}
       <p className="grade-average" data-testid="grade-average">
         Promedio: {formatScore(grading.average)} de 5
       </p>

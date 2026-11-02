@@ -51,7 +51,8 @@ describe('regla de redirección (5 reglas)', () => {
     expect(accessDecision('#/', null, ctx).kind).toBe('allow');
   });
   it('2. con rol y #/ → inicio del rol', () => {
-    expect(accessDecision('#/', 'lider', ctx)).toEqual({ kind: 'redirect', to: '#/lider' });
+    // «Inicio»: con un rol activo se muestra el ingreso sin borrar el estado
+    expect(accessDecision('#/', 'lider', ctx).kind).toBe('allow');
   });
   it('3. ruta de otro rol → inicio con aviso', () => {
     expect(accessDecision('#/lider', 'consultor', ctx)).toEqual({

@@ -5,3 +5,6 @@ export const FEATURES = {
   /** Encuesta del Contacto: se pone en true cuando exista esa pantalla. */
   survey: false,
 } as const;
+
+/** Rutas de la tabla que todavía no tienen pantalla propia (las pruebas transversales las omiten hasta que existan). */
+export const UNBUILT_ROUTES = ['consultor.report', 'lider.deliveryReport', 'contacto.survey'] as const;

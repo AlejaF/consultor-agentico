@@ -148,9 +148,8 @@ test.describe('Líder: tablero, revisión y calificación', () => {
     for (const name of ['Calidad del análisis', 'Coherencia entre diagnóstico y estrategia', 'Claridad de la comunicación']) {
       await page.getByRole('radiogroup', { name }).getByRole('radio', { name: '4' }).check({ force: true });
     }
-    await page.getByRole('button', { name: 'Guardar calificación' }).click({ force: true });
-    await expect(page.getByText(/Escribe un comentario/)).toBeVisible();
-    await page.getByLabel('Comentarios').fill('Ruta clara y bien apoyada en el diagnóstico.');
+    await expect(page.getByRole('button', { name: 'Guardar calificación' })).toHaveAttribute('aria-disabled', 'false');
+    await page.getByLabel(/Comentarios/).fill('Ruta clara y bien apoyada en el diagnóstico.');
     await page.getByRole('button', { name: 'Guardar calificación' }).click();
 
     await expect(page.getByText('Calificada', { exact: true })).toBeVisible();
@@ -232,7 +231,7 @@ test.describe('Líder: tablero, revisión y calificación', () => {
     await page.getByRole('button', { name: 'Entrar como Líder' }).click();
     await goto(page, '#/lider/entregas/dx/E-3');
     const largo = 'x'.repeat(1500) + ' ' + 'palabra-'.repeat(200);
-    await page.getByLabel('Comentarios').fill(largo);
+    await page.getByLabel(/Comentarios/).fill(largo);
     for (const name of ['Trazabilidad de la evidencia', 'Calidad del análisis', 'Coherencia entre diagnóstico y estrategia', 'Claridad de la comunicación']) {
       await page.getByRole('radiogroup', { name }).getByRole('radio', { name: '3' }).check({ force: true });
     }

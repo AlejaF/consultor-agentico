@@ -13,7 +13,7 @@ const isNarrow = (page: Page) => (page.viewportSize()?.width ?? 0) < 1024;
 
 async function expectTargets44(page: Page) {
   const small = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>('nav a[href], header button, header select')]
+    [...document.querySelectorAll<HTMLElement>('nav a[href], header button, header select, header a[href]')]
       .filter((el) => el.offsetParent !== null)
       .map((el) => ({ t: (el.textContent ?? '').trim().slice(0, 30), r: el.getBoundingClientRect() }))
       .filter(({ r }) => r.height < 44 || r.width < 44)
@@ -50,16 +50,12 @@ test.describe('pestañas de navegación bajo 1024 px (FR-049)', () => {
     expect(pos).toEqual({ afterHeader: true, beforeMain: true, inViewport: true });
   });
 
-  test('«Opciones» contiene solo la tarjeta de cuenta y «Restablecer demo»', async ({ page }) => {
-    test.skip(!isNarrow(page), 'Solo bajo 1024 px');
+  test('no hay menú «Opciones» ni panel de cuenta: «Restablecer demo» está en la cabecera', async ({ page }) => {
     await loginAs(page, 'Consultor');
     await goto(page, '#/consultor/proyectos/P-A/evidencia');
-    await expect(page.locator('#cuenta')).toBeHidden();
-    await page.getByRole('button', { name: 'Opciones' }).click();
-    const cuenta = page.locator('#cuenta');
-    await expect(cuenta).toContainText('Sesión de demostración · Consultor Demo (cuenta ficticia)');
-    await expect(cuenta.getByRole('button', { name: 'Restablecer demo' })).toBeVisible();
-    await expect(cuenta.getByRole('link')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Opciones' })).toHaveCount(0);
+    await expect(page.locator('#cuenta')).toHaveCount(0);
+    await expect(page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' })).toBeVisible();
   });
 
   test('Líder: «Tablero» y «Entregas por revisar (n)» siempre a la vista', async ({ page }) => {

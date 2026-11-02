@@ -43,7 +43,7 @@ test('capturas de L4', async ({ page }, info) => {
   await shot('revision-con-rubrica');
   const levels = ['5', '4', '4', '4'];
   for (const [i, name] of GROUPS.entries()) await page.getByRole('radiogroup', { name }).getByRole('radio', { name: levels[i] }).check({ force: true });
-  await page.getByLabel('Comentarios').fill('Ruta clara y bien apoyada en el diagnóstico. Falta indicar quién responde por cada fase.');
+  await page.getByLabel(/Comentarios/).fill('Ruta clara y bien apoyada en el diagnóstico. Falta indicar quién responde por cada fase.');
   await page.getByRole('button', { name: 'Guardar calificación' }).click();
   await page.getByTestId('grade-average').waitFor();
   await shot('calificacion-guardada');

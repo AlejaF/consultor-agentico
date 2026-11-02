@@ -65,7 +65,7 @@ test.describe('Ajuste 3: promedio de calificaciones del tablero', () => {
     for (const name of ['Trazabilidad de la evidencia', 'Calidad del análisis', 'Coherencia entre diagnóstico y estrategia', 'Claridad de la comunicación']) {
       await page.getByRole('radiogroup', { name }).getByRole('radio', { name: '1' }).check({ force: true });
     }
-    await page.getByLabel('Comentarios').fill('Muy por debajo de lo esperado.');
+    await page.getByLabel(/Comentarios/).fill('Muy por debajo de lo esperado.');
     await page.getByRole('button', { name: 'Guardar calificación' }).click();
     await expect(page.getByTestId('grade-average')).toHaveText('Promedio: 1,0 de 5');
     await goto(page, '#/lider');
@@ -82,24 +82,6 @@ test.describe('Ajuste 4: una sola insignia «Simulada» en la vista del Líder',
       await expect(page.getByRole('heading', { level: 1, name: 'Revisión de la entrega' })).toBeVisible();
       await expect(page.locator('main').getByText('Simulada', { exact: true })).toHaveCount(1);
     }
-  });
-});
-
-test.describe('Ajuste 6: «Opciones» y tarjeta de sesión', () => {
-  test('el botón de la cabecera se llama «Opciones»; no existe «Cuenta» ni «Menú»', async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) >= 1024, 'El botón solo existe bajo 1024 px');
-    await login(page, 'Consultor');
-    await expect(page.getByRole('button', { name: 'Opciones' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Cuenta' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Menú' })).toHaveCount(0);
-  });
-  test('la tarjeta dice «Sesión de demostración · [nombre] (cuenta ficticia)»', async ({ page }) => {
-    await login(page, 'Líder');
-    const toggle = page.getByRole('button', { name: 'Opciones' });
-    if (await toggle.isVisible()) await toggle.click();
-    await expect(page.locator('#cuenta')).toContainText('Sesión de demostración · Líder Demo (cuenta ficticia)');
-    await expect(page.locator('#cuenta').getByRole('button', { name: 'Restablecer demo' })).toBeVisible();
-    await expect(page.locator('#cuenta')).not.toContainText('Menú');
   });
 });
 

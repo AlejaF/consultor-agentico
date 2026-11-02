@@ -5,12 +5,6 @@ async function loginAs(page: Page, role: 'Consultor' | 'Líder' | 'Contacto') {
   await page.goto('/');
   await page.getByRole('button', { name: `Entrar como ${role}` }).click();
 }
-async function openAccountIfCollapsed(page: Page) {
-  const toggle = page.getByRole('button', { name: 'Opciones' });
-  if (await toggle.isVisible()) {
-    if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
-  }
-}
 async function goto(page: Page, hash: string) {
   await page.evaluate((h) => (window.location.hash = h), hash);
 }
@@ -89,22 +83,13 @@ test.describe('navegación lateral por rol', () => {
   });
 
   for (const role of ['Consultor', 'Líder', 'Contacto'] as const) {
-    test(`pie de ${role}: tarjeta de cuenta y «Restablecer demo» separado; sin «Estás como…»`, async ({ page }) => {
+    test(`${role}: la navegación no lleva tarjeta de cuenta ni «Restablecer demo»; sin «Estás como…»`, async ({ page }) => {
       await loginAs(page, role);
-      await openAccountIfCollapsed(page);
-      const cuenta = page.locator('#cuenta');
-      await expect(cuenta.getByText(`Sesión de demostración · ${role} Demo (cuenta ficticia)`)).toBeVisible();
-      await expect(cuenta.locator('hr')).toHaveCount(1);
-      await expect(cuenta.getByRole('button', { name: 'Restablecer demo' })).toBeVisible();
+      await expect(page.getByText(/Sesión de demostración|cuenta ficticia/)).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Opciones' })).toHaveCount(0);
       await expect(page.getByText(/Estás como/)).toHaveCount(0);
-      // la tarjeta va antes de la línea y el botón después
-      const order = await cuenta.evaluate((el) => {
-        const card = el.querySelector('.account-card')!.getBoundingClientRect().top;
-        const hr = el.querySelector('hr')!.getBoundingClientRect().top;
-        const btn = [...el.querySelectorAll('button')].find((b) => b.textContent === 'Restablecer demo')!.getBoundingClientRect().top;
-        return card < hr && hr < btn;
-      });
-      expect(order).toBe(true);
+      await expect(page.locator('.sidebar, nav').getByRole('button', { name: /Restablecer/ })).toHaveCount(0);
+      await expect(page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' })).toBeVisible();
     });
   }
 
@@ -126,32 +111,14 @@ test.describe('navegación lateral por rol', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Revisión y emisión' })).toBeFocused();
   });
 
-  test('«Opciones» (bajo 1024 px): se abre, Escape la cierra y devuelve el foco al botón', async ({ page }) => {
-    test.skip(!isNarrow(page), 'Solo hay botón «Opciones» bajo 1024 px');
-    await loginAs(page, 'Consultor');
-    const toggle = page.getByRole('button', { name: 'Opciones' });
-    await expect(page.getByRole('button', { name: 'Menú' })).toHaveCount(0);
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await toggle.click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('#cuenta').getByRole('button', { name: 'Restablecer demo' })).toBeVisible();
-    await page.locator('#cuenta').getByRole('button', { name: 'Restablecer demo' }).focus();
-    await page.keyboard.press('Escape');
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(toggle).toBeFocused();
-    await expect(page.locator('#cuenta')).toBeHidden();
-  });
-
   test('barra de navegación: elementos visibles sin abrir nada, sin desplazamiento horizontal, controles ≥ 44 px y axe', async ({ page }) => {
     await loginAs(page, 'Consultor');
     await goto(page, '#/consultor/proyectos/P-B/diagnostico');
     await expect(nav(page).getByRole('link', { name: /^Estrategia/ })).toBeVisible();
-    await openAccountIfCollapsed(page);
-    await expect(page.locator('#cuenta').getByRole('button', { name: 'Restablecer demo' })).toBeVisible();
     await expectNoHorizontalScroll(page);
     await expectNoAxeViolations(page);
     const small = await page.evaluate(() =>
-      [...document.querySelectorAll<HTMLElement>('nav a[href], #cuenta button, button, select')]
+      [...document.querySelectorAll<HTMLElement>('nav a[href], button, select')]
         .filter((el) => el.offsetParent !== null && !el.classList.contains('skip-link'))
         .map((el) => ({ t: (el.textContent ?? '').trim().slice(0, 30), r: el.getBoundingClientRect() }))
         .filter(({ r }) => r.height < 44 || r.width < 44)

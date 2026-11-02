@@ -236,6 +236,7 @@ test.describe('recorrido P1', () => {
   });
 
   test('axe, sin desplazamiento horizontal y controles ≥ 44 px en las pantallas P1', async ({ page }) => {
+    test.setTimeout(90_000); // recorre ~12 pantallas con axe; con la suite en paralelo superó los 30 s por defecto
     await page.goto('/');
     await expectNoAxeViolations(page); // 1. ingreso
     await expectNoHorizontalScroll(page);

@@ -17,7 +17,7 @@ La demo no tiene API ni servidor. Sus «interfaces» son las rutas por hash. El 
 | `#/lider/entregas/:tipo/:projectId` | `lider` | Revisión y calificación de una entrega (`tipo` = `dx` diagnóstico o `st` estrategia) | US6 | P2 |
 | `#/consultor/proyectos/:projectId/informe` | `consultor` | Informe imprimible | US8 | P3 |
 | `#/lider/entregas/:tipo/:projectId/informe` | `lider` | Informe imprimible de la entrega (`dx`: solo diagnóstico; `st`: estrategia enviada con su diagnóstico) | US8 | P3 |
-| `#/contacto` | `contacto` | Resumen del proyecto | US7 | P3 |
+| `#/contacto` | `contacto` | Hoy: mensaje «Vista no disponible» (el resumen del proyecto es la historia 7, P3, pendiente de decisión) | US7 | P3 |
 | `#/contacto/encuesta` | `contacto` | Encuesta simulada | US7 | P3 |
 
 `:projectId` es `P-A`…`P-D` (proyectos del Consultor) o el de un equipo precargado; `:tipo` es `dx` (diagnóstico emitido) o `st` (estrategia enviada). La entrega queda identificada por **dos segmentos de ruta** (`:tipo/:projectId`), sin caracteres que codificar; en el estado equivale a la clave `dx/<projectId>` o `st/<projectId>`.
@@ -39,7 +39,7 @@ Se evalúa en este orden en cada cambio de hash y en la carga inicial:
 | # | Condición | Resultado | Aviso |
 |---|---|---|---|
 | 1 | No hay rol activo y la ruta no es `#/` | ir a `#/` | ninguno |
-| 2 | Hay rol activo y la ruta es `#/` | ir al inicio del rol | ninguno |
+| 2 | Hay rol activo y la ruta es `#/` | **mostrar el ingreso** (se llega con «Inicio»; no borra el estado; elegir una cuenta lleva a su inicio) | ninguno |
 | 3 | La ruta es de otro rol | ir al inicio del rol activo | «Esa vista pertenece al rol *X*. Estás como *Y*.» (FR-003) |
 | 4 | La ruta no existe, o `:projectId` no existe, o `:tipo` no es `dx` ni `st`, o la entrega aún no existe (`dx` sin diagnóstico emitido; `st` sin estrategia enviada), o el proyecto no es accesible para el rol | ir al inicio del rol activo | «No encontramos esa pantalla.» |
 | 5 | Ruta válida del rol | mostrar | — |
@@ -61,11 +61,11 @@ Los avisos se anuncian en una región `aria-live` y se pueden cerrar.
 
 | Rol | Elementos | Notas |
 |---|---|---|
-| Consultor | «Proyectos» (`#/consultor`); dentro de un proyecto (cualquier ruta con `:projectId`), un bloque con la empresa y 4 pasos: Evidencia, Diagnóstico, Revisión, Estrategia | Cada paso lleva su estado en texto: Pendiente, En curso, Completado o Bloqueado. **Un paso Bloqueado enlaza a su pantalla, que explica el bloqueo; no redirige.** |
+| Consultor | «Proyectos» (`#/consultor`); dentro de un proyecto (cualquier ruta con `:projectId`), un bloque con la empresa y 4 pasos: Evidencia, Diagnóstico, Revisión, Estrategia | Cada paso lleva su estado en texto: Pendiente, En curso, Completado, Bloqueado o Disponible (Estrategia con el diagnóstico emitido y sin generar). **Un paso Bloqueado enlaza a su pantalla, que explica el bloqueo; no redirige.** |
 | Líder | «Tablero» (`#/lider`), «Entregas por revisar (n)» (`#/lider/entregas`) | `n` = entregas existentes sin calificación |
-| Contacto | «Resumen» (`#/contacto`), «Encuesta» (`#/contacto/encuesta`) | — |
+| Contacto de la empresa | «Resumen» (`#/contacto`) y «Encuesta» (`#/contacto/encuesta`), **solo cuando existan sus pantallas** (`src/app/features.ts`); hoy, ninguno y sin barra | Mientras no exista su vista, el rol muestra un mensaje claro, sin menús vacíos ni enlaces rotos |
 
-Al pie de la navegación, en todos los roles: tarjeta de cuenta («Nombre · cuenta ficticia») y, separada por una línea, «Restablecer demo». En celular el menú contiene los mismos elementos; al abrirlo con teclado se cierra con Escape devolviendo el foco al botón «Menú», y al elegir un enlace se cierra y el foco pasa al `h1` de la nueva pantalla.
+La navegación no incluye tarjeta de cuenta ni «Restablecer demo»: «Restablecer demo» es un botón de la cabecera (FR-006) y la cabecera lleva también «Inicio» y la marca, ambos hacia `#/` sin borrar el estado (FR-051). Bajo 1024 px la navegación es una barra de pestañas siempre visible bajo la cabecera (en la lista de proyectos del Consultor no hace falta). Al elegir un enlace, el foco pasa al `h1` de la nueva pantalla.
 
 ## Selector de rol
 

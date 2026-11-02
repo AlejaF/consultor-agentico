@@ -46,10 +46,16 @@ describe('saveGrading', () => {
     const other = Object.fromEntries(RUBRIC_CRITERIA.map((c) => [c.id, 1 as const]));
     expect(reducer(s1, { type: 'saveGrading', deliveryId: 'dx/P-B', levels: other, comment: 'b', at: AT })).toBe(s1);
   });
+  it('guarda sin comentario (opcional): queda vacío', () => {
+    const s0 = createInitialState();
+    for (const comment of ['', '   ']) {
+      const s1 = reducer(s0, { type: 'saveGrading', deliveryId: 'dx/P-B', levels, comment, at: AT });
+      expect(s1.gradings['dx/P-B']).toEqual({ levels, comment: '', average: 4, gradedAt: AT });
+    }
+  });
   it('no guarda incompleta, ni una entrega que no existe', () => {
     const s0 = createInitialState();
     expect(reducer(s0, { type: 'saveGrading', deliveryId: 'dx/P-B', levels: {}, comment: 'x', at: AT })).toBe(s0);
-    expect(reducer(s0, { type: 'saveGrading', deliveryId: 'dx/P-B', levels, comment: ' ', at: AT })).toBe(s0);
     expect(reducer(s0, { type: 'saveGrading', deliveryId: 'dx/P-A', levels, comment: 'x', at: AT })).toBe(s0); // sin emitir
     expect(reducer(s0, { type: 'saveGrading', deliveryId: 'st/P-B', levels, comment: 'x', at: AT })).toBe(s0); // sin enviar
     expect(reducer(s0, { type: 'saveGrading', deliveryId: 'xx/P-B', levels, comment: 'x', at: AT })).toBe(s0);

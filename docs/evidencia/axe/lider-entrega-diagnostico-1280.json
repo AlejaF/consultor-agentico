@@ -1,0 +1,15 @@
+{
+  "fecha": "2026-11-02",
+  "ruta": "#/lider/entregas/dx/E-2",
+  "ancho": 1280,
+  "reglas": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag22aa"
+  ],
+  "versionAxe": "4.14.0",
+  "violaciones": [],
+  "reglasAprobadas": 26,
+  "porRevisarAMano": [],
+  "noAplica": 35
+}

@@ -1,5 +1,4 @@
 import { homeOf, navigate, ROLE_LABEL } from '../app/router';
-import { ResetDemoButton } from '../components/ResetDemoButton';
 import { ACCOUNTS } from '../data/accounts';
 import { useAppState } from '../state/context';
 
@@ -23,24 +22,25 @@ export function Login() {
       <h2>Cuentas de demostración</h2>
       <ul className="accounts">
         {ACCOUNTS.map((a) => (
-          <li key={a.role} className="card account">
-            <div>
-              <p>
-                <strong>{a.displayName}</strong>
-              </p>
-              <p className="subtitle">
-                {ROLE_LABEL[a.role]} · {a.subtitle}
-              </p>
-            </div>
+          <li key={a.role} className="account">
             <button
               type="button"
-              className="primary"
+              className="account-link"
+              aria-label={`Entrar como ${ROLE_LABEL[a.role]}: ${a.displayName}. ${ROLE_LABEL[a.role]} · ${a.subtitle}`}
               onClick={() => {
                 dispatch({ type: 'setRole', role: a.role });
                 navigate(homeOf(a.role));
               }}
             >
-              Entrar como {ROLE_LABEL[a.role]}
+              <span className="account-text">
+                <strong>{a.displayName}</strong>
+                <span className="subtitle">
+                  {ROLE_LABEL[a.role]} · {a.subtitle}
+                </span>
+              </span>
+              <span className="account-enter" aria-hidden="true">
+                Entrar →
+              </span>
             </button>
           </li>
         ))}
@@ -58,10 +58,6 @@ export function Login() {
           <strong>Contacto de la empresa:</strong> recibe el informe de la empresa ficticia (vista aún no disponible en esta demostración).
         </li>
       </ul>
-
-      <p>
-        <ResetDemoButton />
-      </p>
     </div>
   );
 }

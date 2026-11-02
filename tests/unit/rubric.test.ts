@@ -30,20 +30,20 @@ describe('average / formatScore (SC-013)', () => {
   });
 });
 
-describe('validación de la calificación', () => {
-  it('completa: 4 niveles enteros 1–5 y comentario no vacío', () => {
-    expect(isGradingComplete(levels([4, 4, 4, 4]), 'Bien')).toBe(true);
-    expect(gradingBlockReason(levels([4, 4, 4, 4]), 'Bien')).toBeNull();
+describe('validación de la calificación (el comentario es opcional)', () => {
+  it('completa: los 4 niveles enteros 1–5; el comentario no se exige', () => {
+    expect(isGradingComplete(levels([4, 4, 4, 4]))).toBe(true);
+    expect(gradingBlockReason(levels([4, 4, 4, 4]))).toBeNull();
   });
-  it('explica lo que falta', () => {
-    expect(gradingBlockReason({}, '')).toMatch(/4 criterios/);
-    expect(gradingBlockReason({ [ids[0]]: 4 } as never, 'x')).toMatch(/3 criterios/);
-    expect(gradingBlockReason(levels([4, 4, 4, 4]), '   ')).toMatch(/comentario/);
+  it('explica lo que falta y recuerda que el comentario es opcional', () => {
+    expect(gradingBlockReason({})).toBe('Elige un nivel de 1 a 5 en los 4 criterios. El comentario es opcional.');
+    expect(gradingBlockReason({ [ids[0]]: 4 } as never)).toMatch(/Faltan 3 criterios por calificar\. El comentario es opcional\./);
+    expect(gradingBlockReason({ [ids[0]]: 4, [ids[1]]: 4, [ids[2]]: 4 } as never)).toMatch(/Falta 1 criterio por calificar/);
   });
   it('rechaza niveles fuera de 1–5 o no enteros', () => {
-    expect(isGradingComplete(levels([0, 4, 4, 4]), 'x')).toBe(false);
-    expect(isGradingComplete(levels([6, 4, 4, 4]), 'x')).toBe(false);
-    expect(isGradingComplete(levels([4.5, 4, 4, 4]), 'x')).toBe(false);
+    expect(isGradingComplete(levels([0, 4, 4, 4]))).toBe(false);
+    expect(isGradingComplete(levels([6, 4, 4, 4]))).toBe(false);
+    expect(isGradingComplete(levels([4.5, 4, 4, 4]))).toBe(false);
   });
   it('la comparación con la meta no tiene efectos', () => {
     expect(average(levels([5, 5, 5, 5])) >= PROGRAM_GOAL).toBe(true);

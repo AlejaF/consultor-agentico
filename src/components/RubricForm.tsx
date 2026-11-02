@@ -11,7 +11,7 @@ export function RubricForm({ onSave }: { onSave: (levels: Record<string, number>
   const uid = useId();
   const [levels, setLevels] = useState<Record<string, number>>({});
   const [comment, setComment] = useState('');
-  const reason = gradingBlockReason(levels, comment);
+  const reason = gradingBlockReason(levels);
   useDirtyFlag(`rubric-${uid}`, Object.keys(levels).length > 0 || comment !== '');
 
   return (
@@ -45,7 +45,7 @@ export function RubricForm({ onSave }: { onSave: (levels: Record<string, number>
           </div>
         ))}
         <div className="field">
-          <label htmlFor={`${uid}-c`}>Comentarios</label>
+          <label htmlFor={`${uid}-c`}>Comentarios (opcional)</label>
           <textarea id={`${uid}-c`} rows={5} maxLength={MAX_COMMENT} value={comment} onChange={(e) => setComment(e.target.value)} />
           <p className="subtitle">
             {comment.length} de {MAX_COMMENT} caracteres

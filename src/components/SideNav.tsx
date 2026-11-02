@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { ACCOUNTS } from '../data/accounts';
 import { COMPANIES } from '../data/companies';
 import { FINDING_IDS } from '../data/diagnosis';
 import { PROJECTS } from '../data/projects';
@@ -11,7 +10,6 @@ import { useAppState } from '../state/context';
 import { FEATURES } from '../app/features';
 import { navItemsFor } from '../app/navItems';
 import type { Role, RouteId, RouteMatch } from '../app/router';
-import { ResetDemoButton } from './ResetDemoButton';
 
 const STATUS_CLASS: Record<StepStatus, string> = {
   Pendiente: 'badge-pending',
@@ -39,17 +37,13 @@ function NavLink({ href, current, children }: { href: string; current: boolean; 
 interface Props {
   role: Role;
   route: RouteMatch;
-  /** Panel «Cuenta» abierto (solo se usa bajo 1024 px; en pantallas anchas siempre se ve). */
-  accountOpen: boolean;
 }
 
 /**
  * Navegación por rol (FR-049): barra lateral desde 1024 px; por debajo, barra de pestañas siempre visible bajo la cabecera.
- * La tarjeta de cuenta y «Restablecer demo» van en el panel «Cuenta» (#cuenta).
  */
-export function SideNav({ role, route, accountOpen }: Props) {
+export function SideNav({ role, route }: Props) {
   const { state } = useAppState();
-  const account = ACCOUNTS.find((a) => a.role === role)!;
   const is = (id: RouteId) => route.id === id;
 
   const projectId = role === 'consultor' ? route.params.projectId : undefined;
@@ -74,9 +68,9 @@ export function SideNav({ role, route, accountOpen }: Props) {
   const bare = role === 'consultor' && !project;
   const noNav = items.length === 0 && !project;
 
+  if (noNav) return null;
   return (
     <div className="sidebar">
-      {!noNav && (
       <nav id="navegacion" className={bare ? 'sidenav nav-bare' : 'sidenav'} aria-label="Navegación principal">
         <ul className="nav-list">
           {items.map((it) => (
@@ -107,17 +101,6 @@ export function SideNav({ role, route, accountOpen }: Props) {
           )}
         </ul>
       </nav>
-      )}
-
-      <div id="cuenta" className={accountOpen ? 'account-panel open' : 'account-panel'}>
-        <div className="account-card">
-          <p>
-            Sesión de demostración · <strong>{account.displayName}</strong> (cuenta ficticia)
-          </p>
-        </div>
-        <hr />
-        <ResetDemoButton />
-      </div>
     </div>
   );
 }

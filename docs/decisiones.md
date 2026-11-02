@@ -2,11 +2,10 @@
 
 ## Estado de la sesión
 
-- **Lote cerrado**: L4 (Estrategia y Líder), más los ajustes F a I previos. **Cierra P2** en código. Pendientes de la persona: T022 (convocar participantes), T049/T050 (L3, si aún no), T063 y T064 (L4: revisión y commit).
-- **L1**: 15:34 a 15:48 (UTC-5), unos 12 min. **L2**: 16:06:58 a 16:18. **L3**: 16:48:07 a 17:04:02 (15 min 55 s).
-- **Ajustes F a I + L4**: 18:49:51 a 19:06:55 (17 min con pausas).
-- **Punto de control**: acumulado de agente L1 a L4 ≈ 0,9 h (más las revisiones humanas); el límite de L4 (≤ 9,0 h) se cumple con holgura.
-- **Qué sigue**: revisión humana de L4 (T063), commit y push (T064) y, después, L6 (pulido, README T085, pruebas con usuarios); la decisión sobre L5a/L5b se toma al final de L6.
+- **Lote cerrado**: L6 (cierre) en lo que no es de la persona (T081 a T092), más las correcciones A a C. L4 ya está en el commit `7c9c329`. **Pendientes de la persona**: T022, T093 (revisión manual de teclado y lector de pantalla), T094 (pruebas con 2 o 3 personas), T095 (pulido), T096 (volcar resultados; depende de T094 y T095), T097 a T100 (revisión final, commit, publicación y decisión sobre P3).
+- **Tiempos del agente**: L1 15:34 a 15:48; L2 16:06:58 a 16:18; L3 16:48:07 a 17:04:02; ajustes F a I y L4 18:49:51 a 19:06:55; siete ajustes previos al commit de L4 (sin hora de inicio registrada); correcciones A a C y L6 19:52:15 a 20:17:38 (25 min con pausas). Acumulado de agente ≈ 1,3 h (más revisiones humanas); los puntos de control de L1, L3 y L4 se cumplen con holgura.
+- **Verificación al cierre de L6**: `typecheck` sin errores; `npm test` 231 en verde; `npm run build` y `BASE_PATH=/mi-repo/ npm run build` correctos; `npm run check` OK; `EVIDENCIA=1 npx playwright test` 325 pasadas y 8 omitidas.
+- **Qué sigue**: la persona completa T093 a T100. La decisión sobre L5a y L5b (T100) se toma con las horas acumuladas y los resultados de las pruebas con usuarios.
 
 ## Decisiones de L1
 
@@ -182,6 +181,46 @@ Orden aplicado: spec (FR-023, FR-049, historia 7) → tasks.md → pruebas (5 fa
 7. **«Contacto de la empresa»** en el selector, el ingreso, los avisos y el spec. Hoy ese rol no tiene vista propia: antes mostraba un resumen provisional con la empresa ficticia; ahora muestra «Esta vista es para la persona de la empresa cliente que recibe el informe. Aún no está disponible en esta demostración.», sin barra de navegación ni enlaces (`FEATURES.contactSummary = false`; «Resumen» y «Encuesta» aparecerán solo cuando existan). El nombre de la cuenta ficticia sigue siendo «Contacto Demo».
 
 Verificación: `typecheck` sin errores; `npm test` 231 en verde; `check` OK; `test:e2e` 260 pasadas, 21 omitidas y 1 fallo intermitente (`shell.spec.ts`: «el primer elemento enfocable es Saltar al contenido», solo a 320 px, en la pantalla de ingreso, que este cambio no toca); repetida 24 veces pasó 24 de 24. Capturas regeneradas completas en `ajustes/` y `L4/` (todas muestran la cabecera o la barra lateral con los textos nuevos); las de L1 a L3 siguen con los textos anteriores.
+
+## Correcciones A a C y cierre de L6 (2026-11-01)
+
+Inicio: 19:52:15. Fin: ver «Estado de la sesión».
+
+**Correcciones de L4 (T064B a T064D)**: spec y tareas primero, luego pruebas que fallan, luego código.
+- **A. Niveles de la rúbrica a 320 px**: ahora los 5 botones comparten una fila (44 px cada uno, separación de 4 px). Prueba en `tests/e2e/correcciones-l6.spec.ts`; falló a 320 px antes del cambio.
+- **B. Cabecera a 320 px**: marca y «Opciones» en la primera fila; «Rol activo» y el selector en la segunda (antes, tres filas). Se verificó que la prueba falla sin el cambio de estilo. La primera versión de la prueba contaba mal las filas (comparaba el borde superior de elementos centrados); se corrigió para agrupar por solapamiento vertical.
+- **C. Prueba intermitente «el primer elemento enfocable es Saltar al contenido» (320 px)**: se repitió 50 veces en aislado (50 de 50 pasan) y 80 veces con 12 trabajadores en paralelo (1 fallo). Causa más probable: la prueba pulsaba Tab justo después del evento `load`, antes de que React terminara de pintar el ingreso, de modo que el enlace aún no existía. Dos sondas (comprobar el estado de la página y el elemento enfocado antes y después de Tab) no reprodujeron el fallo en 200 y 150 repeticiones, lo que concuerda con una carrera de tiempos de la prueba y no con un defecto de enfoque de la aplicación; no hay código que robe el foco al cargar. **No se pudo observar directamente la causa**: queda como la explicación más probable. Corrección: la prueba espera la condición (el enlace existe) antes de pulsar Tab, sin pausas arbitrarias. Después, 120 repeticiones con la misma carga: 120 de 120 pasan.
+
+**L6 (T081 a T092)**
+- Matriz transversal (`matrix.spec.ts`), rótulos (`labels.spec.ts`) y subruta (`base-path.spec.ts`) leen las rutas existentes de `src/app/router.ts` menos `UNBUILT_ROUTES` (`src/app/features.ts`). Una prueba comprueba que las direcciones de muestra cubren exactamente las rutas existentes, para que una pantalla nueva no quede sin probar. Se comprobó que la matriz falla si un enlace de navegación baja de 44 px y que la prueba de subruta falla si se compila sin `BASE_PATH`.
+- Con `EVIDENCIA=1`, `npx playwright test` regenera **todas** las capturas (L1 a L4, ajustes y matriz por ancho, incluida la vista del Contacto de la empresa a 320, 768 y 1280 px) y las salidas de axe (`docs/evidencia/axe/`). Se borraron antes las capturas anteriores para que no queden textos obsoletos.
+- README honesto, `docs/evidencia/` (README, revisión manual, checklist de SC, pruebas con usuarios, correspondencia de `quickstart.md`) y la licencia OFL en `public/licenses/OFL-PlusJakartaSans.txt` (se verificó que `dist/licenses/` la incluye).
+- **Conciliación (T090)**: se corrigieron `plan.md` y `contracts/routes.md` (pestañas en vez de menú, «Opciones», «Disponible», el Contacto de la empresa sin navegación mientras no exista su vista) y la «Línea de corte» de L5b en `tasks.md` (la ruta `#/contacto` se conserva con su mensaje). El spec ya estaba al día por los ajustes anteriores. Los escenarios de `quickstart.md` **no se ejecutaron a mano**: `docs/evidencia/quickstart-resultados.md` dice qué prueba automática cubre cada uno.
+- **SC-001 y SC-005 figuran «NO VERIFICADO» / «indicativo (n = …)»**: no se hicieron pruebas con usuarios y no se inventó ningún resultado.
+- Tamaño del paquete: JS 89,8 kB + CSS ≈ 6,0 kB + tipografía latina 27,3 kB ≈ 123 kB comprimidos, bajo la meta de 150 kB (NO VERIFICADO: no se midió la transferencia real).
+
+## Registro corto de decisiones técnicas (T086)
+
+- **Enrutador propio** (`useSyncExternalStore`, rutas con `#`): evita dependencias y no necesita configuración de servidor en Pages; `navigate()` notifica de inmediato.
+- **Persistencia**: guardado con retraso de 200 ms más guardado inmediato en `pagehide` y `visibilitychange`, para no perder la última acción al recargar; validación de forma con catálogos inyectados y vuelta al estado inicial si algo no cuadra; solo nombre, tipo y tamaño de los archivos propios.
+- **Plantillas únicas de datos**: un diagnóstico y una estrategia compartidos por todos los proyectos; solo cambian las decisiones por proyecto.
+- **CI sin Playwright**: el flujo de GitHub Actions ejecuta typecheck, pruebas unitarias, compilación y `check`; las pruebas de extremo a extremo y la evidencia corren en local (el Chromium ya instalado y `vite preview`).
+- **Contraste**: la paleta se verificó con pruebas unitarias de contraste (`tests/unit/tokens.test.ts`) y solo se usan tokens; `check-tokens` rechaza colores literales.
+- **Tipografía**: Plus Jakarta Sans propia (OFL-1.1), aproximación a la de las referencias: **NO VERIFICADO**.
+- **Acciones de Pages**: `checkout@v6`, `setup-node@v6`, `configure-pages@v5`, `upload-pages-artifact@v4`, `deploy-pages@v4` (el conjunto de la documentación oficial; el ejemplo oficial usaba otras etiquetas, ver `research.md`); el primer despliegue quedó en verde (T018 a T021).
+- **Desviaciones del plan**: ajustes A a D (L3), pestañas y «Opciones» (G), claridad tras emitir (I), formato XLSX, el rol «Contacto de la empresa» sin vista propia y los siete ajustes previos al commit de L4; todos se corrigieron primero en el spec. Horas por lote: ver «Estado de la sesión».
+
+## Lote L6b: ajustes de interfaz tras L6 (T101 a T105)
+
+Pedidos por la persona que prueba la demo. Orden: spec (FR-001, FR-002, FR-006, FR-030, FR-032, FR-049, nuevo FR-051, historias 1 y 6) → tareas (lote L6b) → pruebas (5 unitarias y 15 e2e fallaron antes de implementar) → código.
+
+1. **Comentario de la rúbrica opcional (T101)**: se guarda con los 4 niveles y sin comentario. Ayuda: «Elige un nivel de 1 a 5 en los 4 criterios. El comentario es opcional.» (con 1 a 3 criterios sin nivel: «Faltan N criterios por calificar. El comentario es opcional.»). Límite de 2000 caracteres. Vista de solo lectura sin comentario: «Sin comentario». Un comentario vacío o de solo espacios se guarda como cadena vacía.
+2. **De «Opciones» a «Restablecer demo» (T102)**: se eliminaron el botón «Opciones», el panel de cuenta y la tarjeta «Sesión de demostración · … (cuenta ficticia)» en los tres roles y todos los anchos. Un único botón «Restablecer demo» en la cabecera, siempre visible; ya no está en la barra lateral ni en el ingreso. Una sola confirmación: «¿Restablecer la demo? Se borrarán tus cambios en este navegador.» (reutiliza el diálogo nativo existente: foco atrapado, Escape y «Cancelar»). A menos de 480 px se ve «Restablecer»; el nombre accesible es siempre «Restablecer demo» (contiene la etiqueta visible).
+3. **«Inicio» (T103)**: la cabecera lleva «Inicio» y la marca «Consultor Agéntico», ambos hacia el ingreso **sin borrar el estado**. Para eso cambió la regla 2 de `contracts/routes.md`: con un rol activo, `#/` ya no redirige al inicio del rol, sino que muestra el ingreso (que no lleva cabecera ni navegación); al elegir una cuenta se entra a su inicio. Cambiar de rol con el selector va **siempre a la pantalla de inicio del nuevo rol** y conserva el estado (con confirmación si hay una edición sin guardar). A menos de 768 px la cabecera es una cuadrícula de dos filas (marca + «Inicio»; «Rol activo» + «Restablecer»).
+4. **Ingreso (T104)**: se quitaron los botones «Entrar como …»; cada cuenta es un único botón (la tarjeta completa), sin controles anidados, con «Entrar →» como texto indicativo, foco y paso del puntero visibles. Nombre accesible: «Entrar como <rol>: <nombre de la cuenta>. <rol> · <subtítulo>».
+5. **Puntaje en la tarjeta de proyecto (T105)**: «Calificada · N de 5» no se parte (`white-space: nowrap`), con prueba a 320, 768 y 1280 px.
+
+Otros cambios menores: la prueba pesada «axe … en las pantallas P1» de `p1-journey.spec.ts` pasó a un límite de 90 s (con la suite en paralelo superó los 30 s por defecto en una corrida; sola tarda unos 8 s). La navegación ya no deja una columna lateral vacía cuando el rol no tiene pantallas (Contacto de la empresa).
 
 ## Lista de pulido (para L6)
 

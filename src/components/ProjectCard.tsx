@@ -40,7 +40,7 @@ export function ProjectCard({ project, company, progress, deliveries = [] }: Pro
             <dd>
               {deliveries.map((d) => (
                 <span key={d.label} className="delivery-line">
-                  {d.label}: {d.text}
+                  {d.label}: <span className="delivery-score" data-testid="delivery-score">{d.text}</span>
                 </span>
               ))}
             </dd>

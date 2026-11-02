@@ -18,9 +18,8 @@ export function accessDecision(hash: string, role: Role | null, ctx: AccessConte
   const route = matchRoute(hash);
 
   // 1 y 2: ingreso
-  if (route?.id === 'login') {
-    return role ? { kind: 'redirect', to: homeOf(role) } : { kind: 'allow', route };
-  }
+  // 2: con un rol activo el ingreso también se muestra («Inicio»): no borra el estado y elegir una cuenta lleva a su inicio.
+  if (route?.id === 'login') return { kind: 'allow', route };
   if (!role) return { kind: 'redirect', to: '#/' };
 
   // 4 (ruta desconocida)

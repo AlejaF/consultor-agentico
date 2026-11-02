@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { DemoBanner } from '../components/DemoBanner';
 import { Notice } from '../components/Notice';
+import { ResetDemoButton } from '../components/ResetDemoButton';
 import { RoleSwitcher } from '../components/RoleSwitcher';
 import { SideNav } from '../components/SideNav';
 import { NOTICE_TEXT, useAppState } from '../state/context';
@@ -39,22 +40,11 @@ interface Props {
 export function AppShell({ route, role, routeNotice, onDismissRouteNotice, children }: Props) {
   const { loadNotice, dismissLoadNotice, memoryMode } = useAppState();
   const announcement = useRouteAnnouncer(route);
-  const [accountOpen, setAccountOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
-  const toggleRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => setAccountOpen(false), [route.id]);
 
   return (
-    <div
-      className="app"
-      onKeyDown={(e) => {
-        if (e.key === 'Escape' && accountOpen) {
-          setAccountOpen(false);
-          toggleRef.current?.focus();
-        }
-      }}
-    >
+    <div className="app">
       <a
         className="skip-link"
         href="#contenido"
@@ -68,25 +58,19 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
       <DemoBanner />
       {role && (
         <header className="topbar">
-          <span className="brand">
+          <a className="brand" href="#/">
             <img src={`${import.meta.env.BASE_URL}emblema.svg`} alt="" />
             Consultor Agéntico
-          </span>
+          </a>
+          <a className="home-link" href="#/">
+            Inicio
+          </a>
           <RoleSwitcher role={role} />
-          <button
-            type="button"
-            ref={toggleRef}
-            className="menu-toggle"
-            aria-expanded={accountOpen}
-            aria-controls="cuenta"
-            onClick={() => setAccountOpen((v) => !v)}
-          >
-            Opciones
-          </button>
+          <ResetDemoButton />
         </header>
       )}
       <div className={role ? 'shell-body' : undefined}>
-        {role && <SideNav role={role} route={route} accountOpen={accountOpen} />}
+        {role && <SideNav role={role} route={route} />}
         <main id="contenido" ref={mainRef} tabIndex={-1} className={role ? 'main' : undefined}>
           <div aria-live="polite" role="status" data-testid="notices">
             {memoryMode && <Notice>{NOTICE_TEXT.memory}</Notice>}

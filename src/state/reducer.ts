@@ -106,7 +106,7 @@ export function reducer(state: PersistedState, action: Action): PersistedState {
     case 'saveGrading': {
       // Solo la entrega existente, sin calificar y con la calificación completa. No toca diagnóstico ni estrategia (FR-031).
       if (!deliveryExists(state, action.deliveryId) || action.deliveryId in state.gradings) return state;
-      if (!isGradingComplete(action.levels, action.comment)) return state;
+      if (!isGradingComplete(action.levels)) return state;
       const levels = Object.fromEntries(CRITERION_IDS.map((id) => [id, action.levels[id] as 1 | 2 | 3 | 4 | 5]));
       return {
         ...state,
