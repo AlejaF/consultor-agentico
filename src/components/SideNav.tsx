@@ -8,7 +8,9 @@ import { buildEvidenceItems } from '../domain/evidence';
 import { flowSteps, type StepStatus } from '../domain/flow';
 import { reviewProgress } from '../domain/review';
 import { useAppState } from '../state/context';
-import { homeOf, type Role, type RouteId, type RouteMatch } from '../app/router';
+import { FEATURES } from '../app/features';
+import { navItemsFor } from '../app/navItems';
+import type { Role, RouteId, RouteMatch } from '../app/router';
 import { ResetDemoButton } from './ResetDemoButton';
 
 const STATUS_CLASS: Record<StepStatus, string> = {
@@ -16,6 +18,7 @@ const STATUS_CLASS: Record<StepStatus, string> = {
   'En curso': 'badge-warn',
   Completado: 'badge-ok',
   Bloqueado: 'badge-blocked',
+  Disponible: 'badge-sim',
 };
 
 const STEP_ROUTE = {
@@ -25,9 +28,9 @@ const STEP_ROUTE = {
   estrategia: { id: 'consultor.strategy', path: 'estrategia' },
 } as const;
 
-function NavLink({ href, current, onNavigate, children }: { href: string; current: boolean; onNavigate: () => void; children: ReactNode }) {
+function NavLink({ href, current, children }: { href: string; current: boolean; children: ReactNode }) {
   return (
-    <a href={href} aria-current={current ? 'page' : undefined} onClick={onNavigate}>
+    <a href={href} aria-current={current ? 'page' : undefined}>
       {children}
     </a>
   );
@@ -36,12 +39,15 @@ function NavLink({ href, current, onNavigate, children }: { href: string; curren
 interface Props {
   role: Role;
   route: RouteMatch;
-  open: boolean;
-  onNavigate: () => void;
+  /** Panel «Cuenta» abierto (solo se usa bajo 1024 px; en pantallas anchas siempre se ve). */
+  accountOpen: boolean;
 }
 
-/** Navegación lateral por rol (FR-049); en celular es el menú desplegable. */
-export function SideNav({ role, route, open, onNavigate }: Props) {
+/**
+ * Navegación por rol (FR-049): barra lateral desde 1024 px; por debajo, barra de pestañas siempre visible bajo la cabecera.
+ * La tarjeta de cuenta y «Restablecer demo» van en el panel «Cuenta» (#cuenta).
+ */
+export function SideNav({ role, route, accountOpen }: Props) {
   const { state } = useAppState();
   const account = ACCOUNTS.find((a) => a.role === role)!;
   const is = (id: RouteId) => route.id === id;
@@ -63,76 +69,55 @@ export function SideNav({ role, route, open, onNavigate }: Props) {
   }
 
   const pendingDeliveries = role === 'lider' ? deliveriesFor(state).filter((d) => !d.graded).length : 0;
+  const items = navItemsFor(role, { pendingDeliveries, summaryExists: FEATURES.contactSummary, surveyExists: FEATURES.survey });
+  // En la lista de proyectos no hace falta barra bajo 1024 px.
+  const bare = role === 'consultor' && !project;
+  const noNav = items.length === 0 && !project;
 
   return (
-    <nav id="navegacion" className={open ? 'sidenav open' : 'sidenav'} aria-label="Navegación principal">
-      <ul className="nav-list">
-        {role === 'consultor' && (
-          <>
-            <li>
-              <NavLink href={homeOf('consultor')} current={is('consultor.projects')} onNavigate={onNavigate}>
-                Proyectos
+    <div className="sidebar">
+      {!noNav && (
+      <nav id="navegacion" className={bare ? 'sidenav nav-bare' : 'sidenav'} aria-label="Navegación principal">
+        <ul className="nav-list">
+          {items.map((it) => (
+            <li key={it.routeId} className={project ? 'nav-back' : undefined}>
+              <NavLink href={it.href} current={is(it.routeId)}>
+                {project && <span className="nav-arrow" aria-hidden="true">← </span>}
+                {it.label}
               </NavLink>
             </li>
-            {project && company && (
-              <li className="nav-project">
-                <p className="nav-project-name">{company.name}</p>
-                <ol className="nav-steps" aria-label={`Pasos de ${company.name}`}>
-                  {steps.map((s) => {
-                    const r = STEP_ROUTE[s.id];
-                    return (
-                      <li key={s.id}>
-                        <NavLink href={`#/consultor/proyectos/${project.id}/${r.path}`} current={is(r.id)} onNavigate={onNavigate}>
-                          <span>{s.label}</span>
-                          <span className={`badge ${STATUS_CLASS[s.status]}`}>{s.status}</span>
-                        </NavLink>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </li>
-            )}
-          </>
-        )}
-        {role === 'lider' && (
-          <>
-            <li>
-              <NavLink href={homeOf('lider')} current={is('lider.dashboard')} onNavigate={onNavigate}>
-                Tablero
-              </NavLink>
+          ))}
+          {project && company && (
+            <li className="nav-project">
+              <p className="nav-project-name">{company.name}</p>
+              <ol className="nav-steps" aria-label={`Pasos de ${company.name}`}>
+                {steps.map((s) => {
+                  const r = STEP_ROUTE[s.id];
+                  return (
+                    <li key={s.id}>
+                      <NavLink href={`#/consultor/proyectos/${project.id}/${r.path}`} current={is(r.id)}>
+                        <span>{s.label}</span>
+                        <span className={`badge ${STATUS_CLASS[s.status]}`}>{s.status}</span>
+                      </NavLink>
+                    </li>
+                  );
+                })}
+              </ol>
             </li>
-            <li>
-              <NavLink href="#/lider/entregas" current={is('lider.deliveries')} onNavigate={onNavigate}>
-                Entregas por revisar ({pendingDeliveries})
-              </NavLink>
-            </li>
-          </>
-        )}
-        {role === 'contacto' && (
-          <>
-            <li>
-              <NavLink href={homeOf('contacto')} current={is('contacto.summary')} onNavigate={onNavigate}>
-                Resumen
-              </NavLink>
-            </li>
-            <li>
-              <NavLink href="#/contacto/encuesta" current={is('contacto.survey')} onNavigate={onNavigate}>
-                Encuesta
-              </NavLink>
-            </li>
-          </>
-        )}
-      </ul>
+          )}
+        </ul>
+      </nav>
+      )}
 
-      <div className="nav-footer">
+      <div id="cuenta" className={accountOpen ? 'account-panel open' : 'account-panel'}>
         <div className="account-card">
           <p>
-            <strong>{account.displayName}</strong> · cuenta ficticia
+            Sesión de demostración · <strong>{account.displayName}</strong> (cuenta ficticia)
           </p>
         </div>
         <hr />
         <ResetDemoButton />
       </div>
-    </nav>
+    </div>
   );
 }

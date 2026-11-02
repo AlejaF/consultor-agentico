@@ -1,0 +1,81 @@
+import { useState } from 'react';
+import { FindingCard } from '../../components/FindingCard';
+import { GradeSummary } from '../../components/GradeSummary';
+import { PillarGroups } from '../../components/PillarGroups';
+import { RubricForm } from '../../components/RubricForm';
+import { StrategyView } from '../../components/StrategyView';
+import { SimBadge } from '../../components/badges';
+import { DIAGNOSIS, FINDING_IDS } from '../../data/diagnosis';
+import { STRATEGY } from '../../data/strategy';
+import { countOf, formatDecimal } from '../../domain/format';
+import { projectInfo } from '../../domain/lookup';
+import { deriveStrategy } from '../../domain/strategy';
+import { useAppState } from '../../state/context';
+
+/** Revisión de una entrega por el Líder: contenido en solo lectura y rúbrica (FR-029 a FR-031, FR-033). */
+export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; projectId: string }) {
+  const { state, dispatch } = useAppState();
+  const { company, team } = projectInfo(projectId);
+  const ps = state.projects[projectId];
+  const deliveryId = `${tipo}/${projectId}`;
+  const grading = state.gradings[deliveryId];
+  const [announcement, setAnnouncement] = useState('');
+  const decisions = ps.diagnosis.decisions;
+  const excluded = FINDING_IDS.filter((id) => decisions[id]?.state === 'rejected').length;
+
+  return (
+    <>
+      <p>
+        <a className="btn" href="#/lider/entregas">
+          ← Entregas por revisar
+        </a>
+      </p>
+      <h1>Revisión de la entrega</h1>
+      <p>
+        {tipo === 'dx' ? 'Diagnóstico' : 'Estrategia'} · {company.name} · {team.name} · Proyecto {projectId}
+      </p>
+      <p className="subtitle">
+        Vista de solo lectura. El Líder califica la calidad del entregable: no lo aprueba ni edita su contenido.
+      </p>
+
+      {tipo === 'dx' ? (
+        <section aria-labelledby="entrega-dx">
+          <h2 id="entrega-dx">Diagnóstico emitido</h2>
+          <p>
+            <SimBadge />
+          </p>
+          <p>
+            <strong>Índice de madurez: {formatDecimal(DIAGNOSIS.maturityIndex)} de 5</strong>
+          </p>
+          {excluded > 0 && <p className="subtitle">{countOf(excluded, 'hallazgo excluido', 'hallazgos excluidos')} por el Consultor (no se muestran).</p>}
+          <PillarGroups
+            idPrefix="ent"
+            filter={(f) => decisions[f.id]?.state !== 'rejected'}
+            render={(f) => (
+              <FindingCard key={f.id} finding={f} companyName={company.name} decision={decisions[f.id]} mode="readonly" issued />
+            )}
+          />
+        </section>
+      ) : (
+        <section aria-labelledby="entrega-st">
+          <h2 id="entrega-st">Estrategia enviada</h2>
+          <StrategyView derived={deriveStrategy(STRATEGY, DIAGNOSIS.findings, decisions)} />
+        </section>
+      )}
+
+      <div aria-live="polite" role="status" className="visually-hidden">
+        {announcement}
+      </div>
+      {grading ? (
+        <GradeSummary grading={grading} title="Calificación guardada" />
+      ) : (
+        <RubricForm
+          onSave={(levels, comment) => {
+            dispatch({ type: 'saveGrading', deliveryId, levels, comment, at: new Date().toISOString() });
+            setAnnouncement('Calificación guardada.');
+          }}
+        />
+      )}
+    </>
+  );
+}

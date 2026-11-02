@@ -8,7 +8,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "UNA sola aplicación web responsive que une las dos interfaces de referencia (estudiantes y profesorado) con acceso por rol (Consultor, Líder, Contacto de empresa), para recorrer el flujo Evidencia → Diagnóstico → Estrategia. Prototipo navegable para probar con usuarios, publicado como sitio estático; lo que dependa de IA o de servidor se simula y se rotula «simulada»."
+**Input**: User description: "UNA sola aplicación web responsive que une las dos interfaces de referencia (estudiantes y profesorado) con acceso por rol (Consultor, Líder, Contacto de la empresa), para recorrer el flujo Evidencia → Diagnóstico → Estrategia. Prototipo navegable para probar con usuarios, publicado como sitio estático; lo que dependa de IA o de servidor se simula y se rotula «simulada»."
 
 > **Rótulo de la DEMO**: toda pantalla indica que es una demostración con datos ficticios. Todo contenido que en el sistema completo produciría una IA o un servidor se rotula **«Simulada»**. Lo que no pudo comprobarse se rotula **NO VERIFICADO** (constitución, principios I, II y III).
 
@@ -16,7 +16,7 @@
 
 ### User Story 1 - Ingresar por rol y recorrer la demo con orientación (Priority: P1)
 
-Una persona que prueba la demo abre la aplicación, ve de inmediato que es una demostración con datos ficticios, elige uno de los tres roles (Consultor, Líder, Contacto de empresa) con una cuenta ficticia y llega a la pantalla de inicio propia de ese rol. En cualquier momento puede cambiar de rol con un selector visible, sin perder lo ya hecho.
+Una persona que prueba la demo abre la aplicación, ve de inmediato que es una demostración con datos ficticios, elige uno de los tres roles (Consultor, Líder, Contacto de la empresa) con una cuenta ficticia y llega a la pantalla de inicio propia de ese rol. En cualquier momento puede cambiar de rol con un selector visible, sin perder lo ya hecho.
 
 **Why this priority**: sin ingreso por rol no hay forma de recorrer el flujo ni de probar los demás roles. Es la puerta de entrada de toda la demo.
 
@@ -71,7 +71,7 @@ Con evidencia disponible, el Consultor pide «Generar diagnóstico» y recibe un
 
 ### User Story 4 - Revisar y aprobar el diagnóstico (Priority: P1)
 
-El Consultor revisa cada hallazgo en un panel de revisión con la evidencia de respaldo a un lado: puede **aceptar**, **editar** o **rechazar** cada uno, ve cuántos lleva revisados y, cuando termina, **aprueba y emite** el diagnóstico. Lo emitido queda con estado «Emitido» y fecha, y conserva las decisiones tomadas.
+El Consultor revisa cada hallazgo en un panel de revisión con la evidencia de respaldo a un lado: puede **aceptar**, **editar** o **rechazar** cada uno, ve cuántos lleva revisados y, cuando termina, **aprueba y emite** el diagnóstico. Lo emitido queda con estado «Emitido» y fecha, y conserva las decisiones tomadas. El Líder no aprueba ni bloquea el diagnóstico: solo lo califica después, y el Consultor puede continuar con la estrategia sin esperar su calificación.
 
 **Why this priority**: es la garantía humana del flujo (la IA propone, la persona decide) y habilita la estrategia y la calificación.
 
@@ -84,7 +84,8 @@ El Consultor revisa cada hallazgo en un panel de revisión con la evidencia de r
 3. **Given** un hallazgo, **When** el Consultor lo edita y guarda, **Then** el texto nuevo reemplaza al anterior, queda marcado «Editado por consultor» y conserva sus citas.
 4. **Given** un texto de edición vacío, **When** intenta guardar, **Then** se impide y se explica el motivo.
 5. **Given** hallazgos aún sin revisar, **When** intenta «Aprobar y emitir», **Then** la acción queda impedida y se indica cuántos faltan.
-6. **Given** todos los hallazgos revisados y al menos uno aceptado o editado, **When** aprueba y emite, **Then** el diagnóstico pasa a «Emitido», se registra la fecha y los hallazgos rechazados quedan marcados como excluidos.
+6. **Given** todos los hallazgos revisados y al menos uno aceptado o editado, **When** aprueba y emite, **Then** el diagnóstico pasa a «Emitido», se registra la fecha y los hallazgos rechazados quedan marcados como excluidos; la ventana de confirmación aclara que el Líder podrá revisarlo y calificarlo después y que no se necesita su aprobación para continuar con la estrategia.
+9. **Given** un diagnóstico recién emitido, **When** se muestra el banner «Emitido», **Then** dice que el Líder podrá calificarlo cuando quiera, que no bloquea el trabajo, y ofrece un botón destacado «Continuar con la Estrategia →» que lleva a esa pantalla; en la navegación el paso Estrategia pasa de «Pendiente» a «Disponible».
 7. **Given** que todos los hallazgos fueron rechazados, **When** intenta aprobar, **Then** se impide y se explica que debe haber al menos un hallazgo aceptado o editado.
 8. **Given** un diagnóstico ya emitido, **When** se abre de nuevo, **Then** es de solo lectura.
 
@@ -100,7 +101,7 @@ Cuando el diagnóstico está emitido, el Consultor pulsa «Generar estrategia» 
 
 **Acceptance Scenarios**:
 
-1. **Given** un diagnóstico aún no emitido, **When** el Consultor abre «Estrategia», **Then** ve un bloqueo que explica que requiere diagnóstico emitido y un enlace a la revisión, y el botón «Generar estrategia» no está disponible.
+1. **Given** un diagnóstico aún no emitido, **When** el Consultor abre «Estrategia», **Then** ve un bloqueo que explica que requiere diagnóstico emitido y un enlace al paso que corresponde («Ir al diagnóstico» si aún no se generó; «Ir a la revisión» si está generado y sin emitir), y el botón «Generar estrategia» no está disponible.
 2. **Given** un diagnóstico emitido y una estrategia sin generar, **When** el Consultor abre «Estrategia», **Then** ve el botón «Generar estrategia» y todavía no ve contenido de estrategia.
 3. **Given** el botón «Generar estrategia», **When** lo pulsa, **Then** aparece un indicador de 1,5 s rotulado «Simulada», luego riesgos, ruta sugerida y análisis con el rótulo «Simulada» y el estado «Generada»; pulsarlo dos veces no genera dos estrategias.
 4. **Given** la estrategia generada, **When** se examina cada riesgo y cada paso de la ruta, **Then** cada uno muestra «Deriva de: [hallazgos]» y la lista incluye solo hallazgos aceptados o editados **y verificados**.
@@ -131,9 +132,9 @@ La persona con rol Líder ve un tablero de los equipos ficticios (etapa, avance,
 
 ---
 
-### User Story 7 - Vista del Contacto de empresa y encuesta simulada (Priority: P3)
+### User Story 7 - Vista del Contacto de la empresa y encuesta simulada (Priority: P3)
 
-La persona con rol Contacto de empresa ve el resumen del proyecto de su empresa ficticia (etapa actual, avance por fase, próximo paso, actividad reciente) y responde una encuesta simulada. Cuando el diagnóstico está emitido, también ve un resumen de resultados.
+La persona con rol Contacto de la empresa ve el resumen del proyecto de su empresa ficticia (etapa actual, avance por fase, próximo paso, actividad reciente) y responde una encuesta simulada. Cuando el diagnóstico está emitido, también ve un resumen de resultados.
 
 **Why this priority**: aporta el tercer punto de vista pero no es necesario para validar el flujo principal; es lo primero que se corta dentro de P3 si falta tiempo (orden de corte dentro de P3: 1.º vista del Contacto, 2.º informe imprimible).
 
@@ -141,11 +142,12 @@ La persona con rol Contacto de empresa ve el resumen del proyecto de su empresa 
 
 **Acceptance Scenarios**:
 
-1. **Given** el rol Contacto de empresa, **When** ingresa, **Then** ve el resumen de un único proyecto de empresa ficticia con etapa, avance y próximo paso, sin ver herramientas del Consultor ni del Líder.
+1. **Given** el rol Contacto de la empresa, **When** ingresa, **Then** ve el resumen de un único proyecto de empresa ficticia con etapa, avance y próximo paso, sin ver herramientas del Consultor ni del Líder.
 2. **Given** el resumen, **When** el diagnóstico del proyecto está emitido, **Then** el Contacto ve el índice de madurez y los hallazgos aceptados o editados con su texto preparado en lenguaje no técnico (el texto editado por el Consultor no se muestra al Contacto), rotulados «Simulada».
 3. **Given** la encuesta simulada, **When** el Contacto responde todas las preguntas obligatorias y envía, **Then** ve la confirmación «Respuesta registrada (simulada); no se envió a nadie» y la actividad aparece en el resumen.
 4. **Given** preguntas obligatorias sin responder, **When** intenta enviar, **Then** se impide y se señalan las preguntas faltantes.
 5. **Given** que ya envió la encuesta, **When** vuelve, **Then** ve sus respuestas en solo lectura.
+6. **Given** que la vista del Contacto de la empresa aún no está disponible en la demo, **When** ingresa con ese rol, **Then** ve el mensaje «Esta vista es para la persona de la empresa cliente que recibe el informe. Aún no está disponible en esta demostración.», sin menús vacíos ni enlaces rotos.
 
 ---
 
@@ -173,7 +175,7 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 - **Archivo no válido**: formato no permitido, archivo vacío, tamaño mayor al máximo, nombre repetido, nombre de más de 150 caracteres, o varios archivos de los que solo algunos son válidos; en cada caso se informa el motivo y se aceptan los válidos.
 - **Sin evidencia**: proyecto sin ningún elemento de evidencia → no se puede generar diagnóstico y se orienta a cargar evidencia. Si se quitan todos los archivos propios, la evidencia de ejemplo sigue disponible según el proyecto.
 - **Cambio de rol a mitad de flujo**: con una edición sin guardar o una revisión a medias, cambiar de rol conserva el progreso guardado y avisa si hay un cambio sin guardar; la vista de otro rol nunca expone herramientas del rol anterior.
-- **Pantalla pequeña**: en un ancho de 320 px todo el contenido es legible y operable sin desplazamiento horizontal; la navegación lateral se transforma en un menú accesible; las tablas se reorganizan; el panel de evidencia queda debajo del hallazgo.
+- **Pantalla pequeña**: en un ancho de 320 px todo el contenido es legible y operable sin desplazamiento horizontal; la navegación del rol pasa a una barra de pestañas visible bajo la cabecera (FR-049); las tablas se reorganizan; el panel de evidencia queda debajo del hallazgo.
 - **Navegación solo con teclado**: todas las acciones (incluida la carga de archivos sin arrastrar, aceptar/editar/rechazar, calificar con la rúbrica) se logran con teclado, con foco visible, orden lógico y un salto directo al contenido; los mensajes de error se anuncian a tecnologías de apoyo.
 - **Recarga o cierre del navegador**: el progreso se conserva, pero de los archivos propios solo se conservan nombre, tipo y tamaño; su contenido no se conserva y tras recargar siguen listados con la nota «Contenido no conservado en esta demo». Si el navegador no permite guardar, la demo sigue funcionando durante la sesión y avisa que el progreso no se conservará.
 - **Datos locales borrados**: la demo vuelve al estado inicial sin errores.
@@ -190,7 +192,7 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 |---|---|
 | Consultor | Revisa cada hallazgo y aprueba y emite; es la supervisión humana sobre lo que propone la IA. |
 | Líder | Califica la calidad del entregable con la rúbrica y lo guarda con comentarios; no aprueba ni edita contenido. |
-| Contacto de empresa | Consulta resultados y responde la encuesta. |
+| Contacto de la empresa | Consulta resultados y responde la encuesta. |
 
 > En la demo los tres roles comparten el mismo navegador para que una sola persona recorra el ciclo completo; en el sistema completo cada rol tiene su propia sesión.
 
@@ -200,7 +202,7 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 
 **Ingreso, roles y rótulos (P1)**
 
-- **FR-001**: El sistema MUST ofrecer una pantalla de ingreso con tres cuentas de demostración ficticias, una por rol (Consultor, Líder, Contacto de empresa), sin contraseña ni datos personales reales.
+- **FR-001**: El sistema MUST ofrecer una pantalla de ingreso con tres cuentas de demostración ficticias, una por rol (Consultor, Líder, Contacto de la empresa), sin contraseña ni datos personales reales.
 - **FR-002**: El sistema MUST mostrar en todas las pantallas un selector de rol visible que permita cambiar de rol sin perder el progreso guardado.
 - **FR-003**: El sistema MUST mostrar a cada rol solo su navegación y sus vistas, y redirigir con un mensaje explicativo cuando se intente abrir una vista de otro rol.
 - **FR-004**: El sistema MUST mostrar en todas las pantallas el aviso «DEMO · datos ficticios».
@@ -221,19 +223,19 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 **Diagnóstico (P1)**
 
 - **FR-015**: El sistema MUST permitir «Generar diagnóstico» solo cuando el proyecto tenga al menos un elemento de evidencia, y explicar el bloqueo si no lo tiene.
-- **FR-016**: El sistema MUST producir un diagnóstico simulado a partir de contenido preparado, con índice de madurez, hallazgos agrupados por dimensión (seis dimensiones) y el rótulo «Simulada».
+- **FR-016**: El sistema MUST producir un diagnóstico simulado a partir de contenido preparado, con índice de madurez, hallazgos agrupados por dimensión (seis dimensiones) y el rótulo «Simulada». Cada grupo MUST rotularse «Pilar: <nombre>» (por ejemplo «Pilar: Estrategia») en Diagnóstico, Revisión, informe y Estrategia, para no confundir el pilar «Estrategia» con la etapa «Estrategia».
 - **FR-017**: Cada hallazgo MUST incluir al menos una cita que identifique el elemento de evidencia y su ubicación, y MUST poder abrirse para mostrar un extracto ficticio. Toda cita MUST rotularse «Evidencia de ejemplo (ficticia)», incluso en un proyecto cuya lista de evidencia no muestre ese elemento.
-- **FR-018**: Todo hallazgo con respaldo insuficiente MUST marcarse «NO VERIFICADO» con la razón.
+- **FR-018**: Todo hallazgo con respaldo insuficiente MUST marcarse «NO VERIFICADO» con la razón. Cuando un hallazgo NO VERIFICADO esté aceptado o editado, MUST mostrarse junto a él «No se usará como respaldo de la estrategia».
 - **FR-019**: El sistema MUST ofrecer un panel de revisión con Aceptar, Editar y Rechazar por hallazgo, la evidencia de respaldo junto al hallazgo seleccionado y el avance «N de M hallazgos revisados».
 - **FR-020**: El sistema MUST impedir guardar una edición vacía.
-- **FR-021**: El sistema MUST permitir «Aprobar y emitir» solo con todos los hallazgos revisados y al menos uno aceptado o editado; el diagnóstico emitido MUST quedar de solo lectura, con estado y fecha, y los rechazados MUST quedar marcados como excluidos.
-- **FR-022**: El sistema MUST crear, al emitir el diagnóstico, una entrega visible para el Líder.
+- **FR-021**: El sistema MUST permitir «Aprobar y emitir» solo con todos los hallazgos revisados y al menos uno aceptado o editado; el diagnóstico emitido MUST quedar de solo lectura, con estado y fecha, y los rechazados MUST quedar marcados como excluidos. La ventana «¿Aprobar y emitir el diagnóstico?» MUST decir: «El Líder podrá revisarlo y calificarlo después; no necesitas su aprobación para continuar con la estrategia.» Ningún texto de la interfaz MUST sugerir que el Líder aprueba o desbloquea algo.
+- **FR-022**: El sistema MUST crear, al emitir el diagnóstico, una entrega visible para el Líder. El banner del diagnóstico emitido MUST decir «El Líder podrá calificarlo cuando quiera. No bloquea tu trabajo: puedes continuar con la estrategia.» y MUST ofrecer el botón destacado «Continuar con la Estrategia →», que lleva a la pantalla de Estrategia.
 
 **Estrategia (P2)**
 
-- **FR-023**: El sistema MUST bloquear la estrategia mientras el diagnóstico no esté emitido, con explicación y enlace a la revisión.
+- **FR-023**: El sistema MUST bloquear la estrategia mientras el diagnóstico no esté emitido, con explicación y un enlace cuyo destino depende del estado del proyecto: sin diagnóstico generado, «Ir al diagnóstico»; con el diagnóstico generado y sin emitir, «Ir a la revisión» (nunca un enlace a una pantalla que a su vez está bloqueada).
 - **FR-024**: El sistema MUST ofrecer un botón «Generar estrategia», disponible solo con el diagnóstico emitido, que tras una simulación de 1,5 s rotulada «Simulada» produzca una estrategia simulada con riesgos (con nivel), ruta sugerida por fases con horizonte y análisis de sector y de mercado; la estrategia pasa por los estados sin generar, generada y enviada, y generar dos veces no la duplica.
-- **FR-025**: Cada riesgo y cada fase de la ruta MUST indicar los hallazgos de los que deriva. Como respaldo solo cuentan los hallazgos aceptados o editados **y verificados**; un hallazgo aceptado pero «NO VERIFICADO» MUST NOT contarse como respaldo ni aparecer en «Deriva de», y un elemento sin ningún hallazgo de respaldo MUST NOT mostrarse.
+- **FR-025**: Cada riesgo y cada fase de la ruta MUST indicar los hallazgos de los que deriva. Como respaldo solo cuentan los hallazgos aceptados o editados **y verificados**; un hallazgo aceptado pero «NO VERIFICADO» MUST NOT contarse como respaldo ni aparecer en «Deriva de», y un elemento sin ningún hallazgo de respaldo MUST NOT mostrarse. La pantalla de Estrategia MUST mostrar la línea «N hallazgos aceptados no se usaron como respaldo porque están NO VERIFICADO» (con concordancia de número) solo cuando N > 0.
 - **FR-026**: Los análisis de sector y de mercado MUST llevar la marca «NO VERIFICADO · contenido ilustrativo».
 - **FR-027**: El sistema MUST permitir «Enviar a revisión» la estrategia generada, creando una entrega para el Líder, sin duplicar si se pulsa más de una vez.
 
@@ -246,7 +248,7 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 - **FR-032**: El Consultor MUST poder ver, en su proyecto, el puntaje por criterio y los comentarios de las entregas calificadas, sin poder modificarlos.
 - **FR-033**: Las entregas precargadas de equipos de ejemplo MUST poder calificarse sin que antes se haya ejecutado el flujo del Consultor.
 
-**Contacto de empresa (P3)**
+**Contacto de la empresa (P3)**
 
 - **FR-034**: El sistema MUST mostrar al Contacto el resumen del proyecto de una empresa ficticia (etapa, avance por las fases Evidencia, Diagnóstico y Estrategia, próximo paso, actividad reciente).
 - **FR-035**: Cuando el diagnóstico del proyecto esté emitido, el sistema MUST mostrar al Contacto el índice de madurez y los hallazgos aceptados o editados con su texto preparado en lenguaje no técnico, rotulados «Simulada»; el texto editado por el Consultor no se muestra al Contacto.
@@ -272,13 +274,13 @@ La persona con rol Consultor, o el Líder al revisar una entrega, abre una vista
 
 **Navegación y textos (transversal)**
 
-- **FR-049**: El sistema MUST ofrecer una navegación lateral por rol (en celular, un menú con los mismos elementos). **Consultor**: «Proyectos» y, dentro de un proyecto, un bloque con el nombre de la empresa y los cuatro pasos del flujo en orden (Evidencia, Diagnóstico, Revisión, Estrategia), cada uno con su estado en texto (Pendiente, En curso, Completado o Bloqueado); un paso bloqueado MUST llevar a su pantalla con la explicación del bloqueo, sin redirigir. **Líder**: «Tablero» y «Entregas por revisar (n)». **Contacto**: «Resumen» y «Encuesta». Al pie, en todos los roles, MUST mostrar una tarjeta con la cuenta de demostración («Nombre · cuenta ficticia») y, separada por una línea, la acción «Restablecer demo». Cada lote añade a la navegación los elementos de sus pantallas.
-- **FR-050**: Los textos MUST concordar en número («1 archivo», «4 proyectos», «Se agregó 1 archivo», «No se agregaron 2 archivos») y MUST mostrar el tipo de archivo de forma legible («PDF · 47 B», no el tipo técnico).
+- **FR-049**: El sistema MUST ofrecer una navegación lateral por rol. En pantallas de menos de 1024 px, la navegación del rol MUST ser una barra de pestañas siempre visible bajo la cabecera (no un menú oculto), sin desplazamiento horizontal de la página desde 320 px (con etiquetas ajustadas o en dos líneas), con objetivos de al menos 44 px, foco visible, orden lógico y operable con teclado; el botón de la cabecera se llama «Opciones» y contiene solo la tarjeta de sesión de demostración y «Restablecer demo». En la lista de proyectos del Consultor no hace falta barra de pestañas. Un elemento de navegación MUST aparecer solo cuando su pantalla existe. **Consultor**: «Proyectos» y, dentro de un proyecto, un bloque con el nombre de la empresa y los cuatro pasos del flujo en orden (Evidencia, Diagnóstico, Revisión, Estrategia), cada uno con su estado en texto (Pendiente, En curso, Completado, Bloqueado o Disponible); «Disponible» se aplica al paso Estrategia cuando el diagnóstico está emitido y la estrategia aún no se genera, en lugar de «Pendiente»; un paso bloqueado MUST llevar a su pantalla con la explicación del bloqueo, sin redirigir. **Líder**: «Tablero» y «Entregas por revisar (n)». **Contacto de la empresa**: «Resumen» y, cuando exista esa pantalla, «Encuesta»; mientras su vista no exista, el rol no muestra navegación y presenta un mensaje claro (sin menús vacíos ni enlaces rotos). Al pie, en todos los roles, MUST mostrar una tarjeta con la sesión de demostración («Sesión de demostración · Nombre (cuenta ficticia)») y, separada por una línea, la acción «Restablecer demo». Cada lote añade a la navegación los elementos de sus pantallas.
+- **FR-050**: Los textos MUST concordar en número («1 archivo», «4 proyectos», «Se agregó 1 archivo», «No se agregaron 2 archivos») y MUST mostrar el tipo de archivo de forma legible («PDF · 47 B», no el tipo técnico). Los textos visibles para quien prueba la demo MUST estar en español natural y MUST NOT mencionar lotes ni fases internas de construcción.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Cuenta de demostración**: persona ficticia asociada a un rol; no tiene credenciales.
-- **Rol**: Consultor, Líder o Contacto de empresa; determina vistas y acciones permitidas.
+- **Rol**: Consultor, Líder o Contacto de la empresa; determina vistas y acciones permitidas.
 - **Proyecto**: empresa ficticia, etapa actual (Evidencia, Diagnóstico, Estrategia), avance, estado y fecha de última actividad.
 - **Equipo**: grupo ficticio de consultores asociado a uno o más proyectos; lo observa el Líder.
 - **Elemento de evidencia**: documento, transcripción o entrevista; tiene origen (ejemplo ficticio o cargado localmente), tipo, tamaño y estado de análisis; de los archivos propios solo se conservan nombre, tipo y tamaño, no su contenido.

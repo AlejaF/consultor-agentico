@@ -1,6 +1,8 @@
-import { DIAGNOSIS, DIMENSIONS } from '../../data/diagnosis';
+import { DIAGNOSIS } from '../../data/diagnosis';
 import { FindingCard } from '../../components/FindingCard';
 import { GenerateButton } from '../../components/GenerateButton';
+import { IssuedNotice } from '../../components/IssuedNotice';
+import { PillarGroups } from '../../components/PillarGroups';
 import { SimBadge } from '../../components/badges';
 import { buildEvidenceItems, resolveCitation } from '../../domain/evidence';
 import { formatDateTime, formatDecimal } from '../../domain/format';
@@ -59,6 +61,7 @@ export function Diagnosis({ projectId }: { projectId: string }) {
               <SimBadge />
             </p>
             {issued && d.issuedAt && <p className="subtitle">Emitido el {formatDateTime(d.issuedAt)}</p>}
+            {issued && <IssuedNotice projectId={projectId} />}
             <p>
               <strong>Índice de madurez: {formatDecimal(DIAGNOSIS.maturityIndex)} de 5</strong>
             </p>
@@ -72,26 +75,19 @@ export function Diagnosis({ projectId }: { projectId: string }) {
             </p>
           </section>
 
-          {DIMENSIONS.map((dim) => {
-            const findings = DIAGNOSIS.findings.filter((f) => f.dimension === dim.id);
-            return (
-              <section key={dim.id} aria-labelledby={`dim-${dim.id}`}>
-                <h2 id={`dim-${dim.id}`}>{dim.label}</h2>
-                <div className="stack">
-                  {findings.map((f) => (
-                    <FindingCard
-                      key={f.id}
-                      finding={f}
-                      companyName={company.name}
-                      decision={issued ? d.decisions[f.id] : undefined}
-                      mode={issued ? 'readonly' : 'report'}
-                      issued={issued}
-                    />
-                  ))}
-                </div>
-              </section>
-            );
-          })}
+          <PillarGroups
+            idPrefix="dim"
+            render={(f) => (
+              <FindingCard
+                key={f.id}
+                finding={f}
+                companyName={company.name}
+                decision={issued ? d.decisions[f.id] : undefined}
+                mode={issued ? 'readonly' : 'report'}
+                issued={issued}
+              />
+            )}
+          />
         </>
       )}
     </>

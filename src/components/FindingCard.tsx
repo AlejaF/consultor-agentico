@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { DIMENSIONS, type Finding } from '../data/diagnosis';
+import type { Finding } from '../data/diagnosis';
 import { resolveName } from '../data/evidence';
 import { resolveCitation, type ResolvedCitation } from '../domain/evidence';
 import { isValidEdit } from '../domain/review';
@@ -38,7 +38,6 @@ export function FindingCard({ finding, companyName, decision, mode, issued = fal
   const uid = useId();
   const baseText = resolveName(finding.text, companyName);
   const currentText = decision?.state === 'edited' ? decision.text : baseText;
-  const dimension = DIMENSIONS.find((d) => d.id === finding.dimension)!.label;
 
   const citations = finding.citations.map((c) => resolveCitation(c, companyName)).filter((c): c is ResolvedCitation => c !== null);
   const [open, setOpen] = useState<string[]>([]);
@@ -67,19 +66,20 @@ export function FindingCard({ finding, companyName, decision, mode, issued = fal
   }
 
   const rejected = decision?.state === 'rejected';
+  const noSupport = !finding.verified && (decision?.state === 'accepted' || decision?.state === 'edited');
   const actionable = mode === 'review';
   const title = finding.title;
 
   return (
     <article className={`finding card${openCitations.length ? ' has-panel' : ''}${rejected ? ' rejected' : ''}`} data-testid={`finding-${finding.id}`}>
       <div className="finding-main">
-        <p className="subtitle">{dimension}</p>
         <h3>{title}</h3>
         <p className="finding-badges">
           {decision && mode !== 'report' && <DecisionBadge decision={decision} issued={issued} />}
           {!finding.verified && <UnverifiedBadge />}
         </p>
         {!finding.verified && <p className="subtitle">{finding.unverifiedReason}</p>}
+        {noSupport && <p className="subtitle no-support">No se usará como respaldo de la estrategia</p>}
 
         {editing ? (
           <div className="field">

@@ -16,7 +16,7 @@ export function Login() {
         hay contraseñas ni datos reales.
       </p>
       <p>
-        <strong>Importante:</strong> el control por rol es solo de experiencia; no protege datos. Cualquiera puede
+        <strong>Importante:</strong> el control por rol solo sirve para probar cada perfil; no protege datos. Cualquiera puede
         cambiar de rol.
       </p>
 
@@ -55,7 +55,7 @@ export function Login() {
           <strong>Líder:</strong> revisa y califica las entregas de los equipos.
         </li>
         <li>
-          <strong>Contacto:</strong> ve el resumen del proyecto de su empresa ficticia.
+          <strong>Contacto de la empresa:</strong> recibe el informe de la empresa ficticia (vista aún no disponible en esta demostración).
         </li>
       </ul>
 

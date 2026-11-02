@@ -27,3 +27,13 @@ export function issueBlockReason(findingIds: readonly string[], decisions: Recor
 export function isValidEdit(text: string): boolean {
   return text.trim().length > 0;
 }
+
+/** Solo cuenta como respaldo de la estrategia un hallazgo aceptado o editado y verificado (FR-025). */
+export function usesAsSupport(verified: boolean, state: Decision['state']): boolean {
+  return verified && (state === 'accepted' || state === 'edited');
+}
+
+/** Hallazgos NO VERIFICADO que el Consultor aceptó o editó y que por eso no respaldan la estrategia (FR-018, FR-025). */
+export function countUnverifiedAdopted(findings: readonly { id: string; verified: boolean }[], decisions: Record<string, Decision>): number {
+  return findings.filter((f) => !f.verified && ['accepted', 'edited'].includes(stateOf(decisions, f.id))).length;
+}

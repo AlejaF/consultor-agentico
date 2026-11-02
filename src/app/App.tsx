@@ -8,6 +8,7 @@ import { Deliveries } from '../screens/lider/Deliveries';
 import { Projects } from '../screens/consultor/Projects';
 import { Summary } from '../screens/contacto/Summary';
 import { Dashboard } from '../screens/lider/Dashboard';
+import { DeliveryReview } from '../screens/lider/DeliveryReview';
 import { Login } from '../screens/Login';
 import { StateProvider, useAppState } from '../state/context';
 import { UnsavedProvider } from '../state/unsaved';
@@ -31,6 +32,8 @@ function Screen({ route }: { route: RouteMatch }) {
       return <Strategy projectId={route.params.projectId} />;
     case 'lider.deliveries':
       return <Deliveries />;
+    case 'lider.delivery':
+      return <DeliveryReview tipo={route.params.tipo as 'dx' | 'st'} projectId={route.params.projectId} />;
     case 'lider.dashboard':
       return <Dashboard />;
     case 'contacto.summary':

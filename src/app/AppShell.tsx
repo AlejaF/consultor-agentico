@@ -39,18 +39,18 @@ interface Props {
 export function AppShell({ route, role, routeNotice, onDismissRouteNotice, children }: Props) {
   const { loadNotice, dismissLoadNotice, memoryMode } = useAppState();
   const announcement = useRouteAnnouncer(route);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => setMenuOpen(false), [route.id]);
+  useEffect(() => setAccountOpen(false), [route.id]);
 
   return (
     <div
       className="app"
       onKeyDown={(e) => {
-        if (e.key === 'Escape' && menuOpen) {
-          setMenuOpen(false);
+        if (e.key === 'Escape' && accountOpen) {
+          setAccountOpen(false);
           toggleRef.current?.focus();
         }
       }}
@@ -77,16 +77,16 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
             type="button"
             ref={toggleRef}
             className="menu-toggle"
-            aria-expanded={menuOpen}
-            aria-controls="navegacion"
-            onClick={() => setMenuOpen((v) => !v)}
+            aria-expanded={accountOpen}
+            aria-controls="cuenta"
+            onClick={() => setAccountOpen((v) => !v)}
           >
-            Menú
+            Opciones
           </button>
         </header>
       )}
       <div className={role ? 'shell-body' : undefined}>
-        {role && <SideNav role={role} route={route} open={menuOpen} onNavigate={() => setMenuOpen(false)} />}
+        {role && <SideNav role={role} route={route} accountOpen={accountOpen} />}
         <main id="contenido" ref={mainRef} tabIndex={-1} className={role ? 'main' : undefined}>
           <div aria-live="polite" role="status" data-testid="notices">
             {memoryMode && <Notice>{NOTICE_TEXT.memory}</Notice>}

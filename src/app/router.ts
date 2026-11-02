@@ -5,7 +5,7 @@ export type Role = 'consultor' | 'lider' | 'contacto';
 export const ROLE_LABEL: Record<Role, string> = {
   consultor: 'Consultor',
   lider: 'Líder',
-  contacto: 'Contacto',
+  contacto: 'Contacto de la empresa',
 };
 
 export type RouteId =
@@ -44,7 +44,7 @@ export const ROUTES: readonly RouteDef[] = [
   { id: 'lider.deliveries', pattern: '#/lider/entregas', role: 'lider', title: 'Entregas por revisar' },
   { id: 'lider.delivery', pattern: '#/lider/entregas/:tipo/:projectId', role: 'lider', title: 'Revisión de entrega' },
   { id: 'lider.deliveryReport', pattern: '#/lider/entregas/:tipo/:projectId/informe', role: 'lider', title: 'Informe de entrega' },
-  { id: 'contacto.summary', pattern: '#/contacto', role: 'contacto', title: 'Resumen del proyecto' },
+  { id: 'contacto.summary', pattern: '#/contacto', role: 'contacto', title: 'Contacto de la empresa' },
   { id: 'contacto.survey', pattern: '#/contacto/encuesta', role: 'contacto', title: 'Encuesta' },
 ];
 

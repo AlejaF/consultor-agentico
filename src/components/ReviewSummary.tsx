@@ -54,9 +54,9 @@ export function ReviewSummary({ reviewed, total, accepted, edited, rejected, blo
         }}
       >
         <p>
-          El diagnóstico quedará «Emitido» y de solo lectura. Los hallazgos rechazados ({rejected}) quedarán excluidos. Se creará la
-          entrega para el Líder.
+          El diagnóstico quedará «Emitido» y de solo lectura. Los hallazgos rechazados ({rejected}) quedarán excluidos.
         </p>
+        <p>El Líder podrá revisarlo y calificarlo después; no necesitas su aprobación para continuar con la estrategia.</p>
       </ConfirmDialog>
     </section>
   );

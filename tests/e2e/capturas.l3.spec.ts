@@ -4,7 +4,7 @@ import { test, type Page } from '@playwright/test';
 test.skip(!process.env.EVIDENCIA, 'Solo con EVIDENCIA=1');
 
 async function openMenuIfCollapsed(page: Page) {
-  const toggle = page.getByRole('button', { name: 'Menú' });
+  const toggle = page.getByRole('button', { name: 'Opciones' });
   if ((await toggle.isVisible()) && (await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
 }
 async function goto(page: Page, hash: string) {

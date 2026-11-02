@@ -4,11 +4,11 @@ import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 const HOME: Record<string, { hash: string; h1: string }> = {
   Consultor: { hash: '#/consultor', h1: 'Proyectos' },
   Líder: { hash: '#/lider', h1: 'Tablero' },
-  Contacto: { hash: '#/contacto', h1: 'Resumen del proyecto' },
+  Contacto: { hash: '#/contacto', h1: 'Contacto de la empresa' },
 };
 
 async function openMenuIfCollapsed(page: Page) {
-  const toggle = page.getByRole('button', { name: 'Menú' });
+  const toggle = page.getByRole('button', { name: 'Opciones' });
   if (await toggle.isVisible()) await toggle.click();
 }
 
@@ -17,7 +17,7 @@ test.describe('ingreso', () => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1, name: 'Consultor Agéntico' })).toBeVisible();
     await expect(page.getByTestId('demo-banner')).toHaveText('DEMO · datos ficticios');
-    await expect(page.getByText('solo de experiencia')).toBeVisible();
+    await expect(page.getByText('solo sirve para probar cada perfil')).toBeVisible();
     await expectNoAxeViolations(page);
     await expectNoHorizontalScroll(page);
   });

@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { DIAGNOSIS, FINDING_IDS } from '../../data/diagnosis';
+import { FINDING_IDS } from '../../data/diagnosis';
 import { FindingCard } from '../../components/FindingCard';
+import { DeliveryStatus } from '../../components/DeliveryStatus';
+import { IssuedNotice } from '../../components/IssuedNotice';
+import { PillarGroups } from '../../components/PillarGroups';
 import { ReviewSummary } from '../../components/ReviewSummary';
 import { SimBadge } from '../../components/badges';
 import { countOf, formatDateTime } from '../../domain/format';
@@ -41,7 +44,7 @@ export function Review({ projectId }: { projectId: string }) {
           <p>Primero genera el diagnóstico; después podrás aceptar, editar o rechazar cada hallazgo.</p>
           <p>
             <a className="btn primary" href={`#/consultor/proyectos/${projectId}/diagnostico`}>
-              Ir a Generar diagnóstico
+              Ir a generar el diagnóstico
             </a>
           </p>
         </section>
@@ -72,8 +75,11 @@ export function Review({ projectId }: { projectId: string }) {
             {countOf(counts.accepted + counts.edited, 'incluido', 'incluidos')} ({countOf(counts.accepted, 'aceptado', 'aceptados')},{' '}
             {countOf(counts.edited, 'editado', 'editados')}) y {countOf(counts.rejected, 'excluido', 'excluidos')} (rechazados).
           </p>
-          <p className="subtitle">Se creó la entrega visible para el Líder.</p>
+          <IssuedNotice projectId={projectId} />
         </section>
+      )}
+      {issued && (
+        <DeliveryStatus deliveryId={`dx/${projectId}`} label="el diagnóstico" />
       )}
 
       <div aria-live="polite" role="status" className="visually-hidden" data-testid="decision-announcer">
@@ -81,29 +87,27 @@ export function Review({ projectId }: { projectId: string }) {
       </div>
 
       {d.status !== 'none' && (
-        <section aria-labelledby="lista-hallazgos">
-          <h2 id="lista-hallazgos">Hallazgos</h2>
-          <div className="stack">
-            {DIAGNOSIS.findings.map((f) => (
-              <FindingCard
-                key={f.id}
-                finding={f}
-                companyName={company.name}
-                decision={d.decisions[f.id]}
-                mode={issued ? 'readonly' : 'review'}
-                issued={issued}
-                onDecide={(decision) => {
-                  dispatch({ type: 'decide', projectId, findingId: f.id, decision });
-                  setAnnouncement(`Hallazgo «${f.title}»: ${decision === 'accepted' ? 'aceptado' : 'rechazado'}.`);
-                }}
-                onEdit={(text) => {
-                  dispatch({ type: 'edit', projectId, findingId: f.id, text });
-                  setAnnouncement(`Hallazgo «${f.title}»: editado.`);
-                }}
-              />
-            ))}
-          </div>
-        </section>
+        <PillarGroups
+          idPrefix="rev"
+          render={(f) => (
+            <FindingCard
+              key={f.id}
+              finding={f}
+              companyName={company.name}
+              decision={d.decisions[f.id]}
+              mode={issued ? 'readonly' : 'review'}
+              issued={issued}
+              onDecide={(decision) => {
+                dispatch({ type: 'decide', projectId, findingId: f.id, decision });
+                setAnnouncement(`Hallazgo «${f.title}»: ${decision === 'accepted' ? 'aceptado' : 'rechazado'}.`);
+              }}
+              onEdit={(text) => {
+                dispatch({ type: 'edit', projectId, findingId: f.id, text });
+                setAnnouncement(`Hallazgo «${f.title}»: editado.`);
+              }}
+            />
+          )}
+        />
       )}
     </>
   );

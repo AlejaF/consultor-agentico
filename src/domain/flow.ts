@@ -1,4 +1,4 @@
-export type StepStatus = 'Pendiente' | 'En curso' | 'Completado' | 'Bloqueado';
+export type StepStatus = 'Pendiente' | 'En curso' | 'Completado' | 'Bloqueado' | 'Disponible';
 export type StepId = 'evidencia' | 'diagnostico' | 'revision' | 'estrategia';
 
 export interface FlowInput {
@@ -8,6 +8,11 @@ export interface FlowInput {
   /** Hallazgos con decisión distinta de pendiente. */
   reviewed: number;
   strategy: 'none' | 'generated' | 'sent';
+}
+
+/** Destino del bloqueo de Estrategia según el estado del diagnóstico (FR-023): nunca una pantalla que a su vez está bloqueada. */
+export function blockedStrategyLink(diagnosis: 'none' | 'generated'): { label: string; step: 'diagnostico' | 'revision' } {
+  return diagnosis === 'none' ? { label: 'Ir al diagnóstico', step: 'diagnostico' } : { label: 'Ir a la revisión', step: 'revision' };
 }
 
 export interface FlowStep {
@@ -24,7 +29,7 @@ export function flowSteps(i: FlowInput): FlowStep[] {
   const evidencia: StepStatus = hasEvidence ? 'Completado' : i.hasAnswers ? 'En curso' : 'Pendiente';
   const diagnostico: StepStatus = !hasEvidence && i.diagnosis === 'none' ? 'Bloqueado' : i.diagnosis === 'none' ? 'Pendiente' : issued ? 'Completado' : 'En curso';
   const revision: StepStatus = i.diagnosis === 'none' ? 'Bloqueado' : issued ? 'Completado' : i.reviewed > 0 ? 'En curso' : 'Pendiente';
-  const estrategia: StepStatus = !issued ? 'Bloqueado' : i.strategy === 'sent' ? 'Completado' : i.strategy === 'generated' ? 'En curso' : 'Pendiente';
+  const estrategia: StepStatus = !issued ? 'Bloqueado' : i.strategy === 'sent' ? 'Completado' : i.strategy === 'generated' ? 'En curso' : 'Disponible';
 
   return [
     { id: 'evidencia', label: 'Evidencia', status: evidencia },

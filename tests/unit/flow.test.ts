@@ -28,8 +28,8 @@ describe('flowSteps (pasos del flujo en la navegación)', () => {
   it('revisión a medias: Revisión en curso', () => {
     expect(states({ evidenceCount: 3, diagnosis: 'generated', reviewed: 3 })).toEqual(['Completado', 'En curso', 'En curso', 'Bloqueado']);
   });
-  it('diagnóstico emitido: Diagnóstico y Revisión completados, Estrategia pendiente', () => {
-    expect(states({ evidenceCount: 3, diagnosis: 'issued', reviewed: 8 })).toEqual(['Completado', 'Completado', 'Completado', 'Pendiente']);
+  it('diagnóstico emitido: Diagnóstico y Revisión completados, Estrategia disponible', () => {
+    expect(states({ evidenceCount: 3, diagnosis: 'issued', reviewed: 8 })).toEqual(['Completado', 'Completado', 'Completado', 'Disponible']);
   });
   it('estrategia generada: en curso; enviada: completada', () => {
     expect(states({ evidenceCount: 3, diagnosis: 'issued', strategy: 'generated' })[3]).toBe('En curso');

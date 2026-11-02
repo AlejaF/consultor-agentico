@@ -27,7 +27,7 @@ export const EVIDENCE_SLOTS: readonly EvidenceSlot[] = [
     name: 'Informe de procesos internos de {empresa}',
     detail: 'Documento de ejemplo · 24 páginas',
     excerpts: [
-      { id: 'S1-E1', slot: 1, locator: 'pág. 12', text: 'Los pedidos se registran a mano en hojas de cálculo y se reconcilian una vez por semana entre las áreas.' },
+      { id: 'S1-E1', slot: 1, locator: 'pág. 12', text: 'Los pedidos se registran a mano en hojas de cálculo y se consolidan una vez por semana entre las áreas.' },
       { id: 'S1-E2', slot: 1, locator: 'pág. 18', text: 'No existe un responsable único de los indicadores del proceso; cada área lleva sus propias cifras.' },
     ],
   },

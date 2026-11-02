@@ -1,17 +1,12 @@
-import { COMPANIES } from '../../data/companies';
-
-/** Provisional (L1): el Contacto ve siempre el proyecto de su empresa ficticia (P-B). El resumen real es de P3. */
+/** Mientras la vista del Contacto de la empresa no exista, la demo lo dice con claridad (FR-049, historia 7). */
 export function Summary() {
-  const company = COMPANIES.find((c) => c.id === 'C-B');
   return (
     <>
-      <h1>Resumen del proyecto</h1>
-      <div className="card">
-        <h2>{company?.name}</h2>
-        <p>
-          {company?.sector} · {company?.size}
-        </p>
-      </div>
+      <h1>Contacto de la empresa</h1>
+      <section className="card" aria-labelledby="contacto-aviso">
+        <h2 id="contacto-aviso">Vista no disponible</h2>
+        <p>Esta vista es para la persona de la empresa cliente que recibe el informe. Aún no está disponible en esta demostración.</p>
+      </section>
     </>
   );
 }

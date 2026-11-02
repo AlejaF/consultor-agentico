@@ -29,6 +29,11 @@ export function formatDecimal(n: number): string {
   return (Math.round(n * 10) / 10).toFixed(1).replace('.', ',');
 }
 
+/** Puntaje de 1,0 a 5,0 con coma decimal: 4,3 · 4,0. */
+export function formatScore(n: number): string {
+  return formatDecimal(n);
+}
+
 /** Fecha y hora cortas en español. */
 export function formatDateTime(iso: string): string {
   return new Intl.DateTimeFormat('es', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso));
