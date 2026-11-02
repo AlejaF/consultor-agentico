@@ -93,14 +93,11 @@ test.describe('Ajuste 7: rol Empresa', () => {
     await expect(page.getByLabel('Rol activo').locator('option', { hasText: 'Empresa' })).toHaveCount(1);
     await expect(page.getByLabel('Rol activo').locator('option', { hasText: /^Contacto$/ })).toHaveCount(0);
   });
-  test('sin vista propia: mensaje claro, sin menús vacíos ni enlaces rotos', async ({ page }) => {
+  test('la vista de la Empresa ya existe (L5b): navegación con inicio, encuesta e informe', async ({ page }) => {
     await login(page, 'Empresa');
     await expect(page.getByRole('heading', { level: 1, name: 'Empresa' })).toBeVisible();
-    await expect(
-      page.getByText('Esta vista es para la persona de la empresa cliente que recibe el informe. Aún no está disponible en esta demostración.'),
-    ).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'Navegación principal' })).toHaveCount(0);
-    await expect(page.locator('main').getByRole('link')).toHaveCount(0);
+    const nav = page.getByRole('navigation', { name: 'Navegación principal' });
+    await expect(nav.getByRole('link')).toHaveCount(3);
     await expectNoHorizontalScroll(page);
     await expectNoAxeViolations(page);
   });

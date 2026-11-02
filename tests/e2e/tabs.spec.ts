@@ -64,10 +64,9 @@ test.describe('pestañas de navegación bajo 1024 px (FR-049)', () => {
     await expect(nav(page).getByRole('link', { name: /^Entregas por revisar \(\d+\)$/ })).toBeVisible();
   });
 
-  test('Empresa: sin barra de pestañas mientras no exista ninguna pantalla', async ({ page }) => {
+  test('Empresa (L5b): la barra de pestañas muestra Resumen, Informe de diagnóstico y Encuesta', async ({ page }) => {
     await loginAs(page, 'Empresa');
-    await expect(nav(page)).toHaveCount(0);
-    await expect(page.getByRole('link', { name: /Resumen|Encuesta/ })).toHaveCount(0);
+    await expect(nav(page).getByRole('link')).toHaveText(['Resumen', 'Informe de diagnóstico', 'Encuesta']);
   });
 
   test('un paso bloqueado lleva a su pantalla con la explicación', async ({ page }) => {

@@ -17,7 +17,7 @@ const HASHES: Record<Role, string[]> = {
     '#/consultor/proyectos/P-B/informe',
   ],
   lider: ['#/lider', '#/lider/entregas', '#/lider/entregas/dx/P-B', '#/lider/entregas/st/P-C', '#/lider/entregas/dx/P-B/informe'],
-  contacto: ['#/contacto', '#/contacto/encuesta'],
+  contacto: ['#/contacto', '#/contacto/encuesta', '#/contacto/informe'],
 };
 const ROLES = Object.keys(HASHES) as Role[];
 

@@ -106,6 +106,8 @@ test.describe('Restablecer demo devuelve TODO el estado a los datos de ejemplo',
     await restablecer(A);
     // B adopta el estado restablecido: vuelve al ingreso (sin rol) sin tocar el almacenamiento
     await expect(B.getByRole('heading', { level: 1, name: 'Consultor Agéntico' })).toBeVisible();
+    // A termina de guardar el estado restablecido (guardado con retraso): sin esperar eso, ese aviso podría llegar a B justo después de que entre como Líder
+    await expect.poll(async () => (await guardado(A)) !== null).toBe(true);
     // la persona usa B: no puede resucitar los datos viejos
     await B.getByRole('button', { name: /Entrar como Líder/ }).click();
     await expect(B.getByTestId('kpi-por-revisar')).toContainText('3');
@@ -116,6 +118,27 @@ test.describe('Restablecer demo devuelve TODO el estado a los datos de ejemplo',
     await A.reload();
     await A.goto('/');
     await comprobarInicial(A, 'en la pestaña que restableció, tras recargar');
+    await ctx.close();
+  });
+
+  test('L6g/I: el diálogo de «Restablecer demo» sigue abierto si otra pestaña cambia de rol y se adopta su estado', async ({ browser }, info) => {
+    test.skip(info.project.name !== '1280', 'El escenario no depende del ancho');
+    const ctx = await browser.newContext({ baseURL: info.project.use.baseURL });
+    const A = await ctx.newPage();
+    await A.goto('/');
+    await A.getByRole('button', { name: /Entrar como Líder/ }).click();
+    await goto(A, '#/lider/entregas');
+    await A.getByRole('heading', { level: 1, name: 'Entregas por revisar' }).waitFor();
+    await A.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' }).click();
+    await expect(A.getByRole('dialog')).toBeVisible();
+    // otra pestaña entra como Consultor: A adopta ese estado y su ruta de Líder deja de ser válida (redirección)
+    const B = await ctx.newPage();
+    await B.goto('/');
+    await B.getByRole('button', { name: /Entrar como Consultor/ }).click();
+    await expect.poll(async () => (await guardado(A))?.session?.role).toBe('consultor');
+    await expect(A.getByRole('heading', { level: 1, name: 'Proyectos' })).toBeVisible(); // A ya adoptó y redirigió
+    await expect(A.getByRole('dialog'), 'el diálogo sigue abierto').toBeVisible();
+    await expect(A.getByRole('dialog').getByRole('button', { name: 'Cancelar' })).toBeVisible();
     await ctx.close();
   });
 

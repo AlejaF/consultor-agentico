@@ -1,4 +1,4 @@
-import type { StrategyItem, StrategyTemplate } from '../data/strategy';
+import type { AnalysisTemplate, StrategyItem, StrategyTemplate } from '../data/strategy';
 import type { Decision } from '../state/types';
 import { countUnverifiedAdopted, usesAsSupport } from './review';
 
@@ -6,7 +6,17 @@ export interface DerivedItem extends StrategyItem {
   derivedFrom: string[];
 }
 
+export interface DerivedAnalysis {
+  summary: string;
+  keyPoints: readonly string[];
+  sources: string;
+  /** null si ningún hallazgo aceptado o editado y verificado la respalda (FR-026). */
+  implication: { text: string; derivedFrom: string[] } | null;
+}
+
 export interface DerivedStrategy {
+  sector: DerivedAnalysis;
+  market: DerivedAnalysis;
   risks: DerivedItem[];
   route: DerivedItem[];
   /** Ningún elemento tiene respaldo. */
@@ -32,9 +42,15 @@ export function deriveStrategy(
         derivedFrom: it.supportedBy.filter((id) => usesAsSupport(verified.get(id) ?? false, decisions[id]?.state ?? 'pending')),
       }))
       .filter((it) => it.derivedFrom.length > 0);
+  const analysis = (a: AnalysisTemplate): DerivedAnalysis => {
+    const from = a.implication.supportedBy.filter((id) => usesAsSupport(verified.get(id) ?? false, decisions[id]?.state ?? 'pending'));
+    return { summary: a.summary, keyPoints: a.keyPoints, sources: a.sources, implication: from.length > 0 ? { text: a.implication.text, derivedFrom: from } : null };
+  };
   const risks = derive(template.risks);
   const route = derive(template.route);
   return {
+    sector: analysis(template.sector),
+    market: analysis(template.market),
     risks,
     route,
     empty: risks.length === 0 && route.length === 0,

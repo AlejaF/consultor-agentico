@@ -5,6 +5,7 @@ import { IssuedNotice } from '../../components/IssuedNotice';
 import { PillarGroups } from '../../components/PillarGroups';
 import { SimBadge } from '../../components/badges';
 import { buildEvidenceItems, resolveCitation } from '../../domain/evidence';
+import { maturityOf } from '../../domain/maturity';
 import { formatDateTime, formatDecimal } from '../../domain/format';
 import { canGenerate } from '../../domain/progress';
 import { projectInfo } from '../../domain/lookup';
@@ -63,7 +64,7 @@ export function Diagnosis({ projectId }: { projectId: string }) {
             {issued && d.issuedAt && <p className="subtitle">Emitido el {formatDateTime(d.issuedAt)}</p>}
             {issued && <IssuedNotice projectId={projectId} />}
             <p>
-              <strong>Índice de madurez: {formatDecimal(DIAGNOSIS.maturityIndex)} de 5</strong>
+              <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
             </p>
             <p data-testid="cited-count">
               {cited} de {DIAGNOSIS.findings.length} hallazgos con evidencia citada

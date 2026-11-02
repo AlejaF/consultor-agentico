@@ -4,6 +4,8 @@ import { Notice } from '../components/Notice';
 import { ResetDemoButton } from '../components/ResetDemoButton';
 import { RoleSwitcher } from '../components/RoleSwitcher';
 import { SideNav } from '../components/SideNav';
+import { COMPANY_PROJECT_ID } from '../data/survey';
+import { projectInfo } from '../domain/lookup';
 import { NOTICE_TEXT, useAppState } from '../state/context';
 import type { Role, RouteMatch } from './router';
 
@@ -13,7 +15,9 @@ function useRouteAnnouncer(route: RouteMatch) {
   const first = useRef(true);
   const key = `${route.id}|${JSON.stringify(route.params)}`;
   useEffect(() => {
-    document.title = `${route.title} · Consultor Agéntico (DEMO)`;
+    // Los informes llevan el nombre de la empresa en el título del documento: es también el nombre sugerido al guardar como PDF (FR-047)
+    const isReport = route.id === 'consultor.report' || route.id === 'lider.deliveryReport' || route.id === 'contacto.report';
+    document.title = isReport ? `${route.title} · ${projectInfo(route.params.projectId ?? COMPANY_PROJECT_ID).company.name} (DEMO)` : `${route.title} · Consultor Agéntico (DEMO)`;
     setAnnouncement(`Pantalla: ${route.title}`);
     if (first.current) {
       first.current = false;

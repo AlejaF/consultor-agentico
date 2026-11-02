@@ -10,14 +10,18 @@ interface Props {
   onCancel: () => void;
 }
 
-/** Diálogo con el elemento nativo <dialog>. */
+/** Diálogo con el elemento nativo <dialog>. Al abrirse, el foco va a «Cancelar» (la opción segura). */
 export function ConfirmDialog({ open, title, children, confirmLabel, cancelLabel = 'Cancelar', onConfirm, onCancel }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (open && !d.open) d.showModal();
+    if (open && !d.open) {
+      d.showModal();
+      cancelRef.current?.focus(); // foco inicial en la opción segura (FR-040)
+    }
     if (!open && d.open) d.close();
   }, [open]);
   return (
@@ -32,7 +36,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, cancelLabel
       <h2 id={titleId}>{title}</h2>
       <div>{children}</div>
       <div className="actions">
-        <button type="button" onClick={onCancel}>
+        <button type="button" ref={cancelRef} onClick={onCancel}>
           {cancelLabel}
         </button>
         <button type="button" className="primary" onClick={onConfirm}>

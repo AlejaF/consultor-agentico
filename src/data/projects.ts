@@ -29,6 +29,12 @@ export const PROJECTS: readonly Project[] = [
   { id: 'E-3', teamId: 'T-3', companyId: 'C-E3', ownedByDemoConsultor: false, lastActivityLabel: 'Hace 1 día (ejemplo)', sampleSlots: [1, 2, 3, 4], pendingSlots: [] },
 ];
 
+/**
+ * Índice de madurez ILUSTRATIVO y FICTICIO, sembrado por proyecto (FR-058): no se calcula de los hallazgos ni de puntajes por pilar (no existen).
+ * Los proyectos que no aparecen aquí (P-A, que se genera en la sesión, y E-1) conservan el de la plantilla de diagnóstico.
+ */
+export const SEEDED_MATURITY: Readonly<Record<string, number>> = { 'P-B': 2.4, 'P-C': 3.1, 'E-2': 1.8, 'E-3': 2.8 };
+
 export function emptyProjectState(): ProjectState {
   return { answers: {}, localFiles: [], diagnosis: { status: 'none', decisions: {} }, strategy: { status: 'none' } };
 }
@@ -36,7 +42,7 @@ export function emptyProjectState(): ProjectState {
 const SEED_GENERATED_AT = '2026-10-19T14:00:00.000Z';
 const SEED_ISSUED_AT = '2026-10-20T15:00:00.000Z';
 const SEED_STRATEGY_AT = '2026-10-22T16:00:00.000Z';
-const SEED_STRATEGY_SENT_AT = '2026-10-23T09:00:00.000Z';
+const SEED_STRATEGY_SENT_AT = '2026-10-23T19:00:00.000Z';
 const UNVERIFIED_ID = DIAGNOSIS.findings.find((f) => !f.verified)!.id;
 
 function issuedState(overrides: Record<string, Decision> = {}): ProjectState {
@@ -76,7 +82,7 @@ function seedGrading(levels: number[], comment: string, gradedAt: string): Gradi
 
 /** Calificaciones sembradas (ficticias): dx/P-C, st/P-C y el diagnóstico de un equipo adicional; los otros dos quedan por revisar. */
 export const INITIAL_GRADINGS: Record<string, Grading> = {
-  'dx/P-C': seedGrading([5, 4, 4, 5], 'Hallazgos bien citados. Conviene explicar mejor por qué se excluyó uno de ellos.', '2026-10-24T10:00:00.000Z'),
-  'st/P-C': seedGrading([4, 4, 5, 4], 'La ruta sigue el diagnóstico. Falta detallar quién responde por cada fase.', '2026-10-27T11:30:00.000Z'),
-  'dx/E-1': seedGrading([4, 3, 4, 4], 'Buen orden. El análisis se queda corto en la parte de datos.', '2026-10-25T09:15:00.000Z'),
+  'dx/P-C': seedGrading([5, 4, 4, 5], 'Hallazgos bien citados. Conviene explicar mejor por qué se excluyó uno de ellos.', '2026-10-24T15:00:00.000Z'),
+  'st/P-C': seedGrading([4, 4, 5, 4], 'La ruta sigue el diagnóstico. Falta detallar quién responde por cada fase.', '2026-10-27T16:30:00.000Z'),
+  'dx/E-1': seedGrading([4, 3, 4, 4], 'Buen orden. El análisis se queda corto en la parte de datos.', '2026-10-25T14:30:00.000Z'),
 };

@@ -1,4 +1,5 @@
 import { DIMENSIONS } from '../data/diagnosis';
+import { ACCOUNTS } from '../data/accounts';
 import { resolveName } from '../data/evidence';
 import { resolveCitation } from '../domain/evidence';
 import { countOf, formatDateTime, formatDecimal } from '../domain/format';
@@ -6,6 +7,8 @@ import type { ReportContent } from '../domain/report';
 import { SimBadge, UnverifiedBadge } from './badges';
 import { pillarLabel } from './PillarGroups';
 import { StrategyView } from './StrategyView';
+
+const REVIEWER = ACCOUNTS.find((a) => a.role === 'consultor')!.displayName;
 
 type Available = Extract<ReportContent, { available: true }>;
 
@@ -35,7 +38,8 @@ export function PrintReport({ content, companyName, projectLabel }: { content: A
                   {companyName} · {projectLabel}
                 </p>
                 <p>
-                  <SimBadge /> {content.issuedAt && <span>Diagnóstico emitido el {formatDateTime(content.issuedAt)}</span>}
+                  <SimBadge /> {content.issuedAt && <span>Diagnóstico emitido el {formatDateTime(content.issuedAt)} · </span>}
+                  <span>Revisado por: {REVIEWER}</span>
                 </p>
                 <p>
                   <strong>Índice de madurez: {formatDecimal(content.maturityIndex)} de 5</strong> (ilustrativo, ficticio)

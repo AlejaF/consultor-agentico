@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { countOf, fileTypeLabel, formatDecimal, formatSize, plural } from '../../src/domain/format';
+import { afterEach, describe, expect, it } from 'vitest';
+import { countOf, fileTypeLabel, formatDateTime, formatDecimal, formatSize, plural } from '../../src/domain/format';
 
 describe('formatSize', () => {
   it('bytes, KB y MB con coma decimal', () => {
@@ -44,5 +44,29 @@ describe('formatDecimal', () => {
     expect(formatDecimal(2.4)).toBe('2,4');
     expect(formatDecimal(3)).toBe('3,0');
     expect(formatDecimal(4.25)).toBe('4,3');
+  });
+});
+
+describe('formatDateTime: zona fija America/Bogota (UTC−5, sin horario de verano)', () => {
+  const zonaOriginal = process.env.TZ;
+  afterEach(() => {
+    if (zonaOriginal === undefined) delete process.env.TZ;
+    else process.env.TZ = zonaOriginal;
+  });
+  it('muestra la misma hora sea cual sea la zona del navegador', () => {
+    const salidas = ['UTC', 'Asia/Tokyo', 'America/Bogota', 'Europe/Madrid'].map((z) => {
+      process.env.TZ = z;
+      return formatDateTime('2026-10-20T15:00:00.000Z');
+    });
+    expect(new Set(salidas).size).toBe(1);
+  });
+  it('15:00 UTC es 10:00 en Bogotá, y 09:00 UTC es 4:00', () => {
+    process.env.TZ = 'UTC';
+    expect(formatDateTime('2026-10-20T15:00:00.000Z')).toMatch(/10:00/);
+    expect(formatDateTime('2026-10-08T09:00:00.000Z')).toMatch(/4:00/);
+  });
+  it('el día también se calcula en Bogotá (02:00 UTC es el día anterior)', () => {
+    process.env.TZ = 'UTC';
+    expect(formatDateTime('2026-10-21T02:00:00.000Z')).toMatch(/^20 oct/);
   });
 });

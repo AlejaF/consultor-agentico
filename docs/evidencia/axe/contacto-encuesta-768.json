@@ -1,0 +1,15 @@
+{
+  "fecha": "2026-11-02",
+  "ruta": "#/contacto/encuesta",
+  "ancho": 768,
+  "reglas": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag22aa"
+  ],
+  "versionAxe": "4.14.0",
+  "violaciones": [],
+  "reglasAprobadas": 27,
+  "porRevisarAMano": [],
+  "noAplica": 34
+}

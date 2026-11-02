@@ -35,7 +35,7 @@ export type ReportContent =
  * Contenido del informe imprimible (FR-044 a FR-046). No recibe calificaciones ni comentarios del Líder, así que no puede incluirlos.
  * Una entrega nunca incluye una estrategia generada pero no enviada.
  */
-export function reportContent(diagnosis: DiagnosisState, strategy: StrategyState, scope: ReportScope): ReportContent {
+export function reportContent(diagnosis: DiagnosisState, strategy: StrategyState, scope: ReportScope, maturityIndex: number = DIAGNOSIS.maturityIndex): ReportContent {
   if (diagnosis.status !== 'issued') {
     return { available: false, reason: 'El informe se genera a partir de un diagnóstico emitido. Emite primero el diagnóstico de este proyecto.' };
   }
@@ -60,7 +60,7 @@ export function reportContent(diagnosis: DiagnosisState, strategy: StrategyState
     available: true,
     scope,
     issuedAt: diagnosis.issuedAt,
-    maturityIndex: DIAGNOSIS.maturityIndex,
+    maturityIndex,
     findings,
     excluded,
     unverifiedShown: findings.filter((f) => !f.finding.verified).length,

@@ -31,7 +31,7 @@ Un cambio de comportamiento MUST empezar en el spec y propagarse al plan, a las 
 código, en ese orden. MUST NOT cambiarse el código sin reflejarlo antes en el spec.
 
 ### VII. Alcance acotado
-Todo requisito MUST tener prioridad P1, P2 o P3. Si falta tiempo, se corta desde P3. Lo demás se
+Todo requisito MUST tener prioridad P1, P2 o P3. Si falta tiempo, se corta desde P3. La persona responsable puede incluir o ampliar P3 por decisión escrita y registrada en el spec y en `docs/decisiones.md`; lo incluido sigue siendo P3 y recortable. Lo demás se
 referencia como parte del sistema completo, que se construye aparte. La demo valida el flujo
 Evidencia → Diagnóstico → Estrategia, con usuarios por rol.
 
@@ -63,4 +63,6 @@ El versionado es semántico: MAJOR por eliminar o redefinir principios de forma 
 MINOR por añadir principios o ampliar guía de forma material, PATCH por aclaraciones. Toda
 revisión de lote MUST comprobar el cumplimiento; cualquier excepción MUST justificarse por escrito.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-01
+**Version**: 1.0.1 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-02
+
+<!-- Enmienda 1.0.1 (PATCH, 2026-11-02): aclaración del principio VII (P3 puede incluirse o ampliarse por decisión escrita de la persona responsable). Aprobada por la persona responsable el 2026-11-02 al decidir incluir L5a y L5b y ampliar P3; propagada a spec.md, tasks.md, README.md, docs/decisiones.md y docs/cobertura-referencias.md. -->

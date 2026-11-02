@@ -11,9 +11,19 @@ export interface StrategyItem {
 export interface StrategyTemplate {
   risks: StrategyItem[];
   route: StrategyItem[];
-  sectorAnalysis: string;
-  marketAnalysis: string;
+  sector: AnalysisTemplate;
+  market: AnalysisTemplate;
 }
+
+/** Análisis de solo lectura: resumen y puntos clave ilustrativos; la implicación se deriva de hallazgos (FR-026). */
+export interface AnalysisTemplate {
+  summary: string;
+  keyPoints: [string, string, string];
+  implication: { text: string; supportedBy: string[] };
+  sources: string;
+}
+
+const SOURCES = 'Fuentes: ninguna en esta demostración; en el sistema real se citarán fuentes externas con fecha.';
 
 /** UNA plantilla de estrategia, compartida por todos los proyectos. Todo es ficticio e ilustrativo. */
 export const STRATEGY: StrategyTemplate = {
@@ -77,6 +87,32 @@ export const STRATEGY: StrategyTemplate = {
       supportedBy: ['H7', 'H8'],
     },
   ],
-  sectorAnalysis: 'Las empresas de tamaño similar suelen avanzar primero en indicadores comunes y después en integración de sistemas. Contenido ilustrativo, sin fuentes.',
-  marketAnalysis: 'La demanda de servicios apoyados en datos crece de forma sostenida y los clientes esperan respuestas más rápidas. Contenido ilustrativo, sin fuentes.',
+  sector: {
+    summary:
+      'Las empresas de tamaño similar suelen empezar por acordar sus indicadores y quién responde por cada uno. Solo después conectan sus sistemas y automatizan el registro.',
+    keyPoints: [
+      'Primero se acuerdan indicadores comunes y responsables.',
+      'La integración de sistemas llega después de ordenar los datos.',
+      'La protección de datos funciona cuando alguien responde por ella.',
+    ],
+    implication: {
+      text: 'Esta empresa puede avanzar con indicadores compartidos y responsables antes de invertir en conectar sus sistemas.',
+      supportedBy: ['H1', 'H6'],
+    },
+    sources: SOURCES,
+  },
+  market: {
+    summary:
+      'Los clientes esperan respuestas más rápidas y decisiones apoyadas en datos. Eso obliga a las empresas a conocer mejor sus costos y sus tiempos de atención.',
+    keyPoints: [
+      'Los clientes esperan respuestas cada vez más rápidas.',
+      'Conocer el costo de atender a cada cliente permite crecer sin perder margen.',
+      'Los errores que se detectan tarde terminan siendo visibles para el cliente.',
+    ],
+    implication: {
+      text: 'Antes de crecer, a esta empresa le conviene medir cuánto cuesta atender a un cliente nuevo y detectar antes los errores de pedidos.',
+      supportedBy: ['H2', 'H4', 'H5'],
+    },
+    sources: SOURCES,
+  },
 };

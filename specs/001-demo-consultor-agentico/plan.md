@@ -180,7 +180,8 @@ Detalle en [contracts/routes.md](./contracts/routes.md). Rutas por hash (`#/…`
 | `#/lider/entregas` | Líder | Entregas por revisar (lista; destino de la navegación) | US6 |
 | `#/lider/entregas/:tipo/:projectId` (`tipo` = `dx` o `st`) | Líder | Revisión y calificación | US6 |
 | `#/lider/entregas/:tipo/:projectId/informe` | Líder | Informe imprimible de la entrega (`dx`: solo diagnóstico; `st`: estrategia enviada con su diagnóstico) | US8 |
-| `#/contacto` | Empresa | Hoy: mensaje «Vista no disponible»; el resumen del proyecto es la historia 7 (pendiente de decisión al cerrar L6) | US7 |
+| `#/contacto` | Empresa | Inicio de la Empresa (P-B): ruta de adopción en tres pasos, próximo paso, actividad de ejemplo e informe (historia 7; incluida el 2026-11-02) | US7 |
+| `#/contacto/informe` | Empresa | Informe de diagnóstico de P-B en solo lectura (historia 7 y 8) | US7, US8 |
 | `#/contacto/encuesta` | Contacto | Encuesta simulada | US7 |
 
 **Regla de redirección (única, en `access.ts`, función pura probada)**:
@@ -237,11 +238,11 @@ Versiones: tomadas de la página oficial «Using custom workflows with GitHub Pa
 | R12 | La edición de hallazgos y el panel de evidencia son lo más complejo de la interfaz | Media | Edición en línea con `textarea` nativo; el panel de evidencia es una región que cambia de sitio por CSS |
 | R13 | El Lote 1 se alarga (es el cimiento y arrastra el despliegue) | Media | **Regla de corte: si el tiempo del agente en el Lote 1 (solo las tareas que no son de la persona) supera 2,5 h, se recorta P3 de inmediato** (se eliminan 5b y 5a del plan, quedando 8,0 h para lo demás) sin esperar a llegar al Lote 5. Las tareas deben registrar la hora al cierre del Lote 1 |
 | R14 | `pagehide` / `visibilitychange` no garantizan siempre el guardado (cierres forzados, fallos del navegador) | Baja | Retraso de solo 200 ms además del flush; prueba de recarga inmediata en Playwright; NO VERIFICADO el comportamiento en todos los navegadores móviles |
-| R15 | No se consiguen 2 o 3 participantes para las pruebas con usuarios | Media | Convocarlos en la sesión 1 (T022); si no hay, SC-001 y SC-005 quedan NO VERIFICADO (no se inventan resultados); con 2 o 3 personas SC-005 solo puede quedar «indicativo (n = …)» |
+| R15 | SC-001 y SC-005 no se evalúan | Baja | Quedan como metas con estado «No evaluado en esta versión de demostración»; no se inventan resultados |
 
 ## Lotes (6) y línea de corte
 
-Estimaciones **NO VERIFICADO**. Incluyen sus pruebas. Tras el análisis de consistencia, el Lote 6 pasa de 0,75 h a 1,25 h. Suma: **9,5 h de trabajo del agente**. Las revisiones humanas (15 min por lote; 30 min en L1 y en L6) y, en L6, la prueba con usuarios y el pulido **no** están en esas horas: se cuentan en los «Puntos de control» (abajo) y el margen que queda de las 12 h cubre **solo imprevistos**.
+Estimaciones **NO VERIFICADO**. Incluyen sus pruebas. Tras el análisis de consistencia, el Lote 6 pasa de 0,75 h a 1,25 h. Suma: **9,5 h de trabajo del agente**. Las revisiones humanas (15 min por lote; 30 min en L1 y en L6) y, en L6, el pulido **no** están en esas horas: se cuentan en los «Puntos de control» (abajo) y el margen que queda de las 12 h cubre **solo imprevistos**.
 
 | Lote | Contenido | Historias / FR | Prioridad | Horas | Criterio de salida |
 |---|---|---|---|---|---|
@@ -249,8 +250,8 @@ Estimaciones **NO VERIFICADO**. Incluyen sus pruebas. Tras el análisis de consi
 | **2. Evidencia** | Lista de proyectos del Consultor; captura de evidencia (preguntas, listas, progreso); `FileDropzone` con validación; aviso de privacidad; nota «Contenido no conservado en esta demo»; evidencia de ejemplo y proyecto sin evidencia | US2; FR-008 a 014 | P1 | **1,25** | Pruebas de `fileValidation` y de persistencia de metadatos en verde; carga válida/no válida con teclado; prueba de red sin solicitudes |
 | **3. Diagnóstico y revisión** | **Plantilla única** de diagnóstico (8 hallazgos) y las 5 ranuras de evidencia con extractos; generar (simulado, bloqueo sin evidencia); reporte con citas abribles y rotuladas «Evidencia de ejemplo (ficticia)»; panel de revisión (aceptar/editar/rechazar, avance, emisión); entrega creada al emitir; solo lectura | US3, US4; FR-015 a 022 | P1 | **1,9** | Pruebas de `review` en verde; **recorrido P1 completo en Playwright** (con recarga inmediata); axe en pantallas P1 a 320/768/1280. **Cierra todo P1** |
 | **4. Estrategia y Líder** | **Plantilla única** de estrategia; estrategia derivada (función pura) con trazabilidad y rótulos; bloqueo sin diagnóstico emitido; botón «Generar estrategia» (1,5 s, «Simulada») y «Enviar a revisión»; tablero del Líder con equipos adicionales que reutilizan las plantillas con otros nombres ficticios, cola; revisión de entrega en `#/lider/entregas/:tipo/:projectId`; rúbrica 1–5 con «Guardar calificación»; calificación visible para el Consultor | US5, US6; FR-023 a 033 | P2 | **1,65** | Pruebas de `strategy` y `rubric` en verde; Playwright de estrategia, calificación y vuelta al Consultor; la emisión no cambia; axe y 3 anchos |
-| **5. P3** (pendiente de decisión al cerrar L6) | **5a** informe imprimible (compartido por Consultor y Líder, estilos de impresión) y **5b** vista del Contacto con encuesta simulada y el campo `plainText` de la plantilla de diagnóstico (con su prueba) | US8 (5a), US7 (5b); FR-034 a 036, 044 a 048 | P3 | **1,5** (5a 0,75 + 5b 0,75) | Playwright con medio `print` y rótulos; encuesta con obligatorias; axe |
-| **6. Cierre** | Pasada transversal de accesibilidad, teclado, 320 px y objetivos de 44 px; README honesto y `docs/decisiones.md`; evidencia de axe y de las vistas responsive guardada en `docs/`; guion de pruebas con usuarios (`docs/evidencia/pruebas-usuarios.md`), prueba con 2 o 3 personas y pasada de pulido (tareas de la persona); decisión sobre P3; verificación de nombres y de PDF; revisión de los SC medibles; despliegue final | transversal; SC-003, 004, 007 a 010 | P1/P2 | **1,25** | `typecheck`, `test`, `build`, `check` y `test:e2e` en verde; README completo; publicación verificada por la persona |
+| **5. P3** (incluido el 2026-11-02) | **5a** informe imprimible (compartido por Consultor y Líder, estilos de impresión) y **5b** vista del Contacto con encuesta simulada y el campo `plainText` de la plantilla de diagnóstico (con su prueba) | US8 (5a), US7 (5b); FR-034 a 036, 044 a 048 | P3 | **1,5** (5a 0,75 + 5b 0,75) | Playwright con medio `print` y rótulos; encuesta con obligatorias; axe |
+| **6. Cierre** | Pasada transversal de accesibilidad, teclado, 320 px y objetivos de 44 px; README honesto y `docs/decisiones.md`; evidencia de axe y de las vistas responsive guardada en `docs/`; pasada de pulido (tarea de la persona); decisión sobre P3; verificación de nombres y de PDF; revisión de los SC medibles; despliegue final | transversal; SC-003, 004, 007 a 010 | P1/P2 | **1,25** | `typecheck`, `test`, `build`, `check` y `test:e2e` en verde; README completo; publicación verificada por la persona |
 | | | | **Total** | **9,5** | |
 
 ### Línea de corte por prioridad (qué se corta primero)
@@ -265,7 +266,7 @@ Cuando se recorte, el README y el spec dicen explícitamente «no incluido en es
 
 ### Puntos de control (horas ACUMULADAS desde el inicio de L1)
 
-Incluyen el trabajo del agente de cada lote más **15 min de revisión humana por lote (30 min en L1 y en L6)** y, en L6, la **prueba con usuarios, la comprobación manual de teclado y lector y la pasada de pulido** (tareas de la persona). El margen que queda de las 12 h cubre **solo imprevistos**. Todas las cifras son **NO VERIFICADO**.
+Incluyen el trabajo del agente de cada lote más **15 min de revisión humana por lote (30 min en L1 y en L6)** y, en L6, la **comprobación manual de teclado y lector y la pasada de pulido** (tareas de la persona). El margen que queda de las 12 h cubre **solo imprevistos**. Todas las cifras son **NO VERIFICADO**.
 
 | Punto | Cálculo nominal | Acumulado nominal | Límite |
 |---|---|---|---|
@@ -274,19 +275,19 @@ Incluyen el trabajo del agente de cada lote más **15 min de revisión humana po
 | Cierre de L3 (cierra P1) | + 1,90 + 0,25 | 6,10 h | **≤ 7,0 h** |
 | Cierre de L4 (cierra P2) | + 1,65 + 0,25 | 8,00 h | **≤ 9,0 h** |
 | Cierre de L6 (agente y revisión final) | + 1,25 + 0,50 | 9,75 h | — |
-| Pruebas con usuarios, comprobación manual y pulido (persona) | + 1,50 *(estimación, NO VERIFICADO)* | 11,25 h | **Aquí se decide P3** |
+| Comprobación manual y pulido (persona) | + 1,50 *(estimación, NO VERIFICADO)* | 11,25 h | **Aquí se decide P3** |
 | Cierre de L5a (si se hace) | + 0,75 + 0,25 | 12,25 h | solo si el cierre de L6 con pruebas y pulido ≤ 10,5 h *(derivado, ajustable)* |
 | Cierre de L5b (si se hace) | + 0,75 + 0,25 | 13,25 h | solo si el cierre de L5a ≤ 10,5 h *(derivado, ajustable)* |
 
-- **La decisión sobre P3 se toma al cerrar L6** (con las horas reales y los resultados de las pruebas con usuarios), no al cerrar L4. Los puntos de control de L1, L3 y L4 la anticipan: **si alguno se superó, la decisión ya es «no» y P3 se corta sin discusión.**
-- Los límites de L1, L3 y L4 son decisión del responsable; los de L5a y L5b (y la estimación de 1,5 h de pruebas con usuarios, comprobación manual y pulido) los derivé yo y se pueden ajustar: cada lote de P3 solo se empieza si puede terminar con al menos 0,5 h de margen (≤ 11,5 h).
+- **La decisión sobre P3 se toma al cerrar L6** (con las horas reales), no al cerrar L4. Los puntos de control de L1, L3 y L4 la anticipan: **si alguno se superó, la decisión ya es «no» y P3 se corta sin discusión.**
+- Los límites de L1, L3 y L4 son decisión del responsable; los de L5a y L5b (y la estimación de 1,5 h de comprobación manual y pulido) los derivé yo y se pueden ajustar: cada lote de P3 solo se empieza si puede terminar con al menos 0,5 h de margen (≤ 11,5 h).
 - **R13** cuenta solo el tiempo del agente en L1, sin las tareas de la persona.
-- A ritmo nominal, sin P3 el plan cierra en **11,25 h** (0,75 h de margen). L5a solo cabe si se va al menos 0,75 h adelantado y L5b solo si se va al menos 1,75 h adelantado. Con todo P3 y a ritmo nominal el total sería 13,25 h, que **no cabe** en las 12 h. Con 2 o 3 participantes, **SC-005 solo puede quedar «indicativo (n = …)»**.
+- A ritmo nominal, sin P3 el plan cierra en **11,25 h** (0,75 h de margen). L5a solo cabe si se va al menos 0,75 h adelantado y L5b solo si se va al menos 1,75 h adelantado. Con todo P3 y a ritmo nominal el total sería 13,25 h, que **no cabe** en las 12 h.
 
 ### Sesiones de trabajo y orden de ejecución
 
-- **Sesión 1**: L1, L2 y L3. Cierra todo P1, con push y despliegue verificado. En esta sesión la persona también **convoca a 2 o 3 participantes** para las pruebas con usuarios de L6 (T022, «mañana por la tarde»).
-- **Sesión 2**: L4 y L6. **Al cerrar L6 se decide si se hacen L5a y L5b** (con las horas reales y las pruebas con usuarios); si se decide hacerlos, se ejecutan después de L6, primero L5a y luego L5b, cada uno con su propio cierre, revisión y commit.
+- **Sesión 1**: L1, L2 y L3. Cierra todo P1, con push y despliegue verificado. 
+- **Sesión 2**: L4 y L6. **Al cerrar L6 se decide si se hacen L5a y L5b** (con las horas reales); si se decide hacerlos, se ejecutan después de L6, primero L5a y luego L5b, cada uno con su propio cierre, revisión y commit.
 - **Orden de ejecución**: L1 → L2 → L3 → L4 → L6 → L5a → L5b (el número del lote no es el orden). Como L6 va antes de L5, escribe el README y la evidencia solo de lo construido y marca P3 como «no incluido todavía (pendiente de decisión al cerrar L6)». Si se hace L5a o L5b, **su tarea de cierre actualiza `README.md` (qué incluye y qué queda fuera), `docs/evidencia/sc-checklist.md` y `docs/decisiones.md`, y vuelve a ejecutar `EVIDENCIA=1 npm run test:e2e -- matrix`** para regenerar la evidencia con las rutas nuevas.
 - **Toda sesión termina con el lote en curso cerrado, commiteado y subido.**
 - Para retomar sin perder contexto, `docs/decisiones.md` lleva una sección **«Estado de la sesión»** (lote cerrado, horas reales y qué sigue), que se actualiza al cierre de cada lote (se crea en L1).

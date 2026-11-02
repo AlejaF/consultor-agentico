@@ -74,11 +74,13 @@ test.describe('navegación lateral por rol', () => {
     await expect(page.getByRole('link', { name: /^Abrir entrega/ })).toHaveCount(n);
   });
 
-  test('Empresa: sin pantallas no hay menú ni enlaces, solo el mensaje', async ({ page }) => {
+  test('Empresa (L5b): Resumen, Informe de diagnóstico y Encuesta, todos con pantalla', async ({ page }) => {
     await loginAs(page, 'Empresa');
-    await expect(page.getByRole('navigation', { name: 'Navegación principal' })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: /Resumen|Encuesta/ })).toHaveCount(0);
-    await expect(page.locator('main').getByRole('link')).toHaveCount(0);
+    const menu = page.getByRole('navigation', { name: 'Navegación principal' });
+    await expect(menu.getByRole('link')).toHaveText(['Resumen', 'Informe de diagnóstico', 'Encuesta']);
+    await menu.getByRole('link', { name: 'Encuesta' }).click();
+    await expect(page).toHaveURL(/#\/contacto\/encuesta$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Encuesta' })).toBeFocused();
     await expect(page.getByText('se completa en un lote posterior')).toHaveCount(0);
   });
 

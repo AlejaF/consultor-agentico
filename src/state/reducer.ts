@@ -1,6 +1,7 @@
 import type { Role } from '../app/router';
 import { FINDING_IDS } from '../data/diagnosis';
 import { CRITERION_IDS } from '../data/rubric';
+import { SURVEY_QUESTIONS } from '../data/survey';
 import { canIssue, isValidEdit } from '../domain/review';
 import { average, isGradingComplete } from '../domain/rubric';
 import type { Decision, DiagnosisState, LocalFileMeta, PersistedState, ProjectState } from './types';
@@ -17,6 +18,7 @@ export type Action =
   | { type: 'issue'; projectId: string; at: string }
   | { type: 'generateStrategy'; projectId: string; at: string }
   | { type: 'sendStrategy'; projectId: string; at: string }
+  | { type: 'submitSurvey'; projectId: string; answers: Record<string, number>; at: string }
   | { type: 'saveGrading'; deliveryId: string; levels: Record<string, number>; comment: string; at: string };
 
 /** La entrega existe: `dx/<id>` con el diagnóstico emitido o `st/<id>` con la estrategia enviada (FR-022, FR-027). */
@@ -102,6 +104,14 @@ export function reducer(state: PersistedState, action: Action): PersistedState {
       const p = state.projects[action.projectId];
       if (!p || p.strategy.status !== 'generated') return state; // idempotente
       return updateProject(state, action.projectId, (pp) => ({ ...pp, strategy: { ...pp.strategy, status: 'sent', sentAt: action.at } }));
+    }
+    case 'submitSurvey': {
+      // Las 3 preguntas obligatorias, con un nivel de 1 a 5; una encuesta guardada no se modifica (FR-036)
+      if (!state.projects[action.projectId] || state.surveys[action.projectId]) return state;
+      const ok = SURVEY_QUESTIONS.every((q) => Number.isInteger(action.answers[q.id]) && action.answers[q.id] >= 1 && action.answers[q.id] <= 5);
+      if (!ok) return state;
+      const answers = Object.fromEntries(SURVEY_QUESTIONS.map((q) => [q.id, action.answers[q.id]]));
+      return { ...state, surveys: { ...state.surveys, [action.projectId]: { answers, submittedAt: action.at } } };
     }
     case 'saveGrading': {
       // Solo la entrega existente, sin calificar y con la calificación completa. No toca diagnóstico ni estrategia (FR-031).

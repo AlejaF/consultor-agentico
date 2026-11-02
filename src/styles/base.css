@@ -25,6 +25,10 @@ a { color: var(--color-primary); }
   outline-offset: 2px;
 }
 
+/* Diálogos: el contorno del foco usa siempre el color de tinta sobre el fondo claro del diálogo (aunque el diálogo esté dentro de la cabecera,
+   cuyo contorno es blanco) y se muestra también cuando el foco llega al abrirlo con el ratón (L6g, FR-040). */
+.app dialog :focus, .app dialog :focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+
 button, select, input, textarea { font: inherit; }
 
 button, .btn {

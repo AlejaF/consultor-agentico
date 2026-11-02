@@ -1,10 +1,10 @@
 /** Pantallas opcionales: un elemento de navegación solo aparece si su pantalla existe (FR-049). */
 export const FEATURES = {
   /** Resumen de la Empresa: false mientras su vista no exista. */
-  contactSummary: false,
+  contactSummary: true,
   /** Encuesta del Contacto: se pone en true cuando exista esa pantalla. */
-  survey: false,
+  survey: true,
 } as const;
 
 /** Rutas de la tabla que todavía no tienen pantalla propia (las pruebas transversales las omiten hasta que existan). */
-export const UNBUILT_ROUTES = ['contacto.survey'] as const;
+export const UNBUILT_ROUTES: readonly string[] = [];

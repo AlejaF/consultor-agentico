@@ -1,5 +1,6 @@
 import { PrintReport } from './PrintReport';
 import { projectInfo } from '../domain/lookup';
+import { maturityOf } from '../domain/maturity';
 import { reportContent, type ReportScope } from '../domain/report';
 import { useAppState } from '../state/context';
 
@@ -8,7 +9,7 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
   const { state } = useAppState();
   const { company } = projectInfo(projectId);
   const ps = state.projects[projectId];
-  const content = reportContent(ps.diagnosis, ps.strategy, scope);
+  const content = reportContent(ps.diagnosis, ps.strategy, scope, maturityOf(projectId));
   const what = scope === 'dx' ? 'Diagnóstico' : scope === 'st' ? 'Estrategia con su diagnóstico' : 'Diagnóstico y estrategia';
   return (
     <>
@@ -17,7 +18,7 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
           {back.label}
         </a>
       </p>
-      <h1>Informe imprimible</h1>
+      <h1>Informe de diagnóstico</h1>
       <p className="no-print">
         {what} · {company.name} · Proyecto {projectId}
       </p>

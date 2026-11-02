@@ -63,7 +63,7 @@ export function SideNav({ role, route }: Props) {
   }
 
   const pendingDeliveries = role === 'lider' ? deliveriesFor(state).filter((d) => !d.graded).length : 0;
-  const items = navItemsFor(role, { pendingDeliveries, summaryExists: FEATURES.contactSummary, surveyExists: FEATURES.survey });
+  const items = navItemsFor(role, { pendingDeliveries, summaryExists: FEATURES.contactSummary, surveyExists: FEATURES.survey, reportExists: FEATURES.contactSummary });
   // En la lista de proyectos no hace falta barra bajo 1024 px.
   const bare = role === 'consultor' && !project;
   const noNav = items.length === 0 && !project;

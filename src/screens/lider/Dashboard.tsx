@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { KpiCard } from '../../components/KpiCard';
 import { ReviewQueue } from '../../components/ReviewQueue';
 import { TeamsTable } from '../../components/TeamsTable';
@@ -6,13 +7,15 @@ import { PROJECTS } from '../../data/projects';
 import { TEAMS } from '../../data/teams';
 import { buildEvidenceItems } from '../../domain/evidence';
 import { deliveriesFor } from '../../domain/deliveries';
-import { formatScore } from '../../domain/format';
+import { formatDecimal, formatScore } from '../../domain/format';
+import { averageMaturity } from '../../domain/maturity';
 import { projectProgress } from '../../domain/progress';
 import { averageOfGradings } from '../../domain/rubric';
 import { useAppState } from '../../state/context';
 
 export function Dashboard() {
   const { state } = useAppState();
+  const [query, setQuery] = useState('');
   const pending = deliveriesFor(state).filter((d) => !d.graded);
   const activeTeams = TEAMS.filter((t) =>
     PROJECTS.some((p) => {
@@ -24,6 +27,7 @@ export function Dashboard() {
   ).length;
   const avg = averageOfGradings(state.gradings);
   const mean = avg === null ? '—' : `${formatScore(avg)} de 5`;
+  const maturity = averageMaturity(state);
 
   return (
     <>
@@ -36,10 +40,15 @@ export function Dashboard() {
         <KpiCard testId="kpi-equipos" label="Equipos activos" value={String(activeTeams)} />
         <KpiCard testId="kpi-por-revisar" label="Entregas por revisar" value={String(pending.length)} />
         <KpiCard testId="kpi-promedio" label="Promedio de calificaciones" value={mean} />
+        <KpiCard testId="kpi-madurez" label="Madurez promedio (de 5)" value={maturity === null ? '—' : formatDecimal(maturity)} />
       </section>
       <section aria-labelledby="tab-equipos">
         <h2 id="tab-equipos">Equipos</h2>
-        <TeamsTable state={state} />
+        <div className="field">
+          <label htmlFor="buscar-equipo">Buscar equipo o empresa</label>
+          <input id="buscar-equipo" type="search" value={query} onChange={(e) => setQuery(e.target.value)} autoComplete="off" />
+        </div>
+        <TeamsTable state={state} query={query} />
       </section>
       <section aria-labelledby="tab-cola">
         <h2 id="tab-cola">Cola de revisión</h2>

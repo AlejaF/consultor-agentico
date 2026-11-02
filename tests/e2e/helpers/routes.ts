@@ -19,7 +19,11 @@ export const SAMPLE_HASHES: Record<Role, { hash: string; name: string }[]> = {
     { hash: '#/lider/entregas/st/P-C/informe', name: 'lider-informe-estrategia' },
     { hash: '#/lider', name: 'lider-tablero' },
   ],
-  contacto: [{ hash: '#/contacto', name: 'contacto-vista' }],
+  contacto: [
+    { hash: '#/contacto', name: 'contacto-vista' },
+    { hash: '#/contacto/encuesta', name: 'contacto-encuesta' },
+    { hash: '#/contacto/informe', name: 'contacto-informe' },
+  ],
 };
 
 export const BUILT_ROUTE_IDS: RouteId[] = ROUTES.map((r) => r.id).filter((id) => id !== 'login' && !(UNBUILT_ROUTES as readonly string[]).includes(id));

@@ -8,7 +8,7 @@ export function DeliveryStatus({ deliveryId, label }: { deliveryId: string; labe
   if (grading) return <GradeSummary grading={grading} title={`Calificación de ${label}`} />;
   return (
     <p>
-      <span className="badge badge-pending">Por revisar</span> <span className="subtitle">{label}: el Líder la calificará cuando quiera.</span>
+      <span className="badge badge-pending">Por revisar</span> <span className="subtitle">En la cola del Líder. Su calificación aparecerá aquí cuando la guarde.</span>
     </p>
   );
 }

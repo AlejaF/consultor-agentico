@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { CompanyData } from '../../components/CompanyData';
 import { CaptureProgress } from '../../components/CaptureProgress';
 import { EvidenceList } from '../../components/EvidenceList';
 import { FileDropzone } from '../../components/FileDropzone';
@@ -45,6 +46,7 @@ export function Evidence({ projectId }: { projectId: string }) {
 
       <div className="evidence-layout">
         <div className="evidence-main">
+          <CompanyData company={company} />
           <QuestionForm
             questions={CAPTURE_QUESTIONS}
             answers={ps.answers}

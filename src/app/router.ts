@@ -21,7 +21,8 @@ export type RouteId =
   | 'lider.delivery'
   | 'lider.deliveryReport'
   | 'contacto.summary'
-  | 'contacto.survey';
+  | 'contacto.survey'
+  | 'contacto.report';
 
 export interface RouteDef {
   id: RouteId;
@@ -39,13 +40,14 @@ export const ROUTES: readonly RouteDef[] = [
   { id: 'consultor.diagnosis', pattern: '#/consultor/proyectos/:projectId/diagnostico', role: 'consultor', title: 'Diagnóstico' },
   { id: 'consultor.review', pattern: '#/consultor/proyectos/:projectId/revision', role: 'consultor', title: 'Revisión y emisión' },
   { id: 'consultor.strategy', pattern: '#/consultor/proyectos/:projectId/estrategia', role: 'consultor', title: 'Estrategia' },
-  { id: 'consultor.report', pattern: '#/consultor/proyectos/:projectId/informe', role: 'consultor', title: 'Informe' },
+  { id: 'consultor.report', pattern: '#/consultor/proyectos/:projectId/informe', role: 'consultor', title: 'Informe de diagnóstico' },
   { id: 'lider.dashboard', pattern: '#/lider', role: 'lider', title: 'Tablero' },
   { id: 'lider.deliveries', pattern: '#/lider/entregas', role: 'lider', title: 'Entregas por revisar' },
   { id: 'lider.delivery', pattern: '#/lider/entregas/:tipo/:projectId', role: 'lider', title: 'Revisión de entrega' },
-  { id: 'lider.deliveryReport', pattern: '#/lider/entregas/:tipo/:projectId/informe', role: 'lider', title: 'Informe de entrega' },
+  { id: 'lider.deliveryReport', pattern: '#/lider/entregas/:tipo/:projectId/informe', role: 'lider', title: 'Informe de diagnóstico' },
   { id: 'contacto.summary', pattern: '#/contacto', role: 'contacto', title: 'Empresa' },
   { id: 'contacto.survey', pattern: '#/contacto/encuesta', role: 'contacto', title: 'Encuesta' },
+  { id: 'contacto.report', pattern: '#/contacto/informe', role: 'contacto', title: 'Informe de diagnóstico' },
 ];
 
 export interface RouteMatch {

@@ -8,6 +8,7 @@ import { SimBadge } from '../../components/badges';
 import { UnverifiedCount } from '../../components/UnverifiedCount';
 import { DIAGNOSIS, FINDING_IDS } from '../../data/diagnosis';
 import { STRATEGY } from '../../data/strategy';
+import { maturityOf } from '../../domain/maturity';
 import { countOf, formatDecimal } from '../../domain/format';
 import { projectInfo } from '../../domain/lookup';
 import { deriveStrategy } from '../../domain/strategy';
@@ -52,7 +53,7 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
             <SimBadge />
           </p>
           <p>
-            <strong>Índice de madurez: {formatDecimal(DIAGNOSIS.maturityIndex)} de 5</strong>
+            <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
           </p>
           {excluded > 0 && <p className="subtitle">{countOf(excluded, 'hallazgo excluido', 'hallazgos excluidos')} por el Consultor (no se muestran).</p>}
           <PillarGroups

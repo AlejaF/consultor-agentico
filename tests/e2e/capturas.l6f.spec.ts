@@ -14,7 +14,7 @@ test('capturas de L6f: cabecera adaptable e informe imprimible', async ({ page }
         await page.setViewportSize({ width: ancho, height: 700 });
         const estilo = await page.addStyleTag({ content: `html { font-size: ${base}px !important; }` });
         await page.locator('header.topbar').screenshot({ path: `${dir}/encabezado-${ancho}px-fuente-${base}.png` });
-        await estilo.evaluate((e) => e.remove());
+        await estilo.evaluate((e: Element) => e.remove());
       }
     }
     await page.setViewportSize({ width: 320, height: 640 });

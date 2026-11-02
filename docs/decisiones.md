@@ -2,11 +2,11 @@
 
 ## Estado de la sesión
 
-- **Lote cerrado**: L6 (cierre) en lo que no es de la persona (T081 a T092), más las correcciones A a C. L4 ya está en el commit `7c9c329`. **Pendientes de la persona**: T022, T093 (revisión manual de teclado y lector de pantalla), T094 (pruebas con 2 o 3 personas), T095 (pulido), T096 (volcar resultados; depende de T094 y T095), T097 a T100 (revisión final, commit, publicación y decisión sobre P3).
+- **Lote cerrado**: L6 (cierre) en lo que no es de la persona (T081 a T092), más las correcciones A a C. L4 ya está en el commit `7c9c329`. **Pendientes de la persona**: T093 (la revisión de teclado se hizo el 2026-11-02; falta la del lector de pantalla), T095 (pulido), T096 (volcar resultados de T095), T097 a T099 (revisión final, commit y publicación).
 - **Tiempos del agente**: L1 15:34 a 15:48; L2 16:06:58 a 16:18; L3 16:48:07 a 17:04:02; ajustes F a I y L4 18:49:51 a 19:06:55; siete ajustes previos al commit de L4 (sin hora de inicio registrada); correcciones A a C y L6 19:52:15 a 20:17:38 (25 min con pausas). Acumulado de agente ≈ 1,3 h (más revisiones humanas); los puntos de control de L1, L3 y L4 se cumplen con holgura.
 - **Verificación al cierre de L6**: `typecheck` sin errores; `npm test` 231 en verde; `npm run build` y `BASE_PATH=/mi-repo/ npm run build` correctos; `npm run check` OK; `EVIDENCIA=1 npx playwright test` 325 pasadas y 8 omitidas.
 - **Después de L6: L6f (2026-11-02)**: encabezado adaptable, informe imprimible L5a, recuento NO VERIFICADO y cobertura (ver «Lote L6f»). **Pendientes de la persona además**: T071 (imprimir una vez el informe) y T072 (commit); L5b sigue sin decidir.
-- **Qué sigue**: la persona completa T093 a T100. La decisión sobre L5a y L5b (T100) se toma con las horas acumuladas y los resultados de las pruebas con usuarios.
+- **Qué sigue**: la persona completa T093, T095 y T096 a T099. La decisión sobre P3 (T100) quedó tomada el 2026-11-02: se incluyen L5a y L5b (ver «Lote L6g»).
 
 ## Decisiones de L1
 
@@ -70,7 +70,7 @@
 **Navegación (FR-049)**
 - Pasos del flujo (`flowSteps`): Evidencia completada con al menos un elemento («En curso» si solo hay respuestas); Diagnóstico bloqueado sin evidencia, en curso al generarse, completado al emitirse; Revisión bloqueada sin diagnóstico, en curso con alguna decisión, completada al emitirse; Estrategia bloqueada hasta emitir, completada al enviarse.
 - Un paso bloqueado enlaza a su pantalla, que explica el bloqueo; no redirige. La pantalla de Estrategia es provisional: explica el bloqueo y, con el diagnóstico emitido, dice que la generación llega en L4.
-- «Entregas por revisar (n)» cuenta las entregas existentes sin calificación. Hasta L4 no hay calificaciones sembradas, así que las cinco entregas sembradas cuentan como por revisar (n = 5).
+- «Entregas por revisar (n)» cuenta las entregas existentes sin calificación. Hasta L4 no hay calificaciones sembradas, así que las cinco entregas sembradas cuentan como por revisar (5).
 - En celular el menú tiene los mismos elementos. Escape lo cierra y devuelve el foco a «Menú»; al elegir un enlace se cierra y el foco pasa al `h1`.
 - La barra lateral a 1280 px se extiende hasta el final de la página (no es fija: acompaña el alto del contenido).
 
@@ -123,7 +123,7 @@ Inicio: 2026-11-01 18:49:51. Orden aplicado en cada uno: spec → plan y tareas 
 | Ingreso | «el control por rol es solo de experiencia; no protege datos.» | «el control por rol solo sirve para probar cada perfil; no protege datos.» |
 | Revisión sin diagnóstico | «Ir a Generar diagnóstico» | «Ir a generar el diagnóstico» |
 | Ventana «¿Aprobar y emitir…?» | «…Se creará la entrega para el Líder.» | «El Líder podrá revisarlo y calificarlo después; no necesitas su aprobación para continuar con la estrategia.» |
-| Banner «Emitido» | «Se creó la entrega visible para el Líder.» | «El Líder podrá calificarlo cuando quiera. No bloquea tu trabajo: puedes continuar con la estrategia.» |
+| Banner «Emitido» | «Se creó la entrega visible para el Líder.» | «En la cola del Líder. Su calificación aparecerá aquí cuando la guarde. No bloquea tu trabajo: puedes continuar con la estrategia.» (cambio de L6g, pieza H; antes decía que el Líder «podrá calificarlo cuando quiera») |
 | Estrategia (texto provisional) | «…todavía no está construida en esta versión de trabajo; llega en el siguiente lote.» | «La estrategia se podrá generar a partir de los hallazgos aceptados o editados y verificados de este diagnóstico.» |
 | Subtítulo de cada hallazgo | «Estrategia» / «Datos»… (sin prefijo) | Encabezado de grupo «Pilar: Estrategia», «Pilar: Datos»… |
 
@@ -195,9 +195,9 @@ Inicio: 19:52:15. Fin: ver «Estado de la sesión».
 **L6 (T081 a T092)**
 - Matriz transversal (`matrix.spec.ts`), rótulos (`labels.spec.ts`) y subruta (`base-path.spec.ts`) leen las rutas existentes de `src/app/router.ts` menos `UNBUILT_ROUTES` (`src/app/features.ts`). Una prueba comprueba que las direcciones de muestra cubren exactamente las rutas existentes, para que una pantalla nueva no quede sin probar. Se comprobó que la matriz falla si un enlace de navegación baja de 44 px y que la prueba de subruta falla si se compila sin `BASE_PATH`.
 - Con `EVIDENCIA=1`, `npx playwright test` regenera **todas** las capturas (L1 a L4, ajustes y matriz por ancho, incluida la vista del Contacto de la empresa a 320, 768 y 1280 px) y las salidas de axe (`docs/evidencia/axe/`). Se borraron antes las capturas anteriores para que no queden textos obsoletos.
-- README honesto, `docs/evidencia/` (README, revisión manual, checklist de SC, pruebas con usuarios, correspondencia de `quickstart.md`) y la licencia OFL en `public/licenses/OFL-PlusJakartaSans.txt` (se verificó que `dist/licenses/` la incluye).
+- README honesto, `docs/evidencia/` (README, revisión manual, checklist de SC, correspondencia de `quickstart.md`) y la licencia OFL en `public/licenses/OFL-PlusJakartaSans.txt` (se verificó que `dist/licenses/` la incluye).
 - **Conciliación (T090)**: se corrigieron `plan.md` y `contracts/routes.md` (pestañas en vez de menú, «Opciones», «Disponible», el Contacto de la empresa sin navegación mientras no exista su vista) y la «Línea de corte» de L5b en `tasks.md` (la ruta `#/contacto` se conserva con su mensaje). El spec ya estaba al día por los ajustes anteriores. Los escenarios de `quickstart.md` **no se ejecutaron a mano**: `docs/evidencia/quickstart-resultados.md` dice qué prueba automática cubre cada uno.
-- **SC-001 y SC-005 figuran «NO VERIFICADO» / «indicativo (n = …)»**: no se hicieron pruebas con usuarios y no se inventó ningún resultado.
+- **SC-001 y SC-005 figuran «No evaluado en esta versión de demostración»**: sin resultados y sin ninguno inventado.
 - Tamaño del paquete: JS 89,8 kB + CSS ≈ 6,0 kB + tipografía latina 27,3 kB ≈ 123 kB comprimidos, bajo la meta de 150 kB (NO VERIFICADO: no se midió la transferencia real).
 
 ## Registro corto de decisiones técnicas (T086)
@@ -310,4 +310,75 @@ Fecha: 2026-11-02, aprox. 11:10 a 11:35 (≈ 25 min de agente). Orden: spec (FR-
 5. **README**: enlace visible a la cobertura y el informe pasa a «incluido».
 
 **Verificación**: `typecheck` sin errores; `npm test` 245 en verde; `npm run check` OK; `EVIDENCIA=1 npx playwright test` **429 pasadas, 41 omitidas, 1 fallo**: `restablecer.spec.ts:95` («otra pestaña…», 1280 px), que se agota esperando el botón «Sí, restablecer» («element was detached»). **No lo causan estos cambios**: sin ellos (con `git stash`) falló 3 de 8 repeticiones; con ellos, 1 de 5. Causa no investigada. Capturas regeneradas y nuevas en `docs/evidencia/capturas/L6f/`; `sc-checklist.md` actualizado (SC-014 y SC-015).
+
+## Lote L6g: foco visible, informe, vista de la Empresa y ampliaciones de P3 (T120 a T129)
+
+Fecha: 2026-11-02, aprox. 12:14 a 13:15 (≈ 1 h de agente). Orden pedido: L, I, J, K, D, G, F, E, H, N, registro de decisión y M. Spec primero, pruebas y después código. **Registro de decisión (2026-11-02)**: se incluyen L5a y L5b, y las piezas E, F y G amplían el alcance de P3; la constitución se enmendó a 1.0.1 (principio VII: P3 puede incluirse o ampliarse por decisión escrita de la persona responsable).
+
+- **L. Foco visible en diálogos (FR-054)**. Causa: los diálogos de «Restablecer demo» y de cambio de rol viven dentro de la cabecera, que pone el contorno del foco en blanco (`.topbar :focus-visible`), y el diálogo es blanco: contraste 1,00:1. Corrección: el contorno de todo diálogo usa el color de tinta (también con foco por ratón, que no activaba `:focus-visible`) y el foco inicial va por código a «Cancelar» (o «Seguir editando»). Prueba `foco-visible.spec.ts`: todas las pantallas de la matriz (los 3 roles, 3 anchos) y los 4 diálogos (teclado y ratón); contorno ≥ 2 px y contraste ≥ 3:1 contra el fondo donde se pinta. **Falló antes** con el estilo actual en los 8 casos de diálogo (y las pantallas ya pasaban). Límite: mide el contorno calculado; no sustituye una revisión visual.
+- **I. Prueba intermitente (`restablecer.spec.ts`, «otra pestaña…»)**. Causa **confirmada** (reproducida con una prueba determinista que falló antes): era un **defecto real de la aplicación**: al adoptar el estado de otra pestaña (p. ej. un cambio de rol hecho allí), la ruta del rol anterior deja de ser válida, `Routed` devolvía `null` durante la redirección y **desmontaba la cabecera y el diálogo de «Restablecer demo» abierto** (FR-055). Corrección: durante la redirección se conserva la cabecera de la última pantalla válida. Además la prueba tenía una **carrera propia**: B entraba como Líder justo antes de que le llegara el guardado diferido de A (restablecer); se estabilizó esperando a que A termine de guardar (sin pausas arbitrarias). Antes 3 de 8 fallos; después 48 de 48 en 12 repeticiones con 3 trabajadores.
+- **J. Sensibilidad del informe imprimible**. Se rompió el código de producción una vez por vez y se restauró el original (comparado con una copia). (1) Incluir un hallazgo rechazado: lo detectó la prueba unitaria; **ninguna e2e** → se añadió una e2e que cuenta los hallazgos mostrados (7 de 8) y que el rechazado no aparece. (2) Quitar la marca NO VERIFICADO: fallaron `report.spec.ts` y `labels.spec.ts`. (3) No repetir el aviso en cada página: falla `report.spec.ts` (lectura de los glifos de cada página del PDF). (4) Abrir sin diagnóstico emitido: fallaron la unitaria y la e2e de bloqueo. (5) Rol o proyecto ajeno: solo fallaban pruebas unitarias → se añadieron 7 casos e2e (rol ajeno, proyecto inexistente, entrega no enviada, diagnóstico sin emitir). Se comprobó que las nuevas e2e fallan con (1) y (5).
+- **K. Informe**: encabezado «Informe de diagnóstico», título «Informe de diagnóstico · Empresa Ficticia Beta (DEMO)» (el de cada empresa), «Revisado por: Consultor Demo» junto a la fecha de emisión; en impresión no queda ningún botón, enlace ni control visible (prueba).
+- **D. Vista de la Empresa (L5b, FR-034 a FR-036)**: inicio de P-B con tres pasos derivados del estado real, próximo paso, actividad de ejemplo rotulada, informe en solo lectura (`#/contacto/informe`) y encuesta simulada de 3 preguntas (1 a 5, guardada solo en el navegador, sin envíos; una prueba verifica que no sale ninguna solicitud no GET). La Empresa solo ve P-B (sus rutas no llevan parámetros; las de otros roles la redirigen). «Restablecer demo» borra la encuesta (prueba). Se reemplazaron las pruebas que daban por «no disponible» esa vista. Desvío del plan original: 3 preguntas (no 5) y sin el campo `plainText`, por lo pedido; FR-035 ahora habla del informe en lugar del texto no técnico.
+- **G. Análisis de sector y de mercado (FR-026)**: resumen de 2 frases, 3 puntos clave, «Implicación para esta empresa» derivada con la lógica de `deriveStrategy` («Deriva de…»; el hallazgo H5, NO VERIFICADO, se añadió como respaldo del mercado para poder probar que no cuenta) y «Fuentes: ninguna…». La insignia «NO VERIFICADO · contenido ilustrativo» sigue en el resumen y los puntos clave. Sin cifras (prueba). El informe imprimible los incluye (reutiliza `StrategyView`).
+- **F. Datos de la empresa y documentos sugeridos (FR-056)**: valores inventados (ciudad, sitio web con dominio reservado `.example`); 4 documentos sugeridos con tipos distintos entre sí; se marcan por **extensión** de los archivos cargados por la persona (los de ejemplo de cada proyecto no cuentan); sin análisis.
+- **E. Tablero del Líder (FR-057)**: «Madurez promedio (de 5)», columna «Madurez» («—» sin diagnóstico emitido) y buscador. **Nota**: como todos los diagnósticos comparten una sola plantilla, toda madurez vale 2,4; el indicador demuestra la derivación, no variedad real. Sin promedio por pilar.
+- **H. Texto de la entrega**: «En la cola del Líder. Su calificación aparecerá aquí cuando la guarde.» con la insignia «Por revisar», en la estrategia enviada y en el banner del diagnóstico emitido; actualizados spec, pruebas y este registro.
+- **N. Revisión manual**: registrada en `docs/evidencia/revision-manual.md` solo lo indicado (teclado, 2026-11-02, Chrome para Windows; lector de pantalla NO verificado).
+- **M. Pruebas con usuarios**: se eliminó `docs/evidencia/pruebas-usuarios.md` y se retiró toda mención en documentos, spec, plan, tareas y README; SC-001 y SC-005 quedan «No evaluado en esta versión de demostración»; T022, T092 y T094 «No aplica en esta versión». Quedan palabras como «usuario» en otros sentidos (p. ej. «archivos del usuario», «multiusuario», «Usuarios y acceso» del spec).
+
+**Verificación al cierre de L6g**: `typecheck` sin errores; `npm test` 274 en verde (26 archivos); `npm run check` OK (incluido `check-names`); `EVIDENCIA=1 npx playwright test` **522 pasadas, 51 omitidas, 0 fallos** (una sola corrida); capturas y salidas de axe regeneradas. No se hizo commit ni push.
+
+## Prueba de sensibilidad de G, F y E (2026-11-02)
+
+> **Nota posterior**: la lista de documentos sugeridos (y su frase «Marcado según el tipo de archivo…») que se menciona en esta sección **se retiró** el mismo día; ver «Congelamiento de alcance». Lo verificado de G y E sigue vigente.
+
+Se rompió el código de producción una ruptura a la vez, se ejecutaron `npm test` y las pruebas e2e de estrategia, evidencia e informe (a 320 px) y se restauró el original (comparado después con una copia byte a byte). **Todas las roturas hicieron fallar alguna prueba**:
+
+| Ruptura | Qué la detectó |
+|---|---|
+| G1 análisis derivado de un hallazgo rechazado | 3 unitarias (`strategy.test.ts`) y 2 e2e (`strategy-leader.spec.ts`) |
+| G2 derivado de un NO VERIFICADO | 2 unitarias y 2 e2e |
+| G3 sin la insignia «NO VERIFICADO · contenido ilustrativo» | solo una e2e (el conteo global de 2) |
+| G3 sin la línea de «Fuentes» | solo una e2e |
+| F1 un documento de ejemplo cuenta como cargado | solo una e2e (en P-A) |
+| F2 marca ✓ sin cargar nada | 2 unitarias y 1 e2e |
+| E1 promedio con equipos sin diagnóstico emitido | 3 unitarias y 1 e2e |
+| E2 buscador que no filtra / que distingue mayúsculas y acentos | 1 unitaria y 1 e2e cada una |
+| E3 indicador y columna sin coma decimal | solo una e2e cada una (no hay unitaria del formato) |
+
+Detección débil encontrada (se cubrió con pruebas nuevas, y se volvió a romper para comprobar que fallan): G3 solo lo detectaba un conteo global y F1 solo dependía de que P-A tuviera documentos de ejemplo. Se añadieron `G (sensibilidad)` en `strategy-leader.spec.ts` (insignia y fuentes en **cada** sección) y `F (sensibilidad)` en `evidence.spec.ts` (P-B y P-C, que traen documentos de ejemplo, muestran los 4 sugeridos «Pendiente»). E3 queda cubierto solo por e2e.
+
+**Texto de F**: la lista se marca por la extensión, así que la interfaz ahora dice «Marcado según el tipo de archivo; el contenido no se lee.» (FR-056, prueba en `evidence.spec.ts`, captura `L6g/F-evidencia-datos-y-sugeridos-{ancho}.png`).
+
+**Comprobación final**: respecto de la copia tomada al empezar, en `src/` solo cambió `src/components/CompanyData.tsx` (esa frase). No se hizo commit.
+
+## Congelamiento de alcance (2026-11-02, después de L6g)
+
+Solo cambios pedidos, sin funciones nuevas.
+
+1. **Documentación**: la revisión manual con **teclado** se hizo el 2026-11-02 (todo funcionó salvo el foco visible del diálogo de restablecer, ya corregido); el **lector de pantalla NO se hizo** (NO VERIFICADO). Corregidos README («Límites conocidos») y SC-009 de `sc-checklist.md`, que se contradecían con la línea de teclado; también `docs/evidencia/README.md`. Quitada la fila duplicada del README sobre el análisis de sector y de mercado; reformuladas las líneas 3 y 17 del README («Permite recorrer…», «Muestra si…», «no hay análisis real»); la sección pasó a «Alcance: qué se incluyó y qué se recortó». **SC-004** pasó a «Verificado (auto)» porque `labels.spec.ts` sí recorre los informes (Consultor, Líder y Empresa), el inicio de la Empresa y la encuesta: su tabla de expectativas debe cubrir exactamente las rutas construidas (lo comprueba una prueba).
+2. **Se quitó la lista de «documentos sugeridos»** de la captura de evidencia (FR-056 actualizado; se conservan la tarjeta «Datos de la empresa (ficticios)» y la carga libre). Motivo: la demo no lee el contenido, no puede saber qué documento se subió, y la lista induce a pensar que hay que subir esos nombres; el sistema real sí podrá hacerlo al leer los documentos. Se eliminaron `src/data/suggested.ts`, `src/domain/suggested.ts`, `tests/unit/suggested.test.ts` y las pruebas e2e F1/F2; quedó una e2e de la tarjeta y la unitaria de los datos de la empresa. En `docs/cobertura-referencias.md` la fila pasa a «Excluido por decisión» (resumen: 8 incluidas, 16 simplificadas, 8 excluidas, 3 no tratadas).
+3. **Madurez distinta por equipo (FR-058)**. Dónde estaba: un solo `maturityIndex: 2.4` en la plantilla `src/data/diagnosis.ts`; **no existe ningún dato por pilar** (los hallazgos solo tienen pilar, sin puntaje) y no se inventó ninguno. Ahora hay un valor **ilustrativo, ficticio y sembrado por proyecto** (`SEEDED_MATURITY` en `src/data/projects.ts`): Beta (P-B) 2,4; Gamma (P-C) 3,1; Zeta (E-2) 1,8; Eta (E-3) 2,8. Épsilon (E-1, con diagnóstico emitido en los datos de ejemplo) y P-A (el que se genera en la sesión) conservan 2,4 de la plantilla; así el promedio de los 5 diagnósticos emitidos da **2,5** exacto (con los cuatro valores pedidos y sin E-1 daría 2,525, también «2,5»). Equipo 1 promedia P-B y P-C: 2,75, que se muestra «2,8». Lo muestran el diagnóstico, la entrega del Líder, el informe, el inicio de la Empresa (línea nueva, necesaria para cumplir lo pedido) y el tablero, siempre con «(ilustrativo, ficticio)». Pruebas: unitarias (valores por proyecto, promedios por equipo y global) y e2e (tablero, diagnóstico, entrega, informe, Empresa, P-A). **Sensibilidad**: se rompió el promedio para que cuente como cero a los equipos sin diagnóstico emitido; fallaron 5 unitarias y la e2e del tablero; restaurado.
+4. **Fechas**: **no mezclan hora local y UTC**. Todo pasa por una sola función, `formatDateTime`, que formateaba en la zona del navegador; los datos de ejemplo están escritos en UTC con horas redondas (p. ej. emitido 15:00 UTC, actividad 09:00 UTC, calificación 11:30 UTC), que en hora de Bogotá se ven 10:00, 4:00 y 6:30. Se fijó la zona `America/Bogota` en esa función (prueba unitaria que falló antes: la hora cambiaba con la zona). Las horas madrugadoras que quedaban (4:00, 5:00, 6:30) se corrigieron después, ver «Horas sembradas a horario de oficina».
+5. **Explicación (sin cambios)**: P-A muestra «Evidencia: Completado» porque ese paso se completa con **al menos un elemento de evidencia**, y P-A trae 5 elementos de evidencia de ejemplo precargados (`sampleSlots` 1 a 5). El progreso de captura es otra cuenta: cada una de las 5 preguntas respondidas es un paso y tener evidencia es un paso más, 6 pasos en total; P-A tiene 0 preguntas respondidas y evidencia, así que 1 de 6 = 17 %.
+
+**Verificación (no se re-ejecutó la suite completa tras este cambio)**: `typecheck` sin errores; `npm test` 276 en verde; `npm run check` OK; e2e solo de las pantallas afectadas (evidencia, informe, tablero, labels, matrix de las rutas tocadas, Empresa y recorrido P1), con capturas regeneradas del tablero, el informe y la captura de evidencia.
+
+## Horas sembradas a horario de oficina (2026-11-02)
+
+Solo datos de ejemplo: los instantes que se veían fuera de 08:00–17:00 (hora de Bogotá) se movieron a horas en punto o y media, **conservando el día** y el orden cronológico. Lo que ya estaba dentro del horario no cambió.
+
+| Dato (`src/data/projects.ts`, `src/data/survey.ts`) | Antes (Bogotá) | Ahora (Bogotá) |
+|---|---|---|
+| Diagnóstico generado (19 oct) / emitido (20 oct) / estrategia generada (22 oct) | 09:00 / 10:00 / 11:00 | sin cambio |
+| Estrategia enviada de P-C (23 oct) | 04:00 | 14:00 |
+| Calificación `dx/P-C` (24 oct) | 05:00 | 10:00 |
+| Calificación `dx/E-1` (25 oct) | 04:15 | 09:30 |
+| Calificación `st/P-C` (27 oct) | 06:30 | 11:30 |
+| Actividad de la Empresa: revisión del diagnóstico (20 oct) | 05:00 | 09:00 (antes de la emisión, 10:00) |
+| Actividad: documentos recibidos (14 oct) | 10:30 | sin cambio |
+| Actividad: primera conversación programada (8 oct) | 04:00 | 08:30 |
+
+Orden conservado: generado → emitido (20 oct) → estrategia generada (22) → enviada (23) → calificaciones (24, 25 y 27). No había textos de hora de estos datos en `tests/` ni en `docs/` (las pruebas de formato usan sus propios instantes). Verificación: `typecheck`, unitarias, `check` y e2e de strategy-leader, report, tablero, Empresa, labels, p1-journey, matrix y capturas afectadas; no se re-ejecutó la suite completa.
 

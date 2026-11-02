@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import { inflateSync } from 'node:zlib';
+import { DIAGNOSIS } from '../../src/data/diagnosis';
 import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 
 /** L5a / T069: informe imprimible (FR-044 a FR-048, SC-014, SC-015). */
-async function entrar(page: Page, rol: 'Consultor' | 'Líder') {
+async function entrar(page: Page, rol: 'Consultor' | 'Líder' | 'Empresa') {
   await page.goto('/');
   await page.getByRole('button', { name: `Entrar como ${rol}` }).click();
 }
@@ -44,11 +45,17 @@ test.describe('Informe del Consultor (P-B, diagnóstico emitido)', () => {
   test('en pantalla muestra el informe; en impresión, rótulos legibles y sin navegación ni controles', async ({ page }) => {
     await entrar(page, 'Consultor');
     await page.goto('/#/consultor/proyectos/P-B/informe');
-    await expect(page.getByRole('heading', { level: 1, name: 'Informe imprimible' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Informe de diagnóstico' })).toBeVisible();
     await expect(page.getByTestId('print-report')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Imprimir o guardar como PDF' })).toBeVisible();
+    await expect(page).toHaveTitle('Informe de diagnóstico · Empresa Ficticia Beta (DEMO)');
+    await expect(page.getByTestId('print-report')).toContainText('Revisado por: Consultor Demo');
     // impresión
     await page.emulateMedia({ media: 'print' });
+    // nada exclusivo de pantalla: ni controles ni enlaces visibles en la página impresa
+    const visibles = await page.evaluate(() => [...document.querySelectorAll('button, a[href], select, input, textarea, nav, header.topbar')].filter((e) => { const r = e.getBoundingClientRect(); return getComputedStyle(e).display !== 'none' && r.width > 0 && r.height > 0; }).map((e) => `${e.tagName}:${(e.textContent ?? '').trim().slice(0, 25)}`));
+    expect(visibles, 'controles y enlaces visibles al imprimir').toEqual([]);
+    await expect(page.locator('main h1')).toHaveText('Informe de diagnóstico');
     await expect(page.getByTestId('print-banner')).toBeVisible();
     await expect(page.getByTestId('print-banner')).toHaveText('DEMO · datos ficticios');
     for (const oculto of [page.locator('header.topbar'), page.locator('.sidebar'), page.getByTestId('demo-banner'), page.getByRole('button', { name: 'Imprimir o guardar como PDF' }), page.locator('.skip-link')]) {
@@ -59,6 +66,9 @@ test.describe('Informe del Consultor (P-B, diagnóstico emitido)', () => {
     await expect(informe.getByText('NO VERIFICADO').first()).toBeVisible();
     await expect(informe.getByTestId('report-excluded')).toHaveText('1 hallazgo excluido por el Consultor (no se muestra)');
     await expect(informe.getByText('Estrategia aún no disponible')).toBeVisible();
+    // solo los aceptados o editados: P-B rechaza H4, que no se muestra (J: sensibilidad del informe)
+    await expect(informe.locator('article.print-finding')).toHaveCount(DIAGNOSIS.findings.length - 1);
+    await expect(informe).not.toContainText(DIAGNOSIS.findings.find((f) => f.id === 'H4')!.title);
     // blanco y negro: los rótulos llevan texto y borde
     const borde = await informe.locator('.badge-unverified').first().evaluate((e) => parseFloat(getComputedStyle(e).borderTopWidth));
     expect(borde).toBeGreaterThanOrEqual(1);
@@ -109,13 +119,13 @@ test.describe('Informe del Consultor (P-B, diagnóstico emitido)', () => {
     await entrar(page, 'Consultor');
     await page.goto('/#/consultor/proyectos/P-B/diagnostico');
     await page.getByRole('link', { name: 'Ver informe imprimible' }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'Informe imprimible' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Informe de diagnóstico' })).toBeVisible();
   });
 
   test('con el diagnóstico sin emitir, el informe está bloqueado y lo explica', async ({ page }) => {
     await entrar(page, 'Consultor');
     await page.goto('/#/consultor/proyectos/P-A/informe');
-    await expect(page.getByRole('heading', { level: 1, name: 'Informe imprimible' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Informe de diagnóstico' })).toBeVisible();
     await expect(page.getByText('El informe se genera a partir de un diagnóstico emitido')).toBeVisible();
     await expect(page.getByTestId('print-report')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Imprimir o guardar como PDF' })).toHaveCount(0);
@@ -128,7 +138,7 @@ test.describe('Informe del Consultor (P-B, diagnóstico emitido)', () => {
     await page.goto('/#/consultor/proyectos/P-B/diagnostico');
     await page.getByRole('link', { name: 'Ver informe imprimible' }).focus();
     await page.keyboard.press('Enter');
-    await expect(page.getByRole('heading', { level: 1, name: 'Informe imprimible' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Informe de diagnóstico' })).toBeVisible();
     await page.evaluate(() => { (window as unknown as { __imprimir: number }).__imprimir = 0; window.print = () => { (window as unknown as { __imprimir: number }).__imprimir++; }; });
     await page.getByRole('button', { name: 'Imprimir o guardar como PDF' }).focus();
     await page.keyboard.press('Enter');
@@ -151,6 +161,8 @@ test.describe('Informe del Líder sobre una entrega', () => {
     await page.getByRole('link', { name: 'Ver informe imprimible' }).click();
     const informe = page.getByTestId('print-report');
     await expect(informe).toBeVisible();
+    await expect(page).toHaveTitle(/^Informe de diagnóstico · .+ \(DEMO\)$/);
+    await expect(informe).toContainText('Revisado por: Consultor Demo');
     await expect(informe.getByRole('heading', { name: 'Riesgos' })).toHaveCount(0);
     await expect(informe.getByText('Estrategia aún no disponible')).toHaveCount(0);
     await expect(informe).not.toContainText(/Meta del programa|Calificad|Promedio|Rúbrica/i);
@@ -176,4 +188,25 @@ test.describe('Informe del Líder sobre una entrega', () => {
     const firma = glifos(flujos[flujos.length - 1], 6).trimEnd() + ' ';
     for (const [i, f] of flujos.entries()) expect(glifos(f).includes(firma), `el aviso aparece en la página ${i + 1}`).toBe(true);
   });
+});
+
+test.describe('Acceso al informe (J: un rol o proyecto ajeno no accede)', () => {
+  const casos: { rol: 'Consultor' | 'Líder' | 'Empresa'; hash: string; destino: RegExp; aviso: string }[] = [
+    { rol: 'Consultor', hash: '#/lider/entregas/dx/P-B/informe', destino: /#\/consultor$/, aviso: 'Esa vista pertenece al rol Líder' },
+    { rol: 'Líder', hash: '#/consultor/proyectos/P-B/informe', destino: /#\/lider$/, aviso: 'Esa vista pertenece al rol Consultor' },
+    { rol: 'Empresa', hash: '#/consultor/proyectos/P-B/informe', destino: /#\/contacto$/, aviso: 'Esa vista pertenece al rol Consultor' },
+    { rol: 'Empresa', hash: '#/lider/entregas/dx/P-B/informe', destino: /#\/contacto$/, aviso: 'Esa vista pertenece al rol Líder' },
+    { rol: 'Consultor', hash: '#/consultor/proyectos/XX/informe', destino: /#\/consultor$/, aviso: 'No encontramos esa pantalla.' },
+    { rol: 'Líder', hash: '#/lider/entregas/st/P-B/informe', destino: /#\/lider$/, aviso: 'No encontramos esa pantalla.' }, // estrategia de P-B sin enviar
+    { rol: 'Líder', hash: '#/lider/entregas/dx/P-A/informe', destino: /#\/lider$/, aviso: 'No encontramos esa pantalla.' }, // diagnóstico de P-A sin emitir
+  ];
+  for (const c of casos) {
+    test(`${c.rol} abre ${c.hash}`, async ({ page }) => {
+      await entrar(page, c.rol);
+      await page.evaluate((h) => (window.location.hash = h), c.hash);
+      await expect(page).toHaveURL(c.destino);
+      await expect(page.getByTestId('notices')).toContainText(c.aviso);
+      await expect(page.getByTestId('print-report')).toHaveCount(0);
+    });
+  }
 });

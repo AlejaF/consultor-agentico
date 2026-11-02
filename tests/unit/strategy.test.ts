@@ -24,8 +24,47 @@ describe('plantilla de estrategia', () => {
       expect(f.horizon).toBeTruthy();
       f.supportedBy.forEach((id) => expect(ids.has(id)).toBe(true));
     }
-    expect(STRATEGY.sectorAnalysis.length).toBeGreaterThan(0);
-    expect(STRATEGY.marketAnalysis.length).toBeGreaterThan(0);
+    for (const a of [STRATEGY.sector, STRATEGY.market]) {
+      expect(a.summary.split(/(?<=[.])\s+/).length).toBeGreaterThanOrEqual(2);
+      expect(a.summary.split(/(?<=[.])\s+/).length).toBeLessThanOrEqual(3);
+      expect(a.keyPoints).toHaveLength(3);
+      expect(a.implication.supportedBy.length).toBeGreaterThan(0);
+      a.implication.supportedBy.forEach((id) => expect(ids.has(id)).toBe(true));
+      expect(a.sources).toBe('Fuentes: ninguna en esta demostración; en el sistema real se citarán fuentes externas con fecha.');
+      expect(JSON.stringify({ ...a, implication: a.implication.text })).not.toMatch(/\d/); // sin cifras ni porcentajes
+    }
+  });
+});
+
+describe('análisis de sector y de mercado derivados (FR-026)', () => {
+  it('con todo aceptado muestra la implicación con «Deriva de» sin el hallazgo NO VERIFICADO', () => {
+    const d = derive(all(A));
+    for (const a of [d.sector, d.market]) {
+      expect(a.implication).not.toBeNull();
+      expect(a.implication!.derivedFrom).not.toContain('H5');
+    }
+  });
+  it('un hallazgo rechazado no respalda la implicación', () => {
+    const d = derive({ ...all(A), H1: R, H6: R });
+    expect(d.sector.implication).toBeNull();
+    expect(d.market.implication!.derivedFrom).not.toContain('H1');
+    const d2 = derive({ ...all(A), H2: R });
+    expect(d2.market.implication!.derivedFrom).not.toContain('H2');
+  });
+  it('un hallazgo NO VERIFICADO aceptado no respalda la implicación: sin otros respaldos, no se muestra', () => {
+    const solo = Object.fromEntries(STRATEGY.market.implication.supportedBy.map((id) => [id, id === 'H5' ? A : R]));
+    const d = derive({ ...all(R), ...solo });
+    expect(STRATEGY.market.implication.supportedBy).toContain('H5');
+    expect(d.market.implication).toBeNull();
+  });
+  it('resumen y puntos clave siguen presentes aunque no haya implicación', () => {
+    const d = derive(all(R));
+    expect(d.sector.summary.length).toBeGreaterThan(0);
+    expect(d.sector.keyPoints).toHaveLength(3);
+    expect(d.sector.implication).toBeNull();
+  });
+  it('un estado vacío de la estrategia no oculta los análisis (siguen siendo de solo lectura)', () => {
+    expect(derive(all(R)).empty).toBe(true);
   });
 });
 

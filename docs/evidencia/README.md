@@ -20,11 +20,11 @@ Resultado de la última corrida: 384 pruebas pasadas y 33 omitidas (pruebas que 
 ## Qué NO cubre (**NO VERIFICADO**)
 
 - Axe **no automatiza todo WCAG 2.2 AA**: detecta solo una parte de los criterios. «Cero violaciones» no significa «cumple WCAG». Las salidas guardadas incluyen los elementos «por revisar a mano» que axe no pudo decidir (hoy, ninguno).
-- Teclado y lector de pantalla **no se han revisado a mano**: ver `revision-manual.md` (sin completar).
+- Revisión manual: la de **teclado** se hizo el 2026-11-02; la de **lector de pantalla NO se hizo** (NO VERIFICADO). Ver `revision-manual.md`.
 - Solo se prueba Chromium; no se probaron Firefox ni Safari ni dispositivos reales.
 - Solo se prueban los anchos 320, 768 y 1280 px (no 1920 px ni anchos intermedios).
-- No se prueban las pantallas aún no construidas (informes, encuesta y resumen dla Empresa).
-- Las pruebas con usuarios **no se han hecho**: ver `pruebas-usuarios.md`.
+- Todas las pantallas existentes se prueban (informes, encuesta e inicio de la Empresa incluidos).
+- SC-001 y SC-005: **No evaluado en esta versión de demostración**.
 
 ## Índice
 
@@ -38,8 +38,7 @@ Resultado de la última corrida: 384 pruebas pasadas y 33 omitidas (pruebas que 
 | Capturas de estrategia, tablero del Líder y calificación (L4; el aviso por ruta desconocida está en `tablero-aviso-ruta-desconocida-*`) | `capturas/L4/` |
 | Capturas de los ajustes F a I (pestañas de cada rol, ventana de emisión, banner «Emitido», pilar con NO VERIFICADO) | `capturas/ajustes/` |
 | Capturas de L6c: diálogo de «Restablecer demo» y calificación guardada sin comentario («Sin comentario»), vista del Líder y del Consultor | `capturas/L6c/` |
-| Lista de comprobación manual de teclado y lector de pantalla (sin completar) | `revision-manual.md` |
+| Lista de comprobación manual de teclado y lector de pantalla (teclado hecho; lector NO hecho) | `revision-manual.md` |
 | Checklist de criterios de éxito SC-001 a SC-015 | `sc-checklist.md` |
-| Guion y tabla de pruebas con usuarios (sin completar) | `pruebas-usuarios.md` |
 | Escenarios de `quickstart.md` y su correspondencia con pruebas | `quickstart-resultados.md` |
 | Cobertura frente a las interfaces de referencia | `../cobertura-referencias.md` |

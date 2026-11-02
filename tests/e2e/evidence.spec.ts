@@ -210,3 +210,17 @@ test.describe('Captura de evidencia', () => {
     await expectNoHorizontalScroll(page);
   });
 });
+
+test('F: tarjeta «Datos de la empresa (ficticios)» de solo lectura junto a la carga libre de archivos', async ({ page }) => {
+  await openEvidence(page, 'P-A');
+  const datos = page.getByRole('region', { name: 'Datos de la empresa (ficticios)' });
+  await expect(datos).toBeVisible();
+  await expect(datos).toContainText('Empresa Ficticia Alfa');
+  await expect(datos).toContainText('alfa.ficticia.example');
+  await expect(datos.getByRole('textbox')).toHaveCount(0); // solo lectura
+  await expect(page.getByRole('button', { name: 'Elegir archivos' })).toBeVisible(); // la carga libre sigue
+  await page.locator('input[type=file]').setInputFiles(PDF_VALIDO);
+  await expect(page.getByText('informe-ejemplo.pdf')).toBeVisible();
+  await expect(page.locator('main')).not.toContainText('✓ Cargado'); // ninguna marca según el tipo de archivo
+  await expectNoAxeViolations(page);
+});

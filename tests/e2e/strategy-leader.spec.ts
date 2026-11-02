@@ -58,6 +58,17 @@ test.describe('Estrategia (Consultor)', () => {
     await expect(page.getByRole('heading', { name: 'Análisis de sector' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Análisis de mercado' })).toBeVisible();
     await expect(page.getByText('NO VERIFICADO · contenido ilustrativo')).toHaveCount(2);
+    // G: resumen, 3 puntos clave, implicación derivada (P-B rechaza H4 y acepta H5 NO VERIFICADO: no figuran), y fuentes
+    for (const id of ['estr-sector', 'estr-mercado']) {
+      const sec = page.getByTestId(id);
+      await expect(sec.locator('ul > li')).toHaveCount(3);
+      await expect(sec.getByRole('heading', { name: 'Implicación para esta empresa' })).toBeVisible();
+      await expect(sec.getByTestId(`derived-${id}`)).toBeVisible();
+      await expect(sec).toContainText('Fuentes: ninguna en esta demostración; en el sistema real se citarán fuentes externas con fecha.');
+    }
+    await expect(page.getByTestId('derived-estr-mercado')).not.toContainText('H4');
+    await expect(page.getByTestId('derived-estr-mercado')).not.toContainText('H5');
+    await expect(page.getByTestId('derived-estr-mercado')).toContainText('H2');
   });
 
   test('un hallazgo aceptado pero NO VERIFICADO no figura en «Deriva de»; un rechazado tampoco', async ({ page }) => {
@@ -238,5 +249,103 @@ test.describe('Líder: tablero, revisión y calificación', () => {
     await page.getByRole('button', { name: 'Guardar calificación' }).click();
     await expect(page.getByTestId('grade-average')).toHaveText('Promedio: 3,0 de 5');
     await expectNoHorizontalScroll(page);
+  });
+});
+
+test.describe('E: tablero del Líder ampliado (FR-057)', () => {
+  async function tablero(page: Page) {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Entrar como Líder' }).click();
+    await page.getByRole('heading', { level: 1, name: 'Tablero' }).waitFor();
+  }
+  test('indicador «Madurez promedio (de 5)» y columna «Madurez»', async ({ page }) => {
+    await tablero(page);
+    await expect(page.getByTestId('kpi-madurez')).toContainText('Madurez promedio (de 5)');
+    await expect(page.getByTestId('kpi-madurez')).toContainText('2,5');
+    await expect(page.getByRole('columnheader', { name: 'Madurez' })).toBeAttached();
+    // valores ilustrativos sembrados por proyecto; cada equipo muestra el suyo
+    const fila = (n: string) => page.getByTestId('teams-table').getByRole('row', { name: new RegExp(n) });
+    await expect(fila('Equipo 1')).toContainText('2,8'); // promedio de P-B (2,4) y P-C (3,1) = 2,75
+    await expect(fila('Equipo 2')).toContainText('2,4');
+    await expect(fila('Equipo 3')).toContainText('1,8');
+    await expect(fila('Equipo 4')).toContainText('2,8');
+    await expect(page.getByText(/Promedio por pilar/i)).toHaveCount(0);
+  });
+  test('buscador: filtra por equipo o empresa, avisa sin resultados y se usa con teclado', async ({ page }) => {
+    await tablero(page);
+    const campo = page.getByLabel('Buscar equipo o empresa');
+    await expect(campo).toBeVisible();
+    await campo.focus();
+    await page.keyboard.type('épsilon');
+    const filas = page.getByTestId('teams-table').getByRole('row');
+    await expect(filas).toHaveCount(2); // encabezado + Equipo 2
+    await expect(filas.nth(1)).toContainText('Equipo 2');
+    await campo.fill('zzz');
+    await expect(page.getByTestId('busqueda-sin-resultados')).toHaveText('Sin resultados para «zzz».');
+    await expect(page.getByTestId('teams-table')).toHaveCount(0);
+    await campo.fill('');
+    await expect(page.getByTestId('teams-table').getByRole('row')).toHaveCount(5);
+    await expectNoAxeViolations(page);
+    await expectNoHorizontalScroll(page);
+  });
+});
+
+test.describe('H: texto de la entrega enviada', () => {
+  test('el Consultor ve «Por revisar» y «En la cola del Líder…» (estrategia enviada y diagnóstico emitido), sin la frase anterior', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
+    await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-B/estrategia'));
+    await page.getByRole('button', { name: 'Generar estrategia' }).click();
+    await page.getByRole('button', { name: 'Enviar a revisión' }).click();
+    await page.getByText('Enviada al Líder').first().waitFor();
+    const texto = 'En la cola del Líder. Su calificación aparecerá aquí cuando la guarde.';
+    await expect(page.locator('main').getByText('Por revisar', { exact: true })).toBeVisible();
+    await expect(page.locator('main')).toContainText(texto);
+    await expect(page.locator('main')).not.toContainText(/cuando quiera/);
+    await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-B/diagnostico'));
+    await expect(page.locator('main')).not.toContainText(/cuando quiera/);
+    await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-B/revision'));
+    await expect(page.locator('main')).not.toContainText(/cuando quiera/);
+  });
+});
+
+test('G (sensibilidad): cada análisis lleva su insignia NO VERIFICADO y su línea de fuentes', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
+  await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-C/estrategia'));
+  for (const id of ['estr-sector', 'estr-mercado']) {
+    const sec = page.getByTestId(id);
+    await expect(sec.getByText('NO VERIFICADO · contenido ilustrativo')).toHaveCount(1);
+    await expect(sec.getByText('Fuentes: ninguna en esta demostración; en el sistema real se citarán fuentes externas con fecha.')).toHaveCount(1);
+  }
+});
+
+test.describe('Madurez ilustrativa por proyecto (FR-058)', () => {
+  const rotulo = '(ilustrativo, ficticio)';
+  test('el diagnóstico, la entrega y el informe muestran el valor de su proyecto', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
+    await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-C/diagnostico'));
+    await expect(page.getByText('Índice de madurez: 3,1 de 5')).toBeVisible();
+    await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-C/informe'));
+    await expect(page.getByTestId('print-report')).toContainText('Índice de madurez: 3,1 de 5');
+    await expect(page.getByTestId('print-report')).toContainText(rotulo);
+    await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-B/informe'));
+    await expect(page.getByTestId('print-report')).toContainText('Índice de madurez: 2,4 de 5');
+    await page.getByLabel('Rol activo').selectOption('lider');
+    await page.evaluate(() => (window.location.hash = '#/lider/entregas/dx/E-2'));
+    await expect(page.getByText('Índice de madurez: 1,8 de 5')).toBeVisible();
+    await page.evaluate(() => (window.location.hash = '#/lider/entregas/dx/E-3/informe'));
+    await expect(page.getByTestId('print-report')).toContainText('Índice de madurez: 2,8 de 5');
+  });
+  test('la vista de la Empresa (Beta) muestra su valor, y el proyecto generado en la sesión (P-A) el de la plantilla', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Entrar como Empresa' }).click();
+    await expect(page.getByTestId('madurez-empresa')).toContainText('Índice de madurez: 2,4 de 5');
+    await expect(page.getByTestId('madurez-empresa')).toContainText(rotulo);
+    await page.getByLabel('Rol activo').selectOption('consultor');
+    await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-A/diagnostico'));
+    await page.getByRole('button', { name: 'Generar diagnóstico' }).click();
+    await expect(page.getByText('Índice de madurez: 2,4 de 5')).toBeVisible();
   });
 });

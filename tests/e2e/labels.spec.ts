@@ -4,7 +4,7 @@ import { BUILT_ROUTE_IDS, coveredRouteIds, ROLE_BUTTON, SAMPLE_HASHES } from './
 
 // SC-004 (FR-004, FR-005): el 100 % de las pantallas existentes muestra «DEMO · datos ficticios»; toda pantalla con contenido
 // simulado muestra «Simulada»; y los «NO VERIFICADO» donde corresponden. Recorre solo las rutas existentes (helpers/routes.ts).
-// Los informes (L5a) ya se recorren; la encuesta y el resumen del Contacto se comprobarán cuando existan (cierre de L5b).
+// Los informes (L5a), el inicio de la Empresa y la encuesta (L5b) ya se recorren.
 const EXPECT: Record<string, { simulada: boolean; noVerificado: boolean }> = {
   '#/consultor/proyectos/P-B/evidencia': { simulada: false, noVerificado: false },
   '#/consultor/proyectos/P-B/diagnostico': { simulada: true, noVerificado: true },
@@ -19,6 +19,8 @@ const EXPECT: Record<string, { simulada: boolean; noVerificado: boolean }> = {
   '#/lider/entregas/st/P-C/informe': { simulada: true, noVerificado: true },
   '#/lider': { simulada: false, noVerificado: false },
   '#/contacto': { simulada: false, noVerificado: false },
+  '#/contacto/encuesta': { simulada: true, noVerificado: false },
+  '#/contacto/informe': { simulada: true, noVerificado: true },
 };
 
 const SUBTITULO = 'Todos los datos son ficticios. Los proyectos, calificaciones y entregas iniciales son ejemplos precargados; «Restablecer demo» los recupera.';
@@ -87,4 +89,23 @@ test('SC-014: en la impresión de cada informe aparece el aviso de demo y los r�
   await expect(page.getByTestId('print-banner')).toHaveText('DEMO · datos ficticios');
   await expect(page.getByTestId('print-report').getByText('Simulada', { exact: true }).first()).toBeVisible();
   await expect(page.getByTestId('print-report').getByText('NO VERIFICADO').first()).toBeVisible();
+});
+
+test('L6g/L: en el diálogo de «Restablecer demo» el foco inicial está en «Cancelar» y se ve; los rótulos del diálogo son los esperados', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
+  await page.locator('header.topbar').getByRole('button', { name: 'Restablecer demo' }).click();
+  const dialogo = page.getByRole('dialog', { name: '¿Restablecer la demo?' });
+  await expect(dialogo.getByRole('button', { name: 'Cancelar' })).toBeFocused();
+  await expect(dialogo.getByRole('button', { name: 'Sí, restablecer' })).toBeVisible();
+  const contorno = await dialogo.getByRole('button', { name: 'Cancelar' }).evaluate((e) => parseFloat(getComputedStyle(e).outlineWidth));
+  expect(contorno).toBeGreaterThanOrEqual(2);
+});
+
+test('L6g/K: el informe lleva el rótulo «Informe de diagnóstico» y «Revisado por»', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
+  await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-B/informe'));
+  await expect(page.locator('main h1')).toHaveText('Informe de diagnóstico');
+  await expect(page.getByTestId('print-report')).toContainText('Revisado por: Consultor Demo');
 });

@@ -51,10 +51,11 @@ describe('Ajuste I: la Estrategia queda «Disponible» con el diagnóstico emiti
 });
 
 describe('Ajuste G: elementos de navegación solo si su pantalla existe', () => {
-  it('Contacto no muestra «Encuesta» mientras no exista su pantalla', () => {
+  it('Empresa: solo muestra Resumen, Informe de diagnóstico y Encuesta cuando existe su pantalla', () => {
     expect(navItemsFor('contacto', { pendingDeliveries: 0 })).toEqual([]); // sin pantallas, sin menú vacío
     expect(navItemsFor('contacto', { pendingDeliveries: 0, summaryExists: true }).map((i) => i.label)).toEqual(['Resumen']);
     expect(navItemsFor('contacto', { pendingDeliveries: 0, summaryExists: true, surveyExists: true }).map((i) => i.label)).toEqual(['Resumen', 'Encuesta']);
+    expect(navItemsFor('contacto', { pendingDeliveries: 0, summaryExists: true, surveyExists: true, reportExists: true }).map((i) => i.label)).toEqual(['Resumen', 'Informe de diagnóstico', 'Encuesta']);
   });
   it('Líder: Tablero y Entregas por revisar (n)', () => {
     expect(navItemsFor('lider', { pendingDeliveries: 2 }).map((i) => i.label)).toEqual(['Tablero', 'Entregas por revisar (2)']);

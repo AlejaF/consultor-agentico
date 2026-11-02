@@ -20,7 +20,7 @@ async function smallTargets(page: Page) {
 
 test('las direcciones de muestra cubren exactamente las rutas existentes de la tabla', () => {
   expect([...coveredRouteIds()].sort()).toEqual([...BUILT_ROUTE_IDS].sort());
-  expect(ROUTES.length).toBeGreaterThan(BUILT_ROUTE_IDS.length); // hay rutas aún sin pantalla
+  expect(ROUTES.length).toBeGreaterThanOrEqual(BUILT_ROUTE_IDS.length); // las rutas sin pantalla (si las hay) se omiten
 });
 
 test('ingreso: axe, sin desplazamiento horizontal y objetivos de 44 px', async ({ page }, info) => {
@@ -64,7 +64,7 @@ for (const role of Object.keys(SAMPLE_HASHES) as Role[]) {
       const sameAsCurrent = new URL(page.url()).hash === hash;
       if (!sameAsCurrent) await page.evaluate((h) => (window.location.hash = h), hash);
       await expect(page.locator('main h1')).toBeVisible();
-      await expect(page).toHaveTitle(`${route.title} · Consultor Agéntico (DEMO)`);
+      await expect(page).toHaveTitle(/informe$/.test(hash) ? /^Informe de diagnóstico · .+ \(DEMO\)$/ : `${route.title} · Consultor Agéntico (DEMO)`);
       if (!sameAsCurrent) {
         await expect(page.locator('main h1')).toBeFocused(); // al cambiar de ruta el foco queda en el h1 (FR-038)
       }

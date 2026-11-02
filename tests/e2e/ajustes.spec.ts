@@ -62,7 +62,7 @@ test.describe('Ajuste I: claridad tras emitir', () => {
     await dialog.getByRole('button', { name: 'Sí, aprobar y emitir' }).click();
 
     const banner = page.locator('#emitido').locator('..');
-    await expect(banner).toContainText('El Líder podrá calificarlo cuando quiera. No bloquea tu trabajo: puedes continuar con la estrategia.');
+    await expect(banner).toContainText('En la cola del Líder. Su calificación aparecerá aquí cuando la guarde. No bloquea tu trabajo: puedes continuar con la estrategia.');
     await expect(page.getByText('Se creó la entrega visible para el Líder.')).toHaveCount(0);
     await expect(nav(page).getByRole('link', { name: /^Estrategia/ })).toContainText('Disponible');
     await expectNoHorizontalScroll(page);

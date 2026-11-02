@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CONSULTOR_PROJECT_IDS } from '../data/projects';
 import { Diagnosis } from '../screens/consultor/Diagnosis';
 import { Evidence } from '../screens/consultor/Evidence';
@@ -7,7 +7,9 @@ import { Review } from '../screens/consultor/Review';
 import { Strategy } from '../screens/consultor/Strategy';
 import { Deliveries } from '../screens/lider/Deliveries';
 import { Projects } from '../screens/consultor/Projects';
+import { Report as CompanyReport } from '../screens/contacto/Report';
 import { Summary } from '../screens/contacto/Summary';
+import { Survey } from '../screens/contacto/Survey';
 import { Dashboard } from '../screens/lider/Dashboard';
 import { DeliveryReview } from '../screens/lider/DeliveryReview';
 import { Report as DeliveryReport } from '../screens/lider/Report';
@@ -42,6 +44,10 @@ function Screen({ route }: { route: RouteMatch }) {
       return <DeliveryReview tipo={route.params.tipo as 'dx' | 'st'} projectId={route.params.projectId} />;
     case 'lider.dashboard':
       return <Dashboard />;
+    case 'contacto.report':
+      return <CompanyReport />;
+    case 'contacto.survey':
+      return <Survey />;
     case 'contacto.summary':
       return <Summary />;
     default:
@@ -75,7 +81,19 @@ function Routed() {
     replaceHash(redirectTo);
   }, [redirectTo, redirectNotice, hash]);
 
-  if (decision.kind === 'redirect') return null;
+  // Con una redirección se conserva la cabecera de la última pantalla válida (sin su contenido) para no destruir los diálogos abiertos
+  // en ella cuando el cambio llega de otra pestaña (FR-055); en la primera carga no hay pantalla previa y no se dibuja nada.
+  const lastAllowed = useRef<RouteMatch | null>(null);
+  if (decision.kind === 'allow') lastAllowed.current = decision.route;
+  if (decision.kind === 'redirect') {
+    const prev = lastAllowed.current;
+    if (!prev) return null;
+    return (
+      <AppShell route={prev} role={prev.id === 'login' ? null : role} routeNotice={null} onDismissRouteNotice={() => setRouteNotice(null)}>
+        {null}
+      </AppShell>
+    );
+  }
 
   const shownNotice = routeNotice && routeNotice.at === hash ? routeNotice.text : null;
   return (

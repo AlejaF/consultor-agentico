@@ -1,6 +1,6 @@
 # Consultor Agéntico · versión de demostración
 
-> **DEMO · datos ficticios.** Esto es una demostración navegable para probar el recorrido con personas. No es el sistema real: no hay inteligencia artificial, ni servidor, ni cuentas reales. Todas las empresas, personas, cifras y textos son inventados.
+> **DEMO · datos ficticios.** Esto es una demostración navegable. Permite recorrer el flujo Evidencia → Diagnóstico → Estrategia con cada rol. No es el sistema real: no hay inteligencia artificial, ni servidor, ni cuentas reales. Todas las empresas, personas, cifras y textos son inventados.
 
 ## Qué es y qué valida
 
@@ -8,13 +8,13 @@ Una sola aplicación web (página estática) que une las dos interfaces de refer
 
 - **Consultor**: carga evidencia, genera y revisa el diagnóstico (acepta, edita o rechaza cada hallazgo), lo emite y genera y envía la estrategia.
 - **Líder**: ve un tablero de equipos ficticios, abre las entregas y las califica con una rúbrica de ejemplo.
-- **Empresa**: la vista de este rol **no está disponible todavía** (ver «Qué no se construyó»).
+- **Empresa**: ve el inicio de su proyecto (ruta de adopción, próximo paso, actividad de ejemplo), abre el informe de diagnóstico en solo lectura y responde una encuesta simulada de 3 preguntas.
 
 Las pantallas «Proyectos» y «Tablero» avisan que los proyectos, calificaciones y entregas iniciales son ejemplos precargados que «Restablecer demo» recupera.
 
 La cabecera de toda pantalla lleva la marca, «Inicio» (vuelve al ingreso **sin borrar** tu progreso), el selector «Rol activo» (al cambiar de rol vas a la pantalla de inicio del nuevo rol y tu progreso se conserva) y «Restablecer demo» (borra todo el progreso y vuelve a los datos de ejemplo, con confirmación; si tienes la demo abierta en otras pestañas del mismo navegador, también se restablecen). En la calificación, el comentario es opcional.
 
-Valida, con personas reales, si el recorrido se entiende, si queda claro qué es simulado y si el flujo de revisión y calificación tiene sentido. No valida la calidad de ningún análisis, porque no hay análisis.
+Muestra si el recorrido se entiende, si queda claro qué es simulado y si el flujo de revisión y calificación tiene sentido. No valida la calidad de ningún análisis, porque no hay análisis real.
 
 ## Qué es simulado, qué es real y qué queda fuera
 
@@ -25,9 +25,13 @@ Valida, con personas reales, si el recorrido se entiende, si queda claro qué es
 | Citas y extractos | **Simulado**: extractos ficticios. Rótulo «Evidencia de ejemplo (ficticia)». |
 | Generación del diagnóstico y de la estrategia | **Simulada**: una espera de 1,5 s rotulada «Simulada». |
 | Estrategia | **Simulada**, pero la trazabilidad («Deriva de…») **sí se calcula** con las decisiones reales de la persona: solo cuentan los hallazgos aceptados o editados y verificados. |
-| Análisis de sector y de mercado | **Simulado e ilustrativo**: «NO VERIFICADO · contenido ilustrativo». |
 | Carga de archivos | **Real, solo local**: el navegador lee el nombre, el tipo y el tamaño para listarlo. **No se analiza ni se envía a ningún servidor.** Tras recargar, el contenido no se conserva («Contenido no conservado en esta demo»). |
 | Decisiones de revisión y su efecto | **Real** dentro de la demo. |
+| Encuesta de la Empresa | **Simulada y solo local**: 3 preguntas, rotulada «Simulada»; se guarda en este navegador, no se envía a nadie y «Restablecer demo» la borra. |
+| Análisis de sector y de mercado | **Simulado e ilustrativo**: resumen y puntos clave «NO VERIFICADO · contenido ilustrativo»; la «Implicación para esta empresa» sí se deriva de los hallazgos aceptados o editados y verificados. Sin fuentes en la demo. |
+| Datos de la empresa | **Ficticios**, de solo lectura, en la captura de evidencia. La demo no lee el contenido de los archivos, por eso no ofrece una lista de documentos que se marque según lo que subas. |
+| Índice de madurez (diagnóstico, informe, vista de la Empresa y tablero del Líder) | **Valor ilustrativo y ficticio, sembrado por proyecto** en los datos de ejemplo (Beta 2,4; Gamma 3,1; Zeta 1,8; Eta 2,8; Épsilon y el proyecto que se genera en la sesión, 2,4 de la plantilla). **No se calcula** de los hallazgos ni de puntajes por pilar (no existen). El tablero muestra el promedio por equipo y el de todos los diagnósticos emitidos (2,5 con los datos de ejemplo). |
+| Fechas y horas | Se muestran siempre en hora de Bogotá (UTC−5), sea cual sea la zona del navegador. |
 | Informe imprimible | **Real, solo local**: se arma en el navegador con las decisiones de la persona; no sale de él. El contenido que muestra sigue siendo simulado y rotulado. |
 | Calificación, promedio y comentarios | **Real** dentro de la demo (lógica real; criterios de ejemplo «pendientes de definir por el profesor»). |
 | Meta del programa (4,2 de 5) | Cifra **ilustrativa, NO VERIFICADO**. |
@@ -42,17 +46,21 @@ PDF, DOCX, TXT, VTT, SRT y XLSX, hasta 25 MB y nombres de hasta 150 caracteres. 
 
 Se usa en dos sentidos: (1) un **hallazgo** con respaldo insuficiente se marca «NO VERIFICADO»; puede aceptarse, pero **no cuenta como respaldo de la estrategia**; (2) en este README y en `docs/`, una **afirmación** que nadie ha comprobado todavía (ver la lista más abajo).
 
-## Qué no se construyó o se recortó
+## Decisión sobre el alcance de P3 (2026-11-02)
 
-- **Vista de la Empresa y encuesta simulada**: no incluido todavía (pendiente de decisión al cerrar esta etapa). Hoy ese rol muestra un mensaje de «Vista no disponible».
-- **Informe imprimible** (historia 8): **incluido** (lote L6f). Desde un diagnóstico emitido, «Ver informe imprimible» abre una vista que se imprime o se guarda como PDF con la función del navegador; lleva «DEMO · datos ficticios» en cada página y los rótulos «Simulada» y «NO VERIFICADO». La impresión real en papel o PDF queda por revisar a mano (tarea T071).
+Se incluyen L5a (informe imprimible) y L5b (vista de la Empresa y encuesta simulada), y tres ampliaciones de P3: el tablero del Líder con madurez y buscador (E), los datos de la empresa en la captura de evidencia (F), y el análisis de sector y de mercado de solo lectura (G). Quedó registrado en el spec, `tasks.md`, `docs/decisiones.md` y `docs/cobertura-referencias.md`, y la constitución se enmendó (1.0.1).
+
+## Alcance: qué se incluyó y qué se recortó
+
+- **Vista de la Empresa y encuesta simulada** (historia 7): **incluida el 2026-11-02** (L5b). La Empresa Ficticia Beta ve su ruta de adopción en tres pasos, el próximo paso, una actividad de ejemplo, el informe de diagnóstico en solo lectura y una encuesta simulada de 3 preguntas que se guarda solo en el navegador.
+- **Informe imprimible** (historia 8): **incluido** (lotes L6f y L6g). Desde un diagnóstico emitido, «Ver informe imprimible» abre una vista que se imprime o se guarda como PDF con la función del navegador; lleva «DEMO · datos ficticios» en cada página y los rótulos «Simulada» y «NO VERIFICADO». La impresión real en papel o PDF queda por revisar a mano (tarea T071).
 - Qué se tomó de las interfaces de referencia y qué no (con resumen de conteos por estado): [`docs/cobertura-referencias.md`](docs/cobertura-referencias.md).
 - Fuera de la demo por pertenecer al sistema completo: IA real, transcripción de audio, lectura del contenido de los archivos, cuentas y permisos reales, envío de correos, almacenamiento compartido, administración de la plataforma, exportaciones oficiales, fuentes reales de sector y mercado, estrategia conversacional por etapas, portafolio de casos de uso y la devolución de un entregable para corregirlo (el Líder solo califica).
 
 ## Límites conocidos y cosas NO VERIFICADO
 
-- **NO VERIFICADO** — SC-001 (completar el recorrido P1 en 10 minutos o menos) y SC-005 («9 de cada 10» identifican lo simulado): no se han medido con personas. Con 2 o 3 participantes el resultado solo podrá ser **indicativo (n = …)**, nunca concluyente. Ver `docs/evidencia/pruebas-usuarios.md`.
-- **NO VERIFICADO** — La revisión manual con teclado y con lector de pantalla (`docs/evidencia/revision-manual.md`) no se ha hecho. Axe automatiza solo una parte de WCAG 2.2 AA: que axe no encuentre violaciones **no** equivale a cumplir WCAG.
+- **No evaluado en esta versión de demostración** — SC-001 (completar el recorrido P1 en 10 minutos o menos) y SC-005 («9 de cada 10» identifican lo simulado) se mantienen como metas del spec; no hay ningún resultado y no se afirma ninguno.
+- **NO VERIFICADO** — La revisión manual con **lector de pantalla** no se hizo (`docs/evidencia/revision-manual.md`). La revisión manual con **teclado** sí se hizo el 2026-11-02 en Chrome para Windows: todo funcionó salvo el foco visible del diálogo de «Restablecer demo», ya corregido. Axe automatiza solo una parte de WCAG 2.2 AA: que axe no encuentre violaciones **no** equivale a cumplir WCAG.
 - **NO VERIFICADO** — La tipografía (Plus Jakarta Sans) es una aproximación a la de las referencias.
 - **NO VERIFICADO** — Los tiempos y metas del plan (horas por lote, paquete menor de 150 kB comprimidos) son estimaciones; el tamaño medido está en `docs/evidencia/sc-checklist.md`.
 - **NO VERIFICADO** — Conformidad legal sobre tratamiento de datos personales: no se ha evaluado. La demo no pide datos personales.
@@ -84,7 +92,7 @@ EVIDENCIA=1 npm run test:e2e   # además guarda capturas y salidas de axe en doc
 
 **Playwright corre en local, no en CI.** El flujo de CI (GitHub Actions) ejecuta typecheck, pruebas unitarias, compilación y `check` (este último omite la lista local de nombres vetados, que no se versiona). Las pruebas de extremo a extremo y la evidencia se ejecutan a mano antes de cada commit.
 
-Las capturas y los resultados de axe están en `docs/evidencia/` (ver su `README.md`). Las comprobaciones manuales y las pruebas con usuarios son tareas de una persona y siguen pendientes.
+Las capturas y los resultados de axe están en `docs/evidencia/` (ver su `README.md`). La revisión manual de teclado se hizo el 2026-11-02; la del lector de pantalla **NO se hizo** (NO VERIFICADO); ver `docs/evidencia/revision-manual.md`.
 
 ## Cómo se despliega
 

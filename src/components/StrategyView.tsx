@@ -1,6 +1,6 @@
-import { STRATEGY } from '../data/strategy';
 import { countOf } from '../domain/format';
-import type { DerivedStrategy } from '../domain/strategy';
+import type { DerivedAnalysis, DerivedStrategy } from '../domain/strategy';
+import { DerivedFrom } from './DerivedFrom';
 import { SimBadge } from './badges';
 import { RiskCard } from './RiskCard';
 import { RouteTimeline } from './RouteTimeline';
@@ -10,6 +10,36 @@ function unverifiedLine(n: number): string {
   return n === 1
     ? '1 hallazgo aceptado no se usó como respaldo porque está NO VERIFICADO'
     : `${countOf(n, 'hallazgo aceptado', 'hallazgos aceptados')} no se usaron como respaldo porque están NO VERIFICADO`;
+}
+
+/** Análisis de solo lectura: resumen y puntos clave ilustrativos (NO VERIFICADO), implicación derivada de hallazgos y fuentes (FR-026). */
+function AnalysisSection({ id, title, analysis }: { id: string; title: string; analysis: DerivedAnalysis }) {
+  return (
+    <section className="card" aria-labelledby={id} data-testid={id}>
+      <h2 id={id}>{title}</h2>
+      <p>
+        <span className="badge badge-unverified">NO VERIFICADO · contenido ilustrativo</span>
+      </p>
+      <p>{analysis.summary}</p>
+      <ul>
+        {analysis.keyPoints.map((k) => (
+          <li key={k}>{k}</li>
+        ))}
+      </ul>
+      {analysis.implication ? (
+        <div data-testid={`${id}-implicacion`}>
+          <h3>Implicación para esta empresa</h3>
+          <p>{analysis.implication.text}</p>
+          <DerivedFrom itemId={id} ids={analysis.implication.derivedFrom} />
+        </div>
+      ) : (
+        <p className="subtitle" data-testid={`${id}-sin-implicacion`}>
+          Sin implicación para esta empresa: ningún hallazgo aceptado o editado y verificado la respalda.
+        </p>
+      )}
+      <p className="subtitle">{analysis.sources}</p>
+    </section>
+  );
 }
 
 export function StrategyView({ derived }: { derived: DerivedStrategy }) {
@@ -45,20 +75,8 @@ export function StrategyView({ derived }: { derived: DerivedStrategy }) {
             <h2 id="estr-ruta">Ruta sugerida</h2>
             <RouteTimeline items={derived.route} />
           </section>
-          <section className="card" aria-labelledby="estr-sector">
-            <h2 id="estr-sector">Análisis de sector</h2>
-            <p>
-              <span className="badge badge-unverified">NO VERIFICADO · contenido ilustrativo</span>
-            </p>
-            <p>{STRATEGY.sectorAnalysis}</p>
-          </section>
-          <section className="card" aria-labelledby="estr-mercado">
-            <h2 id="estr-mercado">Análisis de mercado</h2>
-            <p>
-              <span className="badge badge-unverified">NO VERIFICADO · contenido ilustrativo</span>
-            </p>
-            <p>{STRATEGY.marketAnalysis}</p>
-          </section>
+          <AnalysisSection id="estr-sector" title="Análisis de sector" analysis={derived.sector} />
+          <AnalysisSection id="estr-mercado" title="Análisis de mercado" analysis={derived.market} />
         </div>
       )}
     </div>

@@ -34,7 +34,10 @@ export function formatScore(n: number): string {
   return formatDecimal(n);
 }
 
-/** Fecha y hora cortas en español. */
+/** Zona fija de la demo: todas las fechas y horas se muestran en hora de Bogotá, sea cual sea la zona del navegador. */
+export const DISPLAY_TIME_ZONE = 'America/Bogota';
+
+/** Fecha y hora cortas en español, en hora de Bogotá. */
 export function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat('es', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso));
+  return new Intl.DateTimeFormat('es', { dateStyle: 'medium', timeStyle: 'short', timeZone: DISPLAY_TIME_ZONE }).format(new Date(iso));
 }

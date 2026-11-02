@@ -17,8 +17,9 @@ La demo no tiene API ni servidor. Sus «interfaces» son las rutas por hash. El 
 | `#/lider/entregas/:tipo/:projectId` | `lider` | Revisión y calificación de una entrega (`tipo` = `dx` diagnóstico o `st` estrategia) | US6 | P2 |
 | `#/consultor/proyectos/:projectId/informe` | `consultor` | Informe imprimible | US8 | P3 |
 | `#/lider/entregas/:tipo/:projectId/informe` | `lider` | Informe imprimible de la entrega (`dx`: solo diagnóstico; `st`: estrategia enviada con su diagnóstico) | US8 | P3 |
-| `#/contacto` | `contacto` | Hoy: mensaje «Vista no disponible» (el resumen del proyecto es la historia 7, P3, pendiente de decisión) | US7 | P3 |
-| `#/contacto/encuesta` | `contacto` | Encuesta simulada | US7 | P3 |
+| `#/contacto` | `contacto` | Inicio de la Empresa (historia 7, incluida el 2026-11-02) | US7 | P3 |
+| `#/contacto/encuesta` | `contacto` | Encuesta simulada de 3 preguntas | US7 | P3 |
+| `#/contacto/informe` | `contacto` | Informe de diagnóstico de P-B en solo lectura | US7, US8 | P3 |
 
 `:projectId` es `P-A`…`P-D` (proyectos del Consultor) o el de un equipo precargado; `:tipo` es `dx` (diagnóstico emitido) o `st` (estrategia enviada). La entrega queda identificada por **dos segmentos de ruta** (`:tipo/:projectId`), sin caracteres que codificar; en el estado equivale a la clave `dx/<projectId>` o `st/<projectId>`.
 
@@ -63,7 +64,7 @@ Los avisos se anuncian en una región `aria-live` y se pueden cerrar.
 |---|---|---|
 | Consultor | «Proyectos» (`#/consultor`); dentro de un proyecto (cualquier ruta con `:projectId`), un bloque con la empresa y 4 pasos: Evidencia, Diagnóstico, Revisión, Estrategia | Cada paso lleva su estado en texto: Pendiente, En curso, Completado, Bloqueado o Disponible (Estrategia con el diagnóstico emitido y sin generar). **Un paso Bloqueado enlaza a su pantalla, que explica el bloqueo; no redirige.** |
 | Líder | «Tablero» (`#/lider`), «Entregas por revisar (n)» (`#/lider/entregas`) | `n` = entregas existentes sin calificación |
-| Empresa | «Resumen» (`#/contacto`) y «Encuesta» (`#/contacto/encuesta`), **solo cuando existan sus pantallas** (`src/app/features.ts`); hoy, ninguno y sin barra | Mientras no exista su vista, el rol muestra un mensaje claro, sin menús vacíos ni enlaces rotos |
+| Empresa | «Resumen» (`#/contacto`), «Informe de diagnóstico» (`#/contacto/informe`) y «Encuesta» (`#/contacto/encuesta`) | La Empresa solo ve su propia empresa: sus rutas no llevan parámetros de proyecto. |
 
 La navegación no incluye tarjeta de cuenta ni «Restablecer demo»: «Restablecer demo» es un botón de la cabecera (FR-006) y la cabecera lleva también «Inicio» y la marca, ambos hacia `#/` sin borrar el estado (FR-051). Bajo 1024 px la navegación es una barra de pestañas siempre visible bajo la cabecera (en la lista de proyectos del Consultor no hace falta). Al elegir un enlace, el foco pasa al `h1` de la nueva pantalla.
 
