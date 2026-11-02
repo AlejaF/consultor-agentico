@@ -43,7 +43,7 @@ test.describe('Corrección B (revisada en L6c): cabecera de como máximo 3 filas
       const header = page.locator('header.topbar');
       await expect(header.getByText('Rol activo')).toBeVisible();
       const info = await header.evaluate((h) => {
-        const kids = [...h.children].filter((c) => (c as HTMLElement).offsetParent !== null || getComputedStyle(c).position === 'fixed');
+        const kids = [...h.children].filter((c) => ((c as HTMLElement).offsetParent !== null || getComputedStyle(c).position === 'fixed') && c.getBoundingClientRect().height > 0);
         // una fila = elementos cuyos rectángulos verticales se solapan (alineados al centro, sus «top» pueden diferir)
         const rects = kids.map((c) => c.getBoundingClientRect()).sort((a, b) => a.top - b.top);
         let filas = 0;

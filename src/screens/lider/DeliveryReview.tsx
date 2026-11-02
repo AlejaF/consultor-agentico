@@ -5,6 +5,7 @@ import { PillarGroups } from '../../components/PillarGroups';
 import { RubricForm } from '../../components/RubricForm';
 import { StrategyView } from '../../components/StrategyView';
 import { SimBadge } from '../../components/badges';
+import { UnverifiedCount } from '../../components/UnverifiedCount';
 import { DIAGNOSIS, FINDING_IDS } from '../../data/diagnosis';
 import { STRATEGY } from '../../data/strategy';
 import { countOf, formatDecimal } from '../../domain/format';
@@ -33,6 +34,12 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
       <h1>Revisión de la entrega</h1>
       <p>
         {tipo === 'dx' ? 'Diagnóstico' : 'Estrategia'} · {company.name} · {team.name} · Proyecto {projectId}
+      </p>
+      <UnverifiedCount projectId={projectId} />
+      <p>
+        <a className="btn" href={`#/lider/entregas/${tipo}/${projectId}/informe`}>
+          Ver informe imprimible
+        </a>
       </p>
       <p className="subtitle">
         Vista de solo lectura. El Líder califica la calidad del entregable: no lo aprueba ni edita su contenido.

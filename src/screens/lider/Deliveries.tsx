@@ -1,6 +1,7 @@
 import { deliveriesFor } from '../../domain/deliveries';
 import { countOf } from '../../domain/format';
 import { projectInfo } from '../../domain/lookup';
+import { UnverifiedCount } from '../../components/UnverifiedCount';
 import { useAppState } from '../../state/context';
 
 /** Provisional (L3): lista de entregas por revisar. La revisión y la calificación se construyen en L4. */
@@ -20,6 +21,7 @@ export function Deliveries() {
                 <strong>{d.tipo === 'dx' ? 'Diagnóstico' : 'Estrategia'}</strong> · {company.name}
               </p>
               <p className="subtitle">{team.name}</p>
+              <UnverifiedCount projectId={d.projectId} />
               <a className="btn" href={`#/lider/entregas/${d.tipo}/${d.projectId}`}>
                 Abrir entrega<span className="visually-hidden"> de {company.name}</span>
               </a>

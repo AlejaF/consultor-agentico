@@ -69,10 +69,10 @@
 .account { display: block; }
 .account .subtitle { color: var(--color-text-muted); font-size: var(--font-size-sm); }
 
-.cards { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+.cards { display: grid; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); }
 
 @media (min-width: 640px) {
-  .cards { grid-template-columns: repeat(2, 1fr); }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (min-width: 1024px) {
@@ -87,7 +87,7 @@
   .nav-project-name { margin: 0 var(--space-3) var(--space-2); }
   .nav-steps { display: block; }
   .nav-steps a { flex-direction: row; justify-content: space-between; text-align: left; border: 0; padding: 0 var(--space-3); gap: var(--space-2); }
-    .cards { grid-template-columns: repeat(3, 1fr); }
+    .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .project-card h2 { margin-bottom: var(--space-1); }
@@ -181,7 +181,7 @@ button[aria-pressed='true'] { background: var(--color-primary-soft); border-colo
 .kpi-value { font-size: 2rem; font-weight: var(--weight-bold); color: var(--color-primary); }
 .queue-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
 .queue-item p { margin: 0; }
-.delivery-line { display: block; text-align: right; }
+.delivery-line { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 var(--space-1); text-align: right; }
 .rtable { width: 100%; border-collapse: collapse; }
 .rtable th, .rtable td { text-align: left; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border-subtle); }
 .rtable thead th { color: var(--color-text-muted); font-size: var(--font-size-sm); }
@@ -190,22 +190,25 @@ button[aria-pressed='true'] { background: var(--color-primary-soft); border-colo
   .rtable, .rtable tbody, .rtable tr, .rtable th, .rtable td { display: block; width: 100%; }
   .rtable tr { margin-bottom: var(--space-3); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); background: var(--color-surface); }
   .rtable tbody th { font-size: 1.1rem; }
-  .rtable td { display: flex; justify-content: space-between; gap: var(--space-3); border-bottom: 0; }
+  .rtable td { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); border-bottom: 0; }
   .rtable td::before { content: attr(data-label); color: var(--color-text-muted); font-size: var(--font-size-sm); }
 }
 .grade-levels strong { white-space: nowrap; flex-shrink: 0; }
 .grade-levels span { min-width: 0; overflow-wrap: anywhere; }
 
-/* Cabecera (FR-051): menos de 768 px, dos filas (marca + «Inicio»; «Rol activo» + selector + «Restablecer»); desde 768 px, una fila */
+/* Cabecera (FR-051): menos de 768 px se adapta sola con flex-wrap. Fila 1: marca + «Inicio»; fila 2: «Rol activo» + selector y,
+   si caben, «Restablecer»; si no caben, «Restablecer» baja a una tercera fila a la derecha. Todo en rem: crece con la fuente. */
+.topbar-break { display: none; }
+.role-field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); min-width: 0; flex: 1 1 auto; }
+.role-field select { flex: 1 1 8rem; min-width: min(8rem, 100%); }
 @media (max-width: 767px) {
-  .topbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: var(--space-1); row-gap: var(--space-1); }
-  .topbar .brand { grid-column: 1 / 3; grid-row: 1; }
-  .topbar .home-link { grid-column: 3; grid-row: 1; justify-self: end; }
-  .topbar label { grid-column: 1; grid-row: 2; align-self: center; font-size: 0.75rem; }
-  .topbar select { grid-column: 2; grid-row: 2; width: 100%; }
-  .topbar .reset-demo { grid-column: 3; grid-row: 2; margin-left: var(--space-2); padding-inline: 6px; font-size: 0.8125rem; }
+  .topbar { row-gap: var(--space-1); column-gap: var(--space-3); }
+  .topbar .brand { flex: 1 1 auto; font-size: var(--font-size-sm); }
+  .topbar .brand img { flex: 0 0 auto; }
+  .topbar .home-link { flex: 0 0 auto; }
+  .topbar-break { display: block; flex: 0 0 100%; height: 0; }
+  .topbar .reset-demo { margin-left: auto; padding-inline: var(--space-2); font-size: var(--font-size-sm); }
   .topbar .reset-more { display: none; }
-  .topbar .brand { font-size: var(--font-size-sm); }
 }
 
 /* Ingreso: cada cuenta es una sola tarjeta-control */
@@ -222,5 +225,6 @@ button[aria-pressed='true'] { background: var(--color-primary-soft); border-colo
 @media (min-width: 768px) {
   .topbar { flex-wrap: nowrap; }
   .topbar .brand { flex: 1 1 0; min-width: 7rem; }
+  .role-field { flex: 0 0 auto; flex-wrap: nowrap; }
   .topbar select { min-width: 15rem; flex-shrink: 0; }
 }

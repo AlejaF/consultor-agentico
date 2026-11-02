@@ -28,6 +28,7 @@ Valida, con personas reales, si el recorrido se entiende, si queda claro qué es
 | Análisis de sector y de mercado | **Simulado e ilustrativo**: «NO VERIFICADO · contenido ilustrativo». |
 | Carga de archivos | **Real, solo local**: el navegador lee el nombre, el tipo y el tamaño para listarlo. **No se analiza ni se envía a ningún servidor.** Tras recargar, el contenido no se conserva («Contenido no conservado en esta demo»). |
 | Decisiones de revisión y su efecto | **Real** dentro de la demo. |
+| Informe imprimible | **Real, solo local**: se arma en el navegador con las decisiones de la persona; no sale de él. El contenido que muestra sigue siendo simulado y rotulado. |
 | Calificación, promedio y comentarios | **Real** dentro de la demo (lógica real; criterios de ejemplo «pendientes de definir por el profesor»). |
 | Meta del programa (4,2 de 5) | Cifra **ilustrativa, NO VERIFICADO**. |
 | Progreso | **Real, solo local**: se guarda en este navegador (`localStorage`); no se comparte entre personas ni dispositivos. |
@@ -44,7 +45,8 @@ Se usa en dos sentidos: (1) un **hallazgo** con respaldo insuficiente se marca �
 ## Qué no se construyó o se recortó
 
 - **Vista de la Empresa y encuesta simulada**: no incluido todavía (pendiente de decisión al cerrar esta etapa). Hoy ese rol muestra un mensaje de «Vista no disponible».
-- **Informe imprimible** del diagnóstico y la estrategia: no incluido todavía (pendiente de decisión al cerrar esta etapa).
+- **Informe imprimible** (historia 8): **incluido** (lote L6f). Desde un diagnóstico emitido, «Ver informe imprimible» abre una vista que se imprime o se guarda como PDF con la función del navegador; lleva «DEMO · datos ficticios» en cada página y los rótulos «Simulada» y «NO VERIFICADO». La impresión real en papel o PDF queda por revisar a mano (tarea T071).
+- Qué se tomó de las interfaces de referencia y qué no (con resumen de conteos por estado): [`docs/cobertura-referencias.md`](docs/cobertura-referencias.md).
 - Fuera de la demo por pertenecer al sistema completo: IA real, transcripción de audio, lectura del contenido de los archivos, cuentas y permisos reales, envío de correos, almacenamiento compartido, administración de la plataforma, exportaciones oficiales, fuentes reales de sector y mercado, estrategia conversacional por etapas, portafolio de casos de uso y la devolución de un entregable para corregirlo (el Líder solo califica).
 
 ## Límites conocidos y cosas NO VERIFICADO

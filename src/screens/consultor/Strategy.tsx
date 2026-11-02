@@ -58,6 +58,11 @@ export function Strategy({ projectId }: { projectId: string }) {
               <span className={status === 'sent' ? 'badge badge-ok' : 'badge badge-warn'}>{status === 'sent' ? 'Enviada al Líder' : 'Generada'}</span>
             </p>
             {status === 'sent' && ps.strategy.sentAt && <p className="subtitle">Enviada el {formatDateTime(ps.strategy.sentAt)}</p>}
+            <p>
+              <a className="btn" href={`#/consultor/proyectos/${projectId}/informe`}>
+                Ver informe imprimible
+              </a>
+            </p>
             {status === 'generated' && (
               <>
                 <p className="subtitle">Revisa la estrategia y envíala al Líder para que la califique.</p>

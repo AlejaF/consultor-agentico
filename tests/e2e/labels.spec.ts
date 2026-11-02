@@ -4,16 +4,19 @@ import { BUILT_ROUTE_IDS, coveredRouteIds, ROLE_BUTTON, SAMPLE_HASHES } from './
 
 // SC-004 (FR-004, FR-005): el 100 % de las pantallas existentes muestra «DEMO · datos ficticios»; toda pantalla con contenido
 // simulado muestra «Simulada»; y los «NO VERIFICADO» donde corresponden. Recorre solo las rutas existentes (helpers/routes.ts).
-// Los informes, la encuesta y el resumen del Contacto se comprobarán cuando existan (se vuelve a ejecutar en los cierres de L5a y L5b).
+// Los informes (L5a) ya se recorren; la encuesta y el resumen del Contacto se comprobarán cuando existan (cierre de L5b).
 const EXPECT: Record<string, { simulada: boolean; noVerificado: boolean }> = {
   '#/consultor/proyectos/P-B/evidencia': { simulada: false, noVerificado: false },
   '#/consultor/proyectos/P-B/diagnostico': { simulada: true, noVerificado: true },
   '#/consultor/proyectos/P-B/revision': { simulada: true, noVerificado: true },
   '#/consultor/proyectos/P-C/estrategia': { simulada: true, noVerificado: true },
+  '#/consultor/proyectos/P-B/informe': { simulada: true, noVerificado: true },
   '#/consultor': { simulada: false, noVerificado: false },
   '#/lider/entregas': { simulada: false, noVerificado: false },
   '#/lider/entregas/dx/E-2': { simulada: true, noVerificado: true },
   '#/lider/entregas/st/P-C': { simulada: true, noVerificado: true },
+  '#/lider/entregas/dx/E-2/informe': { simulada: true, noVerificado: true },
+  '#/lider/entregas/st/P-C/informe': { simulada: true, noVerificado: true },
   '#/lider': { simulada: false, noVerificado: false },
   '#/contacto': { simulada: false, noVerificado: false },
 };
@@ -73,4 +76,15 @@ test('el contenido simulado generado en la sesión también lleva el rótulo', a
   await page.getByRole('button', { name: 'Generar estrategia' }).click();
   await expect(page.locator('main').getByText('Simulada', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('NO VERIFICADO · contenido ilustrativo')).toHaveCount(2);
+});
+
+test('SC-014: en la impresión de cada informe aparece el aviso de demo y los rótulos', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Entrar como Consultor' }).click();
+  await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-B/informe'));
+  await page.getByTestId('print-report').waitFor();
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.getByTestId('print-banner')).toHaveText('DEMO · datos ficticios');
+  await expect(page.getByTestId('print-report').getByText('Simulada', { exact: true }).first()).toBeVisible();
+  await expect(page.getByTestId('print-report').getByText('NO VERIFICADO').first()).toBeVisible();
 });

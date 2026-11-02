@@ -50,3 +50,12 @@ describe('isValidEdit', () => {
     expect(isValidEdit('   \n ')).toBe(false);
   });
 });
+
+describe('unverifiedAdoptedText (FR-053)', () => {
+  it('concuerda en número y dice cuándo no hay ninguno', async () => {
+    const { unverifiedAdoptedText } = await import('../../src/domain/review');
+    expect(unverifiedAdoptedText(0)).toBe('Ningún hallazgo NO VERIFICADO entre los aceptados o editados');
+    expect(unverifiedAdoptedText(1)).toBe('1 hallazgo NO VERIFICADO entre los aceptados o editados');
+    expect(unverifiedAdoptedText(2)).toBe('2 hallazgos NO VERIFICADO entre los aceptados o editados');
+  });
+});

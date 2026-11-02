@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CONSULTOR_PROJECT_IDS } from '../data/projects';
 import { Diagnosis } from '../screens/consultor/Diagnosis';
 import { Evidence } from '../screens/consultor/Evidence';
+import { Report } from '../screens/consultor/Report';
 import { Review } from '../screens/consultor/Review';
 import { Strategy } from '../screens/consultor/Strategy';
 import { Deliveries } from '../screens/lider/Deliveries';
@@ -9,6 +10,7 @@ import { Projects } from '../screens/consultor/Projects';
 import { Summary } from '../screens/contacto/Summary';
 import { Dashboard } from '../screens/lider/Dashboard';
 import { DeliveryReview } from '../screens/lider/DeliveryReview';
+import { Report as DeliveryReport } from '../screens/lider/Report';
 import { Login } from '../screens/Login';
 import { StateProvider, useAppState } from '../state/context';
 import { UnsavedProvider } from '../state/unsaved';
@@ -30,6 +32,10 @@ function Screen({ route }: { route: RouteMatch }) {
       return <Review projectId={route.params.projectId} />;
     case 'consultor.strategy':
       return <Strategy projectId={route.params.projectId} />;
+    case 'consultor.report':
+      return <Report projectId={route.params.projectId} />;
+    case 'lider.deliveryReport':
+      return <DeliveryReport tipo={route.params.tipo as 'dx' | 'st'} projectId={route.params.projectId} />;
     case 'lider.deliveries':
       return <Deliveries />;
     case 'lider.delivery':

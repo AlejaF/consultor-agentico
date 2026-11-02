@@ -165,8 +165,8 @@ button[aria-disabled='true']:hover { background: var(--color-surface-muted); }
 .progress-fill { height: 100%; background: var(--color-primary); }
 .progress-text { font-weight: var(--weight-bold); font-size: var(--font-size-sm); min-width: 3.5ch; text-align: right; }
 
-.facts { margin: 0 0 var(--space-3); display: grid; gap: var(--space-2); }
-.facts div { display: flex; justify-content: space-between; gap: var(--space-3); align-items: center; }
+.facts { margin: 0 0 var(--space-3); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+.facts div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); align-items: center; }
 .facts dt { color: var(--color-text-muted); font-size: var(--font-size-sm); }
 .facts dd { margin: 0; font-weight: var(--weight-bold); }
 

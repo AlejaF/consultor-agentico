@@ -1,1 +1,29 @@
-/* Estilos de impresión: se completan en el lote del informe (L5a). */
+/* Informe imprimible (FR-044 a FR-048). Solo tokens: sin colores literales. */
+.print-banner { display: none; }
+.print-frame { width: 100%; border-collapse: collapse; }
+.print-frame > thead > tr > td, .print-frame > tbody > tr > td { padding: 0; }
+.print-head { margin-bottom: var(--space-4); }
+.print-title { font-size: var(--font-size-lg); font-weight: var(--weight-bold); margin-bottom: var(--space-2); }
+.print-finding { margin-bottom: var(--space-4); }
+.print-finding h4 { margin: 0 0 var(--space-2); font-size: var(--font-size-base); }
+.print-finding blockquote { margin: var(--space-2) 0 var(--space-2) var(--space-3); padding-left: var(--space-3); border-left: 3px solid var(--color-border); }
+
+@media print {
+  @page { margin: 16mm 14mm; }
+  html, body { background: var(--color-surface); color: var(--color-ink); }
+  .demo-banner, .topbar, .sidebar, .sidenav, .skip-link, .no-print, [data-testid='notices'], [data-testid='route-announcer'] { display: none !important; }
+  .shell-body { display: block; }
+  .main { padding: 0; max-width: none; }
+  a { color: var(--color-ink); text-decoration: none; }
+  /* Cabecera repetida en cada página: el thead se repite y reserva su espacio */
+  .print-frame > thead { display: table-header-group; }
+  .print-banner { display: block; border: 2px solid var(--color-ink); padding: 3pt 6pt; margin-bottom: 8pt; text-align: center; font-weight: var(--weight-bold); font-size: 11pt; }
+  .print-report { font-size: 11pt; line-height: 1.4; color: var(--color-ink); }
+  .print-report h2 { font-size: 15pt; margin-top: 14pt; break-after: avoid; }
+  .print-report h3 { font-size: 13pt; break-after: avoid; }
+  .print-report .card { box-shadow: none; border: 1px solid var(--color-ink); background: transparent; break-inside: avoid; }
+  .print-finding, .print-report blockquote, .print-report .card, .print-report article { break-inside: avoid; }
+  /* Rótulos legibles en blanco y negro: texto en negrita con borde */
+  .print-report .badge { background: transparent; color: var(--color-ink); border: 1.5px solid var(--color-ink); font-weight: var(--weight-bold); }
+  .print-report .subtitle, .print-report .derived-from { color: var(--color-ink); }
+}

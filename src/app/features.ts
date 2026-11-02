@@ -7,4 +7,4 @@ export const FEATURES = {
 } as const;
 
 /** Rutas de la tabla que todavía no tienen pantalla propia (las pruebas transversales las omiten hasta que existan). */
-export const UNBUILT_ROUTES = ['consultor.report', 'lider.deliveryReport', 'contacto.survey'] as const;
+export const UNBUILT_ROUTES = ['contacto.survey'] as const;

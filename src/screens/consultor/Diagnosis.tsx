@@ -71,7 +71,12 @@ export function Diagnosis({ projectId }: { projectId: string }) {
             <p>
               <a className="btn primary" href={`#/consultor/proyectos/${projectId}/revision`}>
                 {issued ? 'Ver la revisión' : 'Ir a la revisión'}
-              </a>
+              </a>{' '}
+              {issued && (
+                <a className="btn" href={`#/consultor/proyectos/${projectId}/informe`}>
+                  Ver informe imprimible
+                </a>
+              )}
             </p>
           </section>
 

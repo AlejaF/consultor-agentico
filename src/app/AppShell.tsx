@@ -65,6 +65,7 @@ export function AppShell({ route, role, routeNotice, onDismissRouteNotice, child
           <a className="home-link" href="#/">
             Inicio
           </a>
+          <span className="topbar-break" aria-hidden="true" />
           <RoleSwitcher role={role} />
           <ResetDemoButton />
         </header>

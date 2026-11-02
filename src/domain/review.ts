@@ -37,3 +37,9 @@ export function usesAsSupport(verified: boolean, state: Decision['state']): bool
 export function countUnverifiedAdopted(findings: readonly { id: string; verified: boolean }[], decisions: Record<string, Decision>): number {
   return findings.filter((f) => !f.verified && ['accepted', 'edited'].includes(stateOf(decisions, f.id))).length;
 }
+
+/** Recuento de NO VERIFICADO entre lo aceptado o editado, para la cola del Líder y la entrega (FR-053). */
+export function unverifiedAdoptedText(n: number): string {
+  if (n === 0) return 'Ningún hallazgo NO VERIFICADO entre los aceptados o editados';
+  return `${countOf(n, 'hallazgo NO VERIFICADO', 'hallazgos NO VERIFICADO')} entre los aceptados o editados`;
+}

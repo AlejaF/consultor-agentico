@@ -17,8 +17,8 @@ Estado al cierre del lote L6, **antes** de las pruebas con usuarios y de la revi
 | SC-011 | El Líder califica los 4 criterios en ≤ 5 min y el Consultor ve el resultado | **Verificado (auto)** lo funcional; **NO VERIFICADO** el tiempo | `tests/e2e/strategy-leader.spec.ts` (el recorrido de calificación y que el Consultor ve el resultado). El tiempo humano no se ha medido. | Medirlo en las pruebas con usuarios. |
 | SC-012 | Ninguna estrategia cita un hallazgo rechazado o NO VERIFICADO; ningún elemento sin respaldo | **Verificado (auto)** | `tests/unit/strategy.test.ts`, `tests/e2e/strategy-leader.spec.ts` y la prueba de sensibilidad (ver `docs/decisiones.md`). | — |
 | SC-013 | El promedio mostrado coincide con el de los niveles y no cambia «Emitido» | **Verificado (auto)** | `tests/unit/rubric.test.ts`, `tests/unit/reducer.grading.test.ts`, `strategy-leader.spec.ts` y la prueba de sensibilidad. | — |
-| SC-014 | Informe impreso con rótulos legibles en blanco y negro | **No aplica todavía** | El informe imprimible (L5a) no está construido; pendiente de decisión al cerrar L6. | Decisión sobre L5a (T100). |
-| SC-015 | Informe imprimible en ≤ 2 interacciones | **No aplica todavía** | Ídem. | Ídem. |
+| SC-014 | Informe impreso con rótulos legibles en blanco y negro | **Cumple en lo automático; la impresión real queda por revisar (T071)** | `tests/e2e/report.spec.ts` y `labels.spec.ts`: en medio `print` el aviso «DEMO · datos ficticios» y los rótulos «Simulada» y «NO VERIFICADO» están presentes, con texto y borde; el PDF en carta y A4 repite el aviso en todas las páginas (se comprueba leyendo los glifos dibujados en cada página). | Revisión humana: imprimir o guardar a PDF una vez y mirarlo en blanco y negro (T071). |
+| SC-015 | Informe imprimible en ≤ 2 interacciones | **Cumple** | `report.spec.ts`: desde el diagnóstico emitido (consultor) o desde la entrega (Líder) basta 1 clic en «Ver informe imprimible»; también con teclado. | — |
 
 ## Tamaño del paquete (meta del plan: menos de 150 kB comprimidos, **NO VERIFICADO**)
 

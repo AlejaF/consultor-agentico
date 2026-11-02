@@ -152,7 +152,7 @@ test.describe('3. «Inicio» y la marca llevan al ingreso sin borrar el estado',
     await expect(page).toHaveURL(/#\/consultor$/);
   });
 
-  test('bajo 768 px: fila 1 = marca + Inicio; fila 2 = «Rol activo» + selector + Restablecer', async ({ page }) => {
+  test('bajo 768 px: fila 1 = marca + Inicio; fila 2 = «Rol activo» + selector (+ Restablecer si cabe; si no, tercera fila a la derecha)', async ({ page }) => {
     test.skip(width(page) >= 768, 'La distribución de dos filas es para menos de 768 px');
     await login(page, 'Líder');
     const f = await page.locator('header.topbar').evaluate((h) => {
@@ -163,12 +163,14 @@ test.describe('3. «Inicio» y la marca llevan al ingreso sin borrar el estado',
       const label = h.querySelector('label');
       const select = h.querySelector('select');
       const reset = h.querySelector('button.reset-demo');
-      return { f1: [centro(brand), centro(inicio)], f2: [centro(label), centro(select), centro(reset)], texto: label!.textContent?.trim(), orden: caja(label).right <= caja(select).left && caja(select).right <= caja(reset).left };
+      const mismaFila = caja(reset).top < caja(select).bottom - 1;
+      return { f1: [centro(brand), centro(inicio)], f2: [centro(label), centro(select), ...(mismaFila ? [centro(reset)] : [])], texto: label!.textContent?.trim(), orden: caja(label).right <= caja(select).left && (!mismaFila || caja(select).right <= caja(reset).left), debajo: !mismaFila ? caja(reset).top >= caja(select).bottom - 1 && h.getBoundingClientRect().right - parseFloat(getComputedStyle(h).paddingRight) - caja(reset).right <= 2 : true };
     });
     expect(Math.abs(f.f1[0] - f.f1[1])).toBeLessThanOrEqual(6);
     expect(Math.max(...f.f2) - Math.min(...f.f2)).toBeLessThanOrEqual(6);
     expect(f.f2[0]).toBeGreaterThan(f.f1[0] + 10);
     expect(f.orden, 'etiqueta, selector y botón en ese orden, de izquierda a derecha').toBe(true);
+    expect(f.debajo, 'si «Restablecer» no cabe, va en una tercera fila a la derecha').toBe(true);
     expect(f.texto).toBe('Rol activo');
     await expectNoHorizontalScroll(page);
   });

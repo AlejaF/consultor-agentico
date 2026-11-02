@@ -19,6 +19,7 @@ export function RoleSwitcher({ role }: { role: Role }) {
 
   return (
     <>
+      <div className="role-field">
       <label htmlFor="rol-activo">Rol activo</label>
       <select
           id="rol-activo"
@@ -35,6 +36,7 @@ export function RoleSwitcher({ role }: { role: Role }) {
             </option>
           ))}
         </select>
+      </div>
       <ConfirmDialog
         open={pending !== null}
         title="Hay una edición sin guardar"

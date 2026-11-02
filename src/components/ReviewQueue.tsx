@@ -1,5 +1,6 @@
 import type { Delivery } from '../domain/deliveries';
 import { projectInfo } from '../domain/lookup';
+import { UnverifiedCount } from './UnverifiedCount';
 
 /** Cola de entregas por revisar. */
 export function ReviewQueue({ deliveries }: { deliveries: readonly Delivery[] }) {
@@ -16,6 +17,7 @@ export function ReviewQueue({ deliveries }: { deliveries: readonly Delivery[] })
                 <strong>{kind}</strong> · {company.name}
               </p>
               <p className="subtitle">{team.name}</p>
+              <UnverifiedCount projectId={d.projectId} />
             </div>
             <a className="btn" href={`#/lider/entregas/${d.tipo}/${d.projectId}`}>
               Revisar<span className="visually-hidden"> {kind.toLowerCase()} de {company.name}</span>

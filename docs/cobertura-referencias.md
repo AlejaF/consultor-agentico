@@ -1,6 +1,18 @@
 # Cobertura de las interfaces de referencia
 
-Fecha: 2026-11-01. Solo documentación: no cambia el comportamiento de la demo.
+Fecha: 2026-11-01; actualizado el 2026-11-02 tras el lote L6f (informe imprimible y recuento de NO VERIFICADO). Solo documentación: no cambia el comportamiento de la demo.
+
+## Resumen de conteos
+
+Cuenta cada fila de las dos tablas siguientes por su estado (el «Incluido (con mejoras)» cuenta como Incluido; el «provisional» se separa porque depende de la decisión T100 sobre P3).
+
+| Referencia | Incluido | Simplificado | Excluido por decisión | Excluido (provisional) | No tratado | Total |
+|---|---|---|---|---|---|---|
+| Estudiantes → Consultor | 5 | 7 | 1 | 0 | 1 | 14 |
+| Profesorado → Líder y Empresa | 2 | 7 | 7 | 1 | 4 | 21 |
+| **Total** | 7 | 14 | 8 | 1 | 5 | 35 |
+
+Cambios del lote L6f: el informe imprimible (brecha 2) pasó de «Excluido por decisión (provisional)» a «Simplificado», y la fila de la cola del Líder (brecha 1) ya incluye el recuento de NO VERIFICADO (seguía «Simplificado»; solo faltan las contradicciones). Las 6 brechas, con su estado, están al final.
 
 ## Cómo se hizo (y qué es verificado y qué es supuesto)
 
@@ -25,7 +37,7 @@ Fecha: 2026-11-01. Solo documentación: no cambia el comportamiento de la demo.
 | Reporte de diagnóstico: tarjetas de índice de madurez, hallazgos identificados, evidencia citada y dimensiones evaluadas | **Simplificado** | Índice de madurez y «N de M hallazgos con evidencia citada»; no hay tarjetas separadas de «hallazgos identificados» ni de «dimensiones evaluadas». | Verificado: `p1-journey.spec.ts` |
 | Hallazgos agrupados por dimensión, cada uno con su evidencia citada | **Incluido** (con mejoras) | Ocho hallazgos en seis pilares rotulados «Pilar: …»; la cita se puede abrir y muestra un extracto ficticio; marca «NO VERIFICADO» donde falta respaldo (FR-016 a FR-018). | Verificado: `ajustes.spec.ts`, `p1-journey.spec.ts` |
 | Estado «generado, pendiente de revisión» y acciones «ir a la estrategia» y «enviar a revisión» en el reporte | **Simplificado** | El reporte ofrece «Ir a la revisión»; la emisión se hace en el panel de revisión, y «Enviar a revisión» pertenece a la estrategia. | Verificado: `ajustes.spec.ts`, `strategy-leader.spec.ts` |
-| Estrategia: análisis de sector, riesgos con nivel, análisis de mercado, ruta por fases con horizonte | **Incluido** | Cuatro riesgos y cuatro fases; sector y mercado marcados «NO VERIFICADO · contenido ilustrativo»; cada elemento indica de qué hallazgos deriva y solo cuentan los aceptados o editados y verificados (FR-024 a FR-027). | Verificado: `strategy.test.ts`, `strategy-leader.spec.ts` |
+| Estrategia: análisis de sector, riesgos con nivel, análisis de mercado, ruta por fases con horizonte | **Incluido** | La plantilla tiene cuatro riesgos y cuatro fases, pero **cada elemento se muestra solo si deriva de al menos un hallazgo aceptado o editado y verificado**: pueden verse 4 riesgos o menos (ver «Cuántos riesgos se ven: 3 o 4» más abajo). Sector y mercado marcados «NO VERIFICADO · contenido ilustrativo»; cada elemento indica de qué hallazgos deriva (FR-024 a FR-027). | Verificado: `strategy.test.ts`, `strategy-leader.spec.ts` |
 | Panel de revisión: aceptar, editar, rechazar; avance «N de M»; evidencia de respaldo al lado; aprobar y emitir | **Incluido** | Igual, con confirmación y diagnóstico emitido de solo lectura (FR-019 a FR-022). La evidencia se abre bajo el hallazgo en celular. | Verificado: `p1-journey.spec.ts` |
 
 ## Referencia de profesorado → rol Líder (y, en parte, rol Empresa)
@@ -37,7 +49,7 @@ Nota: la referencia de profesorado es una plataforma de administración de empre
 | Tablero del superadministrador: cuatro indicadores (empresas activas, diagnósticos por revisar, madurez promedio, casos de uso aprobados) | **Simplificado** | Tres indicadores: equipos activos, entregas por revisar y promedio de calificaciones. El indicador de casos de uso queda fuera (spec, «Fuera de la demo»: portafolio de casos de uso). | Verificado: `strategy-leader.spec.ts` |
 | Tabla de empresas (sector, etapa, madurez, avance, última actividad, enlace) | **Simplificado** | Tabla de equipos con proyectos, etapa (solo Evidencia, Diagnóstico y Estrategia), avance, última actividad y entregas por revisar; se reorganiza en tarjetas bajo 640 px (FR-028). Sin columna de madurez ni sector. | Verificado: `matrix.spec.ts` |
 | Buscador de empresa | **No tratado** | No hay decisión registrada. | Verificado que no existe |
-| Cola de revisión de diagnósticos con aviso de «sin evidencia suficiente» y de «contradicciones» | **Simplificado** | Cola de entregas por revisar (diagnóstico o estrategia) con «Revisar». No muestra recuento de hallazgos con respaldo insuficiente (**No tratado**) ni contradicciones (**No tratado**). | Verificado: `strategy-leader.spec.ts` |
+| Cola de revisión de diagnósticos con aviso de «sin evidencia suficiente» y de «contradicciones» | **Simplificado** | Cola de entregas por revisar (diagnóstico o estrategia) con «Revisar». Cada entrega, y la pantalla de revisión, muestra cuántos hallazgos aceptados o editados están NO VERIFICADO (FR-053, L6f). No muestra contradicciones (**No tratado**). | Verificado: `strategy-leader.spec.ts`, `l6f-no-verificado.spec.ts` |
 | Promedio por pilar (barras) | **Excluido por decisión** | spec, «Fuera de la demo»: analítica global de la plataforma. | Verificado que no existe |
 | Invitar empresa | **Excluido por decisión** | spec, «Fuera de la demo»: cuentas reales, invitación de empresas y envío de correos. | Verificado que no existe |
 | Secciones de administración de bancos de preguntas, metodología y analítica | **Excluido por decisión** | spec, «Fuera de la demo»: administración de la plataforma (bancos de preguntas, metodología, analítica global). | Verificado que no existen |
@@ -52,9 +64,25 @@ Nota: la referencia de profesorado es una plataforma de administración de empre
 | Diagnóstico: casilla de consentimiento de los participantes | **No tratado** | No hay decisión registrada; la demo avisa que los archivos no salen del navegador (FR-011). | Verificado que no existe |
 | Informe de diagnóstico: nivel de madurez de 1 a 5 con descripción del nivel | **Simplificado** | Índice de madurez 2,4 de 5 sin descripción del nivel. | Verificado: `p1-journey.spec.ts` |
 | Informe: gráfico radial, puntaje por pilar, tipificación de cada hallazgo (brecha, fortaleza, contradicción), recomendaciones prioritarias | **No tratado** | No hay decisión registrada. | Verificado que no existe |
-| Informe: exportar a PDF y encabezado de «revisado por el consultor» | **Excluido por decisión (provisional)** | Informe imprimible: historia 8 y FR-044 a FR-048 (P3), pendientes de T100. El estado «Emitido» con fecha ya se muestra (FR-021). | Verificado que el informe no existe |
+| Informe: exportar a PDF y encabezado de «revisado por el consultor» | **Simplificado** | Informe imprimible (historia 8, FR-044 a FR-048, L6f): se imprime o guarda como PDF con la función del navegador; lleva «DEMO · datos ficticios» en cada página, «Simulada», «NO VERIFICADO» y la fecha de emisión; sin encabezado propio de «revisado por el consultor» ni exportación a un archivo desde la aplicación. | Verificado: `report.spec.ts` (PDF en carta y A4, aviso en cada página); la impresión real queda para revisión humana (T071) |
 | Estrategia conversacional por etapas (visión, objetivos, principios, oportunidades, resultados clave) | **Excluido por decisión** | spec, «Fuera de la demo»: estrategia conversacional con asistente. | Verificado que no existe |
 | Portafolio de casos de uso: matriz de priorización, ficha, tabla | **Excluido por decisión** | spec, «Fuera de la demo»: portafolio de casos de uso. | Verificado que no existe |
+
+## Cuántos riesgos se ven: 3 o 4
+
+La plantilla de estrategia tiene **4 riesgos**; la pantalla muestra un riesgo solo si al menos uno de sus hallazgos de respaldo está **aceptado o editado y verificado** (FR-025). El hallazgo H5 es NO VERIFICADO, así que nunca respalda nada.
+
+| Riesgo | Respaldo (hallazgos) | Se ve cuando… |
+|---|---|---|
+| R1 | H2, H1 | H1 o H2 está aceptado o editado |
+| R2 | H4, H5 | **H4** está aceptado o editado (H5 no cuenta: NO VERIFICADO) |
+| R3 | H7, H3 | H3 o H7 está aceptado o editado |
+| R4 | H6 | H6 está aceptado o editado |
+
+- **Salen 4 riesgos** cuando están aceptados o editados H6, H4, al menos uno de H1/H2 y al menos uno de H3/H7. Es el caso de P-C y de los equipos 2 y 3 (todos aceptados).
+- **En P-B salen 3** (R1, R3 y R4) porque el estado de ejemplo **rechaza H4** y H5 es NO VERIFICADO: R2 se queda sin respaldo. Las 4 fases sí salen (F2 deriva de H2, que está editado; F3, de H3).
+- El equipo con H8 rechazado (proyecto E-1) también ve 4 riesgos (H8 solo respalda la fase F4, que sigue saliendo por H7).
+- La frase «cuatro riesgos» de la versión anterior de este documento era correcta para la plantilla, pero engañosa para P-B; se corrigió en la fila de Estrategia.
 
 ## Brechas que se podrían cerrar sin romper la constitución
 
@@ -62,8 +90,8 @@ Criterios: aportan al objetivo (diagnóstico y estrategia con revisión humana y
 
 | # | Brecha | Por qué aporta | Costo estimado |
 |---|---|---|---|
-| 1 | Mostrar en la cola del Líder y en la entrega cuántos hallazgos están «NO VERIFICADO» (respaldo insuficiente). | Ayuda a calificar la honestidad del entregable; los datos ya existen. | ≈ 0,5 h |
-| 2 | Informe imprimible (historia 8, ya especificada). | Permite llevar el resultado a una sesión de validación y es parte de lo pendiente de T100. | ≈ 0,75 h (estimación del plan) |
+| 1 | **Hecha en L6f (FR-053).** Mostrar en la cola del Líder y en la entrega cuántos hallazgos están «NO VERIFICADO» (respaldo insuficiente). | Ayuda a calificar la honestidad del entregable; los datos ya existen. | ≈ 0,5 h |
+| 2 | **Hecha en L6f (L5a, FR-044 a FR-048).** Informe imprimible (historia 8, ya especificada). | Permite llevar el resultado a una sesión de validación y es parte de lo pendiente de T100. | ≈ 0,75 h (estimación del plan) |
 | 3 | Puntaje por pilar y tipo de hallazgo (brecha, fortaleza o contradicción) en el reporte de diagnóstico. | Da una lectura por pilar y hace más útil la revisión; requiere datos ficticios nuevos y un requisito nuevo. | ≈ 1 a 1,5 h |
 | 4 | Recomendaciones prioritarias derivadas de los hallazgos aceptados y verificados (con «Deriva de…», igual que la estrategia). | Conecta diagnóstico y estrategia con trazabilidad; reutiliza `deriveStrategy`. | ≈ 1 h |
 | 5 | Vista de la Empresa con resumen y encuesta simulada (historia 7, ya especificada). | Completa el tercer punto de vista; hoy solo hay un mensaje. | ≈ 0,75 h (estimación del plan) |
