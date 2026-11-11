@@ -394,3 +394,14 @@ Decisión de la persona responsable: enmendar la constitución de 1.0.1 a **2.0.
 
 **Estado**: solo cambió el gobierno. No se construyó backend ni IA real; la demo publicada sigue siendo simulada. Pendiente: reflejar la enmienda en `spec.md`, `plan.md` y `tasks.md` antes de cualquier código (principio VI).
 
+## Decisiones del plan de la especificación 002 «Agente real con IA» (2026-11-11)
+
+Decididas por la persona responsable al revisar `specs/002-agente-real/plan.md`:
+
+1. **Migración del estado v2 → v3 sin pérdida**: los proyectos existentes quedan en modo Simulado.
+2. **Sector y mercado ocultos en modo real**: no se generan con IA ni se mezclan con contenido simulado (AG-029).
+3. **Modelos por etapa: solo PROPUESTA, aún no definitiva**: `gpt-6-luna` en desarrollo y `gpt-6.1-sol` en la demo. La persona decidirá **antes de la prueba de humo del lote C** y registrará aquí la decisión final (principio IX: el valor por defecto de cada etapa no cambia sin decisión registrada). Precios y capacidades se re-verifican en la página oficial de OpenAI antes de esa decisión (NO VERIFICADO hasta entonces).
+4. **Alcance**: solo el lote G (agente Crítico, P3) queda **diferido**. **AG-021 (información faltante) y AG-030 (reabrir archivos al recargar) quedan marcados como «recortables»** pero siguen en el spec y en los lotes; se decide en el **punto de control posterior al lote C**, con tiempos medidos. El spec no se modificó por esto.
+5. **Forma de trabajo**: un lote a la vez; el agente no genera código de un lote hasta que la persona apruebe el anterior; revisión y commit de la persona entre lotes (principio VIII).
+6. **Calibración**: el tiempo real de reloj de cada lote se registra en `docs/tiempos-002.md`.
+
