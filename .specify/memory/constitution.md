@@ -6,16 +6,28 @@
 Todo dato, nombre, marca o logo es ficticio y se rotula como tal. MUST NOT aparecer datos,
 nombres, marcas ni logos reales de empresas, personas o instituciones. Los PDF de `referencias/`
 (`interfaz_estudiantes.pdf`, `interfaz_profe.pdf`) MUST NOT commitearse y permanecen en `.gitignore`.
-Razón: el repositorio es público.
+En modo IA real la persona puede cargar documentos propios; esos documentos MUST NOT
+commitearse ni guardarse en disco por el backend (solo viven en memoria durante la sesión).
+El repositorio, el sitio publicado y los archivos de ejemplo siguen siendo 100 % ficticios.
+Razón: el repositorio es público y los documentos propios pueden ser confidenciales.
 
-### II. Solo sitio estático
-La demo es un sitio estático publicado en GitHub Pages. MUST NOT existir servidor, base de datos
-ni claves de API. La IA se simula con contenido preparado y se rotula como simulada.
-Razón: costo cero, publicación segura y sin secretos.
+### II. Sitio estático publicado y backend local opcional
+El sitio publicado en GitHub Pages sigue siendo estático y funciona solo en modo Simulado, con
+contenido preparado rotulado como simulado. Se permite un backend local opcional (carpeta
+`server/`) que solo corre en el equipo de la persona y es el único lugar donde puede existir la
+clave de API del proveedor de IA (OpenAI). La clave MUST NOT aparecer en el repositorio, el
+historial, el frontend ni `dist/`. MUST NOT desplegarse un backend con la clave de forma pública
+sin autenticación y tope de gasto.
+Razón: el sitio público no puede tener secretos; la IA real solo se ejecuta bajo control local.
 
 ### III. Honestidad
-Lo simulado MUST mostrarse como simulado. MUST NOT inventarse hechos. Lo que no se haya verificado
-MUST marcarse NO VERIFICADO. Razón: el prototipo valida un flujo, no afirma resultados reales.
+Lo simulado MUST mostrarse como simulado: el rótulo «Simulada» se conserva para el modo Simulado.
+Todo contenido producido por el modelo MUST rotularse «Generado por IA (modelo X) · requiere
+revisión humana». MUST NOT inventarse hechos. Lo que no se haya verificado MUST marcarse
+NO VERIFICADO. Toda cita de un hallazgo MUST verificarse por código determinista contra el texto
+fuente; una cita no verificada MUST NOT presentarse como verificada. Todo aviso de privacidad MUST
+nombrar al proveedor al que se envía el texto.
+Razón: el prototipo valida un flujo y el modelo puede equivocarse; la persona debe saberlo.
 
 ### IV. Responsive y accesible
 La aplicación MUST funcionar en celular, tableta y computador, cumplir WCAG 2.2 AA, ofrecer
@@ -39,12 +51,25 @@ Evidencia → Diagnóstico → Estrategia, con usuarios por rol.
 Cada lote MUST terminar con pruebas, revisión humana y un commit hecho por la persona
 responsable. El agente MUST NOT hacer commit ni push.
 
+### IX. Seguridad y costo de la IA
+- La clave de API solo vive en `.env` (ignorado por git); `.env.example` MUST existir sin valores.
+- `npm run check` MUST fallar si encuentra patrones de claves en el repositorio o en `dist/`.
+- Todo bucle de agente MUST tener tope de iteraciones y de tamaño de entrada.
+- El backend MUST escuchar solo en `127.0.0.1`.
+- El contenido de los documentos MUST tratarse como datos, nunca como instrucciones.
+- El agente propone y la persona decide (humano en el circuito).
+- El modelo de cada etapa se configura por variable de entorno y MUST NOT cambiarse por defecto
+  sin decisión registrada de la persona responsable.
+Razón: limitar fugas de secretos, gasto no controlado e inyección de instrucciones.
+
 ## Restricciones Adicionales
 
 - Una sola aplicación web une las interfaces de estudiantes y profesorado, con acceso por rol.
-- Toda salida simulada de IA MUST llevar un rótulo visible de "simulada".
-- Las dependencias externas en tiempo de ejecución se evitan; si se usan, MUST funcionar sin
-  claves ni servicios propios.
+- Toda salida simulada de IA MUST llevar un rótulo visible de "simulada", y toda salida del
+  modelo real el rótulo de generado por IA (principio III).
+- El sitio publicado MUST funcionar sin claves ni servicios propios. Las dependencias externas en
+  tiempo de ejecución se evitan; solo el backend local opcional (principio II) puede usar la clave
+  del proveedor de IA, nunca el sitio publicado.
 - Idioma de la interfaz, documentación y comunicación con el agente: español.
 
 ## Flujo de Desarrollo y Revisión
@@ -53,7 +78,7 @@ responsable. El agente MUST NOT hacer commit ni push.
 - Cada lote MUST pasar pruebas (incluida verificación de accesibilidad y de vistas responsive)
   antes de la revisión humana.
 - La persona responsable revisa y hace el commit; el agente propone el mensaje, sin ejecutarlo.
-- Toda revisión MUST verificar el cumplimiento de los principios I–VIII.
+- Toda revisión MUST verificar el cumplimiento de los principios I–IX.
 
 ## Gobernanza
 
@@ -63,6 +88,8 @@ El versionado es semántico: MAJOR por eliminar o redefinir principios de forma 
 MINOR por añadir principios o ampliar guía de forma material, PATCH por aclaraciones. Toda
 revisión de lote MUST comprobar el cumplimiento; cualquier excepción MUST justificarse por escrito.
 
-**Version**: 1.0.1 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-02
+**Version**: 2.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-11
 
 <!-- Enmienda 1.0.1 (PATCH, 2026-11-02): aclaración del principio VII (P3 puede incluirse o ampliarse por decisión escrita de la persona responsable). Aprobada por la persona responsable el 2026-11-02 al decidir incluir L5a y L5b y ampliar P3; propagada a spec.md, tasks.md, README.md, docs/decisiones.md y docs/cobertura-referencias.md. -->
+
+<!-- Enmienda 2.0.0 (MAJOR, 2026-11-11): redefinición incompatible del principio II («Solo sitio estático» → «Sitio estático publicado y backend local opcional»: ahora se permite un backend local con la clave de API). Principio I ampliado (documentos propios solo en memoria); principio III ampliado (rótulo de IA, verificación determinista de citas, proveedor en avisos de privacidad); nuevo principio IX «Seguridad y costo de la IA»; ajustadas «Restricciones adicionales» y la referencia I–IX. Principios IV–VIII sin cambios. Solicitada por la persona responsable el 2026-11-11; propagada a README.md y docs/decisiones.md. Pendiente propagar a spec.md, plan.md y tasks.md. -->

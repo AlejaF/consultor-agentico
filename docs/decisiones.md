@@ -382,3 +382,15 @@ Solo datos de ejemplo: los instantes que se veían fuera de 08:00–17:00 (hora 
 
 Orden conservado: generado → emitido (20 oct) → estrategia generada (22) → enviada (23) → calificaciones (24, 25 y 27). No había textos de hora de estos datos en `tests/` ni en `docs/` (las pruebas de formato usan sus propios instantes). Verificación: `typecheck`, unitarias, `check` y e2e de strategy-leader, report, tablero, Empresa, labels, p1-journey, matrix y capturas afectadas; no se re-ejecutó la suite completa.
 
+## Enmienda 2.0.0 de la constitución (2026-11-11)
+
+Decisión de la persona responsable: enmendar la constitución de 1.0.1 a **2.0.0 (MAJOR)**, porque el principio II se redefine de forma incompatible («Solo sitio estático» pasa a «Sitio estático publicado y backend local opcional»), según la regla de gobernanza.
+
+- **I**: en modo IA real la persona puede cargar documentos propios; no se commitean ni el backend los guarda en disco (solo memoria durante la sesión). Repositorio, sitio publicado y ejemplos siguen 100 % ficticios.
+- **II**: el sitio en GitHub Pages sigue estático y solo en modo Simulado. Backend local opcional (`server/`), solo en el equipo de la persona, único lugar con la clave de OpenAI; la clave no aparece en repositorio, historial, frontend ni `dist/`; no se despliega un backend con clave sin autenticación y tope de gasto.
+- **III**: rótulo «Generado por IA (modelo X) · requiere revisión humana»; citas verificadas por código determinista (una cita no verificada no se presenta como verificada); «Simulada» se conserva para el modo Simulado; todo aviso de privacidad nombra al proveedor.
+- **IX (nuevo)** «Seguridad y costo de la IA»: clave solo en `.env` con `.env.example` sin valores; `npm run check` falla ante patrones de claves en repo o `dist/`; topes de iteraciones y de tamaño de entrada; backend solo en `127.0.0.1`; documentos como datos, no instrucciones; el agente propone y la persona decide; modelo por etapa por variable de entorno, sin cambiar el predeterminado sin decisión registrada.
+- **IV–VIII** sin cambios. «Restricciones adicionales» ajustada para ser coherente con el nuevo II.
+
+**Estado**: solo cambió el gobierno. No se construyó backend ni IA real; la demo publicada sigue siendo simulada. Pendiente: reflejar la enmienda en `spec.md`, `plan.md` y `tasks.md` antes de cualquier código (principio VI).
+
