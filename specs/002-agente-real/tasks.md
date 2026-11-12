@@ -1,0 +1,305 @@
+---
+
+description: "Lista de tareas de la especificación 002 «Agente real con IA» (7 lotes: A a G)"
+---
+
+# Tasks: Agente real con IA (diagnóstico, traza y estrategia con agente)
+
+**Input**: `specs/002-agente-real/` — [spec.md](./spec.md), [plan.md](./plan.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [research.md](./research.md), [quickstart.md](./quickstart.md); constitución 2.0.0 en `.specify/memory/constitution.md`. Extiende `specs/001-demo-consultor-agentico/` sin romperla.
+
+**Tests**: pedidos explícitamente en el plan (Vitest con cliente de modelo FALSO; Playwright con el servicio en modo falso). **Dentro de cada lote, las pruebas van antes que la implementación de lo que prueban** (se escriben y se ven fallar primero).
+
+**Organización**: por lote (A a G), en el orden del plan. Los tiempos son de **reloj real** (generar código, esperas, revisión de la persona) y son **NO VERIFICADO**: ver la tabla del plan y el registro [docs/tiempos-002.md](../../docs/tiempos-002.md).
+
+## Reglas del trabajo
+
+- **Especificación primero (principio VI)**: toda divergencia detectada durante un lote se corrige primero en el spec y se propaga a plan y tareas antes de seguir con código.
+- **UN lote a la vez**: el agente **no genera código de un lote hasta que la persona apruebe el anterior** (revisión y commit de la persona entre lotes, principio VIII). Las tareas `[PERSONA]` de cuenta y crédito (primeras de A) las puede hacer la persona mientras el agente trabaja, pero deben estar hechas **antes del lote C**.
+- **El agente nunca hace commit ni push.** Tampoco **abre, lee ni imprime `server/.env`** ni ninguna clave: las corridas con el modelo real las ejecuta la persona con un script que no imprime la clave ni texto de documentos (principios I y IX).
+- **Lotes C y D = revisión a fondo**: son los que más riesgo concentran (el bucle del agente y la integración con el flujo de la 001). Sus listas de revisión son más largas que las demás y la revisión de la persona se estima más larga (plan: 3 a 4,5 h cada una).
+- **Cierre estándar de todo lote** (tareas `[CIERRE]` y `[PERSONA]` finales): (1) typecheck, pruebas, build, check y e2e en verde; (2) actualizar «Estado de la sesión» de `docs/decisiones.md`; (3) registrar el tiempo real de reloj del lote en `docs/tiempos-002.md`; (4) escribir la «lista de revisión corta» del lote en `docs/revision-002.md` (qué comando correr, qué abrir y qué comprobar; **máximo 10 minutos**); (5) la persona revisa, corre `npm run build && npm run check` con la lista de nombres, hace el commit y decide el push.
+- **SC-A5**: el modo Simulado pasa todas las pruebas de la 001 **sin modificarlas**. Ninguna prueba existente de `tests/unit/` ni de `tests/e2e/` se edita para que pase; si alguna falla, el cambio rompió el modo Simulado y se corrige el cambio. Solo se **añaden** archivos de prueba nuevos.
+- **Recortables**: las tareas de AG-021 (información faltante) y de AG-030 (reabrir archivos al recargar) llevan la marca **(RECORTABLE)**. Siguen en el spec y en los lotes; la persona decide en el **punto de control posterior al lote C** (T072) con tiempos medidos. **El lote G (Crítico, P3) está DIFERIDO**: no se ejecuta salvo decisión de la persona.
+- **Datos ficticios (principio I)**: ninguna tarea puede introducir nombres, marcas ni logos reales; los fixtures son de «Empresa Ficticia Alfa».
+- **Valores sugeridos por la persona y por el plan, NO VERIFICADO**: modelos (`gpt-6-luna` en desarrollo, `gpt-6.1-sol` en demo), topes (10 iteraciones, 120 000 caracteres, 2 000 filas XLSX, 200 páginas PDF) y límites de gasto: se confirman con mediciones; ninguno es definitivo hasta decisión registrada en `docs/decisiones.md` (principio IX).
+
+## Formato y leyenda
+
+`- [ ] T### [P] [US#] Descripción con archivo (historia; AG/SC)`
+
+- **[P]**: se puede hacer en paralelo (archivos distintos y **sin depender de otra tarea del mismo grupo paralelo**).
+- **[US#]**: historia del spec (US9 diagnóstico real, US10 traza y verificación, US11 estrategia, US12 información faltante, US13 Crítico). Las tareas de base (sin historia propia) no llevan etiqueta y citan sus AG.
+- **[CIERRE]**: tarea de cierre del lote que ejecuta el agente. **No cuenta** para el recuento de implementación.
+- **[PERSONA]**: tarea **de la persona responsable**. El agente no la ejecuta: no hace commit ni push. **No cuenta** para el recuento.
+- **(RECORTABLE)**: tarea ligada a AG-021 o AG-030; se mantiene hasta que la persona decida en T072.
+- Convención de citas: «US9; AG-014, SC-A1» = historia 9, requisito AG-014, criterio SC-A1. Los FR y SC de la 001 se citan tal cual (FR-019, SC-012).
+- Rutas relativas a la raíz del repositorio. Las citas de restricciones del modelo de datos van **textuales** entre comillas.
+
+### Recuento (resumen)
+
+| Lote | Tareas de implementación | Cierre y persona (no cuentan) | Prioridad |
+|---|---|---|---|
+| A Base y seguridad | 11 | 11 | base |
+| B Extracción y verificador | 18 | 7 | P1 |
+| C Agente de Diagnóstico (revisión a fondo) | 14 | 11 | P1/P2 |
+| D Frontend y persistencia (revisión a fondo) | 17 | 7 | P1 |
+| E Estrategia con agente real | 7 | 7 | P1 |
+| F Cierre | 7 | 9 | P1/P2 |
+| G Crítico (DIFERIDO) | 5 | 7 | P3 |
+| **Total** | **79** | **59** | |
+
+---
+
+## Línea de corte y qué se retira si se recorta (principio VII)
+
+**Orden de corte (lo primero que se corta, primero):** 1.º **G (Crítico, P3)**, ya diferido; 2.º **AG-021** (información faltante, P2); 3.º **AG-030** (reabrir archivos al recargar). **US9, US10 y US11 (A a F sin lo recortable) son el mínimo coherente.**
+
+**Si se corta G**: no se crea `server/src/agent/critic.ts`, `server/src/routes/critic.ts` ni `src/components/Objections.tsx`; el spec marca US13 y AG-022 como «fuera de esta versión» (registrar antes en el spec y en `docs/decisiones.md`).
+
+**Si se corta AG-021**: quitar la herramienta `declarar_informacion_faltante` de `server/src/agent/diagnosis.ts`, `missingInfo` de la respuesta y del estado, y `src/components/MissingInfo.tsx`; el spec marca US12 y AG-021 como diferidos y se ajusta la traza de pruebas.
+
+**Si se corta AG-030**: quitar `GET`/`DELETE` de evidencia de `server/src/routes/evidence.ts`, `src/components/ServerFilesList.tsx` y el aviso de reinicio; tras recargar, la persona vuelve a cargar los archivos. El spec marca AG-030 y SC-A7 y el caso límite de recarga como diferidos (AG-025 y AG-026 siguen vigentes).
+
+En todos los casos: spec → plan → tareas antes del código, y constancia en `docs/decisiones.md`.
+
+---
+
+## Lote A — Base y seguridad (P1 · base) · cuenta, clave y `check-secrets`
+
+**Objetivo**: servicio local mínimo que solo escucha en `127.0.0.1`, escáner de claves en `npm run check` (repositorio y `dist/`), configuración por entorno sin modelo por defecto, y la cuenta de la API lista con límites de gasto.
+
+**Criterio de salida (del plan)**: `npm run check` falla si se planta una clave falsa en un archivo versionado y en `dist/`; `GET /api/health` responde solo en loopback y no devuelve la clave.
+
+**AG/SC**: AG-002, AG-010, AG-027, AG-028 (base); principio IX; SC-A2.
+
+- [ ] T001 [PERSONA] **Crear la cuenta y un proyecto dedicado de la API** de OpenAI (por ejemplo, un proyecto solo para esta demo, separado de cualquier otro uso). Esta tarea y las dos siguientes se pueden hacer mientras el agente trabaja y **deben estar hechas antes del lote C**. Los nombres exactos de los menús de la plataforma pueden haber cambiado (NO VERIFICADO): se hace desde la configuración de facturación y de proyectos.
+- [ ] T002 [PERSONA] **Comprar 20 USD de crédito prepago con la recarga automática DESACTIVADA** (comprobar que la opción de recarga automática figura apagada después de la compra). Con crédito prepago y sin recarga automática, el gasto máximo posible queda acotado por lo que se compró.
+- [ ] T003 [PERSONA] **Configurar el límite de gasto con hard limit** en la **organización y en el proyecto**, más **alertas** de gasto. Valores sugeridos (propuesta, NO VERIFICADO; decide la persona): proyecto 10 USD, organización 20 USD, alertas al 50 % y al 80 %. Anotar los valores elegidos (sin claves) en `docs/decisiones.md`.
+- [ ] T004 Crear `server/package.json` con `engines.node` `>=24`, `type: module` y **versiones exactas sin `^`** (openai 7.55.0, fastify 5.12.8, @fastify/cors 11.4.1, @fastify/multipart 10.1.8, zod 4.6.7, unpdf 2.1.0, mammoth 1.13.0, read-excel-file 9.3.15; dev: tsx 4.23.15, typescript 7.0.2, @types/node 26.6.6, fflate con la versión exacta que se fije), `server/tsconfig.json` (estricto) y `server/package-lock.json`; instalar con `npm ci --prefix server --ignore-scripts` y ejecutar `npm audit --prefix server`, anotando el resultado en `research.md` (AG-027, IX; plan «Contexto técnico»)
+- [ ] T005 [P] Actualizar `.gitignore`: añadir `!.env.example`, `!server/.env.example` y `server/.env`; comprobar con `git check-ignore -v` que `server/.env.example` NO se ignora y `server/.env` SÍ (el `.gitignore` actual tiene `.env*`, que ignoraría también el ejemplo) (AG-027; research §10 bis)
+- [ ] T006 [P] Prueba unitaria `tests/unit/secrets.test.ts` de `scripts/lib/secrets.mjs` (se ve fallar primero): detecta `sk-proj-…`, `sk-svcacct-…`, `sk-admin-…`, el formato con la marca `T3BlbkFJ`, el genérico `sk-` largo y `OPENAI_API_KEY=` con valor; **no** marca `.env.example` sin valores ni las claves falsas de los propios fixtures de la prueba (con marca de excepción); falla si `server/.env` aparece como versionado; revisa también un directorio `dist/` simulado (SC-A2)
+- [ ] T007 Implementar `scripts/lib/secrets.mjs` (patrones y búsqueda, research §10) y `scripts/check-secrets.mjs` que recorre `git ls-files`, `dist/` y `server/.env.example`; añadirlo a `npm run check` en `package.json` **sin quitar** `check-names` ni `check-tokens` (AG-027, SC-A2; IX)
+- [ ] T008 [P] Prueba `tests/server/config.test.ts` de `server/src/config.ts` (se ve fallar primero): **no hay modelo por defecto** (falta de `OPENAI_MODEL_DIAGNOSTICO` → categoría `no_model_configured` con el nombre de la variable que falta); `MAX_ITERATIONS` por defecto `10`, `MAX_INPUT_CHARS` `120000`, `MAX_XLSX_ROWS` `2000`, `PORT` `8787`; `MODEL_PROVIDER` solo `openai` o `fake`; la clave nunca aparece en el objeto de configuración serializable (AG-010; IX; contracts/env.md)
+- [ ] T009 Implementar `server/src/config.ts` con zod según `contracts/env.md` (sin valores por defecto de modelo; niveles de razonamiento `none|low|medium|high|xhigh|max`)
+- [ ] T010 [P] Prueba `tests/server/health.test.ts` (se ve fallar primero): el servicio se enlaza a `127.0.0.1` y no a `0.0.0.0`; `GET /api/health` devuelve `{ ok, version, keyConfigured, models, limits, fake }` **sin la clave ni parte de ella**; CORS acepta solo `ALLOWED_ORIGINS`; se rechaza un `Host` u `Origin` no permitido (defensa contra *DNS rebinding*); el registro (`log.ts`) no incluye cuerpos ni clave (AG-002; IX; contracts/api.md)
+- [ ] T011 Implementar `server/src/log.ts` (solo método, ruta, estado, duración, tokens y categoría de error), `server/src/routes/health.ts` y `server/src/index.ts` (Fastify, `listen({ host: '127.0.0.1' })`, `@fastify/cors` con lista explícita, validación de `Host`/`Origin`, límites de multipart declarados) (AG-002; IX)
+- [ ] T012 [P] Crear `server/.env.example` **sin valores** con todas las variables de `contracts/env.md` y un comentario por variable (AG-010, IX)
+- [ ] T013 Añadir a `vite.config.ts` el proxy de `/api` hacia `http://127.0.0.1:8787` **solo en desarrollo** y ampliar el `include` de Vitest a `tests/server/**/*.test.ts` (sin tocar los existentes); crear `scripts/dev-all.mjs` (arranca servicio y Vite y los cierra juntos, sin dependencias nuevas) y los scripts `dev:server` y `dev:all` en `package.json`; hacer que `npm run typecheck` cubra también `server/` (plan «Estructura»; research §14)
+- [ ] T014 Prueba negativa del escáner (SC-A2): con la prueba de T006 ya en verde, comprobar a mano que una clave falsa colocada en un archivo temporal versionado y en `dist/` hace fallar `npm run check`, y que se pasa tras quitarla; dejar el resultado en `docs/evidencia/seguridad-a.md` (sin ninguna clave real)
+- [ ] T015 [CIERRE] Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `npm run check` y `npm run test:e2e`; todo en verde (incluidas las pruebas de la 001 **sin modificar**) y `npm ci --prefix server`
+- [ ] T016 [CIERRE] Actualizar la sección «Estado de la sesión» de `docs/decisiones.md` (lote A cerrado, qué sigue) y registrar el tiempo real de reloj del lote A en `docs/tiempos-002.md` (inicio, fin, (a) generar, (b) esperas; dejar en blanco lo no medido)
+- [ ] T017 [CIERRE] Escribir en `docs/revision-002.md` la **«lista de revisión corta» del lote A** (máx. 10 min): comando `npm run check` y `npm run dev:server`; abrir `http://127.0.0.1:8787/api/health`; comprobar que no aparece la clave, que desde otra interfaz no responde y que `git check-ignore -v server/.env.example server/.env` da el resultado esperado
+- [ ] T018 [PERSONA] **Crear la clave de la API (restringida al proyecto) y el archivo `server/.env`** a partir de `server/.env.example`, con la clave en `OPENAI_API_KEY` y, por ahora, sin modelos (se deciden en el lote C). Comprobar que `git status` NO muestra `server/.env`. **No pegar la clave en el chat ni en ningún archivo versionado.**
+- [ ] T019 [PERSONA] **Revisión humana del lote A** con la lista de T017 (máx. 10 min) y, si algo falla, devolver al agente.
+- [ ] T020 [PERSONA] Ejecutar `npm run build && npm run check` **en local con la lista `.local/denylist.txt` presente** y revisar `git status`; si hay coincidencias, corregirlas antes del commit.
+- [ ] T021 [PERSONA] Hacer el **commit del lote A** (el agente no lo hace).
+- [ ] T022 [PERSONA] Antes del push, repetir `npm run build && npm run check` con la lista de nombres presente; hacer el push de `main` y comprobar que el despliegue de Pages sigue en verde (solo modo Simulado).
+
+---
+
+## Lote B — Extracción y verificador (P1 · US9 base)
+
+**Objetivo**: el servicio recibe archivos, extrae el texto de los 6 formatos **en memoria**, lo divide en fragmentos con ubicación y verifica citas de forma determinista. Sin modelo todavía.
+
+**Criterio de salida (del plan)**: los 6 fixtures se extraen con su ubicación; PDF sin texto, archivo cifrado y archivo dañado dan motivo claro; ningún archivo se escribe a disco; el verificador pasa sus pruebas (parte determinista de SC-A1).
+
+**Historia cubierta**: US9 (base). **AG/SC**: AG-006, AG-007, AG-015, AG-026, AG-030 (servidor, RECORTABLE); SC-A1.
+
+- [ ] T023 [US9] **Spike de librerías (antes de escribir los extractores)**: con un script desechable en el directorio de trabajo temporal, comprobar la API real de `unpdf` 2.1.0 (texto por página), `mammoth` 1.13.0 (`extractRawText`) y `read-excel-file` 9.3.15 (hojas y filas, desde un `Buffer`) y cómo reaccionan ante un archivo cifrado o dañado; anotar en `research.md` lo comprobado y lo que no (research §6, plan «Riesgos» 6)
+- [ ] T024 [P] [US9] Prueba `tests/unit/fixtures.test.ts` de `scripts/make-fixtures.mjs` (se ve fallar primero): genera en `tests/fixtures/` un archivo por formato (PDF con texto, DOCX, XLSX, TXT, VTT, SRT) de «Empresa Ficticia Alfa», más los hostiles pequeños (PDF sin texto, «cifrado», dañado y un TXT que contiene una instrucción dirigida a la IA); todos ficticios y revisables por `check-names` (principio I)
+- [ ] T025 [US9] Implementar `scripts/make-fixtures.mjs` (PDF mínimo escrito a mano; DOCX y XLSX armados con `fflate`; sin dependencias nuevas fuera de las ya fijadas) y generar `tests/fixtures/*`; añadir `tests/fixtures/` a la revisión de `check-names` si hace falta (US9; principio I)
+- [ ] T026 [P] [US9] Prueba `tests/server/verify.test.ts` de `server/src/verify.ts` (se ve fallar primero): normalización «Unicode NFD, quitar marcas diacríticas, minúsculas, colapsar cualquier espacio en blanco a un espacio, recortar»; una cita que difiere solo en mayúsculas, tildes y espacios **se verifica**; un fragmento que no está **no se verifica**; un fragmento de menos de 20 caracteres **no se verifica**; si no está en la ubicación citada pero sí en otra del mismo archivo, el error **incluye la ubicación correcta**; archivo o ubicación inexistentes → error que lo dice (US10; AG-015, AG-016, SC-A1; research §7)
+- [ ] T027 [P] [US9] Prueba `tests/server/extract.test.ts` (se ve fallar primero): cada fixture se extrae con su `Location` (`page`, `paragraph`, `sheet`+`row`, `line`, `time` «mm:ss»); PDF sin texto → `reason: "pdf_sin_texto"` con el mensaje «Este PDF no tiene texto seleccionable (parece escaneado). Esta versión no usa OCR.»; archivo cifrado → `cifrado`; dañado → `danado`; XLSX por encima de `MAX_XLSX_ROWS` → extracción parcial con `warning: "tope_filas_alcanzado"`; un archivo que falla no impide procesar los demás; sin OCR (AG-006, AG-007; data-model «Archivo en el servicio»)
+- [ ] T028 [P] [US9] Prueba `tests/server/limits.test.ts` de `server/src/limits.ts`: formatos permitidos PDF, DOCX, TXT, VTT, SRT y XLSX; máximo 26 214 400 bytes; nombre de hasta 150 caracteres; audio rechazado; los motivos coinciden con los de `src/domain/fileValidation.ts` (FR-010) (AG-006)
+- [ ] T029 [P] [US9] Prueba `tests/server/store-search.test.ts` de `store.ts` y `search.ts`: el almacén vive solo en memoria por proyecto; `buscar` puntúa por términos (sin palabras vacías) y devuelve hasta 5 resultados `{ archivo, ubicacion, texto recortado }`; sin resultados devuelve lista vacía (AG-026; research §8)
+- [ ] T030 [P] [US9] Prueba `tests/server/evidence-route.test.ts` de `server/src/routes/evidence.ts`: `POST /api/evidence?projectId=` (multipart) devuelve `files[]` con `status`, `reason`, `chars`, `chunkCount`; `projectId` válido solo si coincide con `^[A-Za-z0-9-]{1,32}$`; **ninguna escritura a disco** (se compara el contenido del directorio de trabajo y del temporal antes y después); `413` por tamaño; `GET /api/evidence/:projectId` lista (vacía tras reiniciar) **(RECORTABLE, AG-030)**; `DELETE /api/evidence/:projectId/:fileId` quita de memoria **(RECORTABLE, AG-030)** (AG-006, AG-026; contracts/api.md)
+- [ ] T031 [P] [US10] Implementar `server/src/verify.ts` (`normalize`, `verifyQuote` con el fragmento de la ubicación citada y el hallazgo de ubicación alternativa; mínimo de 20 caracteres) (AG-015, AG-016)
+- [ ] T032 [US9] Implementar `server/src/chunk.ts` con el tipo `Location` (unión etiquetada de data-model) y su texto mostrable («pág. 3», «párrafo 12», «hoja “Ventas”, fila 7», «línea 45», «minuto 03:10») (AG-014)
+- [ ] T033 [P] [US9] Implementar `server/src/extract/pdf.ts` con `unpdf` (texto por página, tope de 200 páginas, `pdf_sin_texto`) (AG-006, AG-007)
+- [ ] T034 [P] [US9] Implementar `server/src/extract/docx.ts` con `mammoth` (párrafo N) (AG-006)
+- [ ] T035 [P] [US9] Implementar `server/src/extract/xlsx.ts` con `read-excel-file` (hoja y fila, tope `MAX_XLSX_ROWS`) (AG-006)
+- [ ] T036 [P] [US9] Implementar `server/src/extract/text.ts` (TXT, línea N) y `server/src/extract/subtitles.ts` (VTT y SRT, minuto «mm:ss» de inicio de cada bloque) (AG-006)
+- [ ] T037 [US9] Implementar `server/src/extract/index.ts`: despacha por extensión, aplica un tiempo máximo por archivo, captura los errores por archivo (nunca tumban el servicio) y traduce a los motivos `pdf_sin_texto`, `cifrado`, `danado`, `formato_no_permitido`, `demasiado_grande`, `nombre_largo`, `tope_filas_alcanzado` (AG-007)
+- [ ] T038 [P] [US9] Implementar `server/src/limits.ts` con las mismas reglas de FR-010 (25 MB, nombre de 150 caracteres, formatos, audio fuera) (AG-006)
+- [ ] T039 [P] [US9] Implementar `server/src/store.ts` (memoria por proyecto y archivo; sin ningún acceso a disco) y `server/src/search.ts` (palabras clave, `K = 5`) (AG-026)
+- [ ] T040 [US9] Implementar `server/src/routes/evidence.ts` (`POST` con multipart en memoria; `GET` y `DELETE` marcados **(RECORTABLE, AG-030)**) y registrarlo en `server/src/index.ts` (AG-006, AG-026, AG-030)
+- [ ] T041 [CIERRE] Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `npm run check` y `npm run test:e2e`; todo en verde (pruebas de la 001 **sin modificar**)
+- [ ] T042 [CIERRE] Actualizar «Estado de la sesión» de `docs/decisiones.md` (lote B cerrado, resultado del spike, qué sigue) y registrar el tiempo real de reloj del lote B en `docs/tiempos-002.md`
+- [ ] T043 [CIERRE] Escribir en `docs/revision-002.md` la **«lista de revisión corta» del lote B** (máx. 10 min): `npm test -- tests/server`; arrancar `MODEL_PROVIDER=fake npm run dev:server` y enviar un fixture con `curl`; abrir la respuesta y comprobar ubicaciones y motivos de fallo; comprobar que no apareció ningún archivo nuevo en el disco
+- [ ] T044 [PERSONA] **Revisión humana del lote B** con la lista de T043 (máx. 10 min); probar además con **uno o dos documentos propios de ejemplo de tu elección que sean ficticios** (principio I).
+- [ ] T045 [PERSONA] Ejecutar `npm run build && npm run check` con `.local/denylist.txt` presente y revisar `git status`.
+- [ ] T046 [PERSONA] Hacer el **commit del lote B**.
+- [ ] T047 [PERSONA] Repetir `npm run build && npm run check` con la lista presente antes del push y hacer el push de `main`.
+
+---
+
+## Lote C — Agente de Diagnóstico (P1 · US9, US10, US12) · **REVISIÓN A FONDO**
+
+**Objetivo**: bucle de agente propio sobre `ModelClient` (OpenAI y FALSO), con verificador de citas con retroalimentación, traza, topes y errores normalizados; `POST /api/diagnosis/run`; primera corrida real documentada.
+
+**Criterio de salida (del plan)**: pruebas con el cliente FALSO en verde (reintentos, tope, argumentos mal formados, error de gasto sin reintento); una corrida real documentada con traza, modelo y tokens; **primera medición de SC-A6 y del costo**.
+
+**Historias cubiertas**: US9, US10, US12 (RECORTABLE). **AG/SC**: AG-008, AG-009, AG-011, AG-012, AG-013, AG-014, AG-016, AG-017, AG-021 (RECORTABLE); SC-A1, SC-A3, SC-A6.
+
+- [ ] T048 [US9] **Re-verificar en la página oficial de OpenAI** (precios, IDs exactos, soporte de herramientas de tipo función en la Responses API y valores de razonamiento de los modelos propuestos `gpt-6-luna` y `gpt-6.1-sol`) y anotar la fecha y lo comprobado en `research.md` §3; marcar NO VERIFICADO lo que no se pueda confirmar. Esta tarea va **antes** de que la persona decida los modelos (plan «Riesgos» 1 y 2)
+- [ ] T049 [PERSONA] **Decidir el modelo de cada etapa** (diagnóstico, estrategia y, si se hace, crítico) y el nivel de razonamiento, a la vista de T048, y **registrarlo en `docs/decisiones.md`** (propuesta vigente: `gpt-6-luna` en desarrollo y `gpt-6.1-sol` en la demo; la decisión es de la persona, principio IX). Poner los IDs en `server/.env` (`OPENAI_MODEL_DIAGNOSTICO`, `OPENAI_MODEL_ESTRATEGIA`, y `OPENAI_REASONING_*` si aplica). **Debe estar hecha antes de la prueba de humo (T064)**; las pruebas con el cliente FALSO no la necesitan.
+- [ ] T050 [P] [US10] Prueba `tests/server/model-client.test.ts` (se ve fallar primero): el cliente FALSO devuelve en orden un guion `{ toolCalls } | { text } | { throw }` y falla si el guion se agota o se invoca una herramienta no declarada; la traducción de errores del proveedor usa `error.code` (no solo `error.type`): `organization_spend_limit_exceeded` y `project_spend_limit_exceeded` → `spend_limit`; `credit_balance_exhausted` y `insufficient_quota` → `balance`; `rate_limit_exceeded` → `rate_limit` con `retryAfterSeconds`; 401 o clave ausente → `auth`; `organization_usage_limit_exceeded` → `usage_limit`; 5xx o red → `provider_unavailable`; el mensaje nunca contiene la clave ni el cuerpo de la solicitud (AG-011; contracts/model-client.md; research §2)
+- [ ] T051 [P] [US10] Prueba `tests/server/loop.test.ts` (se ve fallar primero): **tope de iteraciones** (`MAX_ITERATIONS`, por defecto 10) → resultado parcial con aviso `iteration_limit`; **tope de tamaño de entrada** antes de cada llamada → parcial con aviso `input_truncated`; argumentos que no son JSON, que no cumplen el esquema o herramienta desconocida → se devuelve `{ ok: false, error }` al agente, se registra en la traza y **no se lanza excepción**; error de categoría `spend_limit`, `balance`, `auth` o `usage_limit` → la corrida termina de inmediato con **una sola llamada al cliente (cero reintentos)**; `rate_limit` no reintenta solo; el `AbortSignal` corta la corrida; la traza incluye el modelo, los tokens y los errores (AG-008, AG-009, AG-011, AG-012, SC-A3; contracts/model-client.md «Garantías del bucle»)
+- [ ] T052 [P] [US10] Prueba `tests/server/tools-diagnosis.test.ts` (se ve fallar primero): `registrar_hallazgo` con «`pilar` ∈ `estrategia | infraestructura | datos | gobernanza | talento | cultura`», «al menos 1 cita, como máximo 5», verificador determinista por cita; cita falsa → error al agente con ubicación correcta si existe; **máximo 2 reintentos por hallazgo** (pilar + título normalizado); al agotarse se descarta la cita fallida y, si queda alguna verificada, se registra con esas; si no, se registra **NO VERIFICADO con razón** («ninguna cita pudo verificarse»); **propiedad (SC-A1)**: sobre varios guiones, todo hallazgo con `verified: true` tiene todas sus citas verificadas y presentes literalmente en la fuente; nunca `verified: true` con una cita no verificada; `buscar_en_evidencia` devuelve envuelto `<documento archivo=… ubicacion=…>` con el recordatorio de «datos, no instrucciones»; `declarar_informacion_faltante(pilar, descripcion)` con «texto, máx. 400 caracteres» **(RECORTABLE, AG-021)** (AG-014, AG-016, AG-017, AG-021, SC-A1; contracts/agent-tools.md)
+- [ ] T053 [P] [US10] Prueba `tests/server/injection.test.ts` (se ve fallar primero): el prompt de sistema declara que el contenido de los documentos son datos de un tercero y que no se obedecen órdenes dentro; los resultados de herramientas llevan el envoltorio y el recordatorio; el fixture con una instrucción dirigida a la IA **no cambia ninguna herramienta ni argumento fijado por el guion** y, si el detector heurístico opcional la marca, solo **puede** registrar una advertencia `injection_suspected` en la traza (la regla verificable es AG-013) (AG-013; research §9)
+- [ ] T054 [P] [US9] Prueba `tests/server/diagnosis-route.test.ts` (se ve fallar primero): `POST /api/diagnosis/run` devuelve `run`, `findings`, `missingInfo` **(RECORTABLE, AG-021)**, `trace`, `warnings` con la forma de `contracts/api.md`; usa solo archivos `extracted`; sin modelo configurado → `no_model_configured`; una segunda solicitud simultánea del mismo proyecto → `409`; error del proveedor → formato de error **con la traza hasta ese punto en `error.trace`**; cierre de la conexión del cliente aborta la corrida y descarta el resultado (AG-008, AG-009, AG-011, SC-A3; contracts/api.md)
+- [ ] T055 [US10] Implementar `server/src/model/client.ts` (interfaz `ModelClient`, `ModelError` con `category`, tipos de solicitud y respuesta) y `server/src/model/fake.ts` (cliente FALSO guionado; **solo se instancia con `MODEL_PROVIDER=fake`** y `/api/health` lo anuncia con `fake: true`) (AG-011; contracts/model-client.md)
+- [ ] T056 [US9] Implementar `server/src/model/openai.ts` con el SDK `openai` 7.55.0: Responses API con herramientas de tipo función, **`maxRetries: 0`**, **`store: false`**, traducción de errores por `error.code` y sin incluir la clave ni la solicitud en los mensajes; confirmar la forma real de las llamadas a función contra los tipos del SDK y dejar constancia en `research.md` (AG-011; research §2; plan «Riesgos» 6)
+- [ ] T057 [P] [US10] Implementar `server/src/agent/trace.ts` (tipos `TraceStep` `tool | verification | tool_error | warning | model_error` y acumulador con modelo, tokens, iteraciones, errores y conteos) (AG-009)
+- [ ] T058 [US10] Implementar `server/src/agent/tools.ts` (esquemas zod por herramienta; ejecución que valida antes de ejecutar y devuelve el error al agente si falla) (AG-012)
+- [ ] T059 [US10] Implementar `server/src/agent/loop.ts` (bucle genérico: llama al `ModelClient`, ejecuta las herramientas, aplica topes de iteraciones y de entrada, registra la traza, termina de inmediato ante `spend_limit`/`balance`/`auth`/`usage_limit`, respeta el `AbortSignal`) (AG-008, AG-011, AG-012)
+- [ ] T060 [US9] Implementar `server/src/agent/diagnosis.ts` (prompt de sistema con las reglas de `contracts/agent-tools.md`: datos y no instrucciones, citas literales con archivo y ubicación, español; herramientas `buscar_en_evidencia`, `registrar_hallazgo` con verificador y reintentos, y `declarar_informacion_faltante` **(RECORTABLE, AG-021)**) (AG-013, AG-014, AG-016, AG-017, AG-021)
+- [ ] T061 [US9] Implementar `server/src/routes/diagnosis.ts` (`POST /api/diagnosis/run`; una corrida por proyecto, `409` si hay otra; aborto al cerrar la conexión) y registrarlo en `server/src/index.ts` (AG-008, AG-009)
+- [ ] T062 [US9] Implementar `scripts/smoke-real.mjs`: ejecuta una corrida de diagnóstico contra el servicio local con los fixtures de `tests/fixtures/` y escribe un **resumen** en `docs/evidencia/humo-real.md` (modelo, nivel de razonamiento, iteraciones, tokens, tiempo total, costo estimado con la tarifa anotada en `research.md`, n.º de hallazgos, citas verificadas y fallidas, errores); **nunca imprime la clave ni texto de documentos** (SC-A3, SC-A6; plan «Pruebas»)
+- [ ] T063 [CIERRE] Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `npm run check` y `npm run test:e2e`; todo en verde (pruebas de la 001 **sin modificar**); comprobar que ninguna prueba hace llamadas reales de red al proveedor
+- [ ] T064 [PERSONA] **Prueba de humo manual con el modelo real** (con costo): con `server/.env` listo (T018) y los modelos decididos (T049), arrancar `npm run dev:server` y correr `node scripts/smoke-real.mjs`; usar el modelo propuesto más barato; anotar si falla algo. **Mide SC-A6 (tiempo) y el costo**: pasar las cifras a `docs/tiempos-002.md` («Medición de la corrida real del lote C») (US9, US10; SC-A3, SC-A6)
+- [ ] T065 [PERSONA] **Revisar la traza de la primera corrida real**: comprobar que cada herramienta usada y su consulta figuran, que las citas marcadas como verificadas están de verdad en el documento fuente (abrir el fixture y buscar el fragmento), que las verificaciones fallidas y su resolución se ven, que el modelo y los tokens coinciden con el panel de uso de la plataforma, y que el contenido de los documentos no se obedeció como instrucción. Anotar lo que falle (US10; SC-A1, SC-A3)
+- [ ] T066 [CIERRE] Con las cifras de la persona, actualizar `docs/evidencia/humo-real.md` si hace falta (solo cifras, **sin clave ni texto de documentos reales**), «Estado de la sesión» de `docs/decisiones.md` (lote C cerrado, resultado de la prueba de humo, qué sigue) y registrar el tiempo real de reloj del lote C en `docs/tiempos-002.md`
+- [ ] T067 [CIERRE] Escribir en `docs/revision-002.md` la **«lista de revisión corta» del lote C** (a fondo, pero acotada a 10 min de **comprobación**; la lectura del código se agenda aparte): `npm test -- tests/server`; abrir `server/src/agent/loop.ts` y `tools.ts`; comprobar a la vista tres cosas: que una llamada con argumentos mal formados no rompe, que un error de gasto termina con **una sola llamada**, y que `registrar_hallazgo` no marca `verified: true` una cita no encontrada; abrir `docs/evidencia/humo-real.md`
+- [ ] T068 [PERSONA] **Revisión humana a fondo del lote C** (plan: 3 a 4,5 h; máx. 10 min la lista corta, más lectura de `server/src/agent/` y de las pruebas del bucle). Devolver al agente lo que falle.
+- [ ] T069 [PERSONA] Ejecutar `npm run build && npm run check` con `.local/denylist.txt` presente y revisar `git status` (comprobar que `docs/evidencia/humo-real.md` no contiene clave ni texto de documentos).
+- [ ] T070 [PERSONA] Hacer el **commit del lote C**.
+- [ ] T071 [PERSONA] Repetir `npm run build && npm run check` con la lista presente antes del push y hacer el push de `main`.
+- [ ] T072 [PERSONA] **PUNTO DE CONTROL tras el lote C**: con los tiempos reales de A a C (`docs/tiempos-002.md`), el costo medido y la traza revisada, decidir y **registrar en `docs/decisiones.md`**: (1) si se sigue con D y E; (2) si se **recortan AG-021 y/o AG-030** (si sí, se ajusta primero el spec y se retiran las tareas marcadas RECORTABLE); (3) si el lote G se mantiene diferido; (4) si el plazo alcanza. Criterios: SC-A1 en verde con el cliente falso; corrida real con citas verificadas y medidas; error de gasto sin reintento comprobado; costo aceptable.
+
+---
+
+## Lote D — Frontend y persistencia (P1 · US9, US10) · **REVISIÓN A FONDO**
+
+**Objetivo**: capa de proveedor con dos implementaciones (Simulado = actual; IA real = servicio local), selector, aviso previo, estado v3 con migración sin pérdida, y el resultado real dentro del flujo de revisión, emisión, calificación e informe de la 001, con rótulos y `TraceView`.
+
+**Criterio de salida (del plan)**: recorrido completo con el servicio en modo falso (e2e); **toda la batería de la 001 pasa sin cambios**; la recarga conserva hallazgos y archivos.
+
+**Historias cubiertas**: US9, US10. **AG/SC**: AG-001, AG-003, AG-004, AG-005, AG-009, AG-018, AG-023, AG-024, AG-025, AG-028, AG-029, AG-030 (RECORTABLE); SC-A3, SC-A5, SC-A7 (RECORTABLE).
+
+- [ ] T073 [P] [US9] Prueba `tests/unit/providers.test.ts` (se ve fallar primero): `getDiagnosis(proyecto)` en modo Simulado devuelve **exactamente** `DIAGNOSIS` de la 001 y el modo real llama al servicio con `fetch` simulado; `availability` marca «no disponible» cuando `/api/health` no responde (versión publicada) y «disponible» cuando responde; la capa devuelve errores por `error.category`, no por código HTTP (AG-001, AG-002, AG-003; contracts/api.md)
+- [ ] T074 [P] [US9] Prueba `tests/unit/migration-v3.test.ts` (se ve fallar primero): un estado v2 se **migra sin pérdida** (cada proyecto recibe `mode: 'simulated'` y `serverFiles: []`, `schemaVersion` 3, nada de lo demás cambia); otra versión → estado inicial con aviso `version`; forma inválida → estado inicial con aviso `corrupt`; hallazgos reales con forma inválida se descartan uno a uno con aviso; en modo real los ids de `decisions` son los de `real.findings` (dinámicos) y no los `findingIds` fijos (AG-025; contracts/persisted-state-v3.md)
+- [ ] T075 [P] [US9] Prueba `tests/unit/realFindings.test.ts` (se ve fallar primero): conversión de la respuesta del servicio a `RealFinding` compatible con `Finding` (`verified` solo con al menos una cita verificada, `unverifiedReason` si no); el estado serializado **no contiene el texto completo** de los archivos (solo extractos citados y traza resumida con argumentos recortados a 200 caracteres); `reportContent`, `deriveStrategy` y `countUnverifiedAdopted` funcionan con hallazgos reales (AG-014, AG-017, AG-018, AG-025)
+- [ ] T076 [P] [US9] Prueba `tests/unit/mode.test.ts` (se ve fallar primero): el modo queda fijado al generar el diagnóstico; no cambia con `diagnosis.status !== 'none'`; «Limpiar diagnóstico» vuelve a `none`, descarta hallazgos y decisiones, y permite cambiar de modo; «Restablecer demo» borra también `real` y `serverFiles` (AG-029; contracts/persisted-state-v3.md «Reglas»)
+- [ ] T077 [P] [US9] Prueba e2e **nueva** `tests/e2e/ia-real.spec.ts` con el servicio en modo falso (se ve fallar primero): selector «Simulado / IA real» visible y modo activo siempre indicado; con el servicio detenido, «IA real» figura **no disponible** con el mensaje «IA real no disponible aquí (requiere ejecutar el backend en tu equipo)» y el modo Simulado funciona; aviso **antes** de cargar que nombra a OpenAI, dice que el texto va al servicio local y a OpenAI, que se mantiene en la memoria del servicio mientras esté en ejecución y que no se guarda en disco, y es distinto del aviso del modo Simulado; carga de los 6 formatos con estado de extracción y motivo claro en PDF escaneado, cifrado y dañado; ejecutar → hallazgos por pilar con «Extracto de tu archivo» (nunca «Evidencia de ejemplo (ficticia)») y el rótulo «Generado por IA (modelo X) · requiere revisión humana»; `TraceView` con herramientas, consultas, verificaciones fallidas y su resolución, modelo, tokens y errores; revisar → emitir → calificar → informe; el modo no cambia con diagnóstico generado; «Limpiar diagnóstico» lo permite (AG-001, AG-002, AG-004, AG-005, AG-009, AG-018, AG-023, AG-024, AG-029, SC-A3)
+- [ ] T078 [P] [US9] Prueba e2e **nueva** `tests/e2e/ia-real-recarga.spec.ts` **(RECORTABLE, AG-030)** (se ve fallar primero): tras recargar con el servicio en ejecución se muestran de nuevo los archivos (nombre, tipo, estado de extracción) y se puede **volver a ejecutar el agente sin recargarlos** (SC-A7); con el servicio reiniciado, aviso de **qué archivos hay que volver a cargar** y los hallazgos y extractos conservados siguen visibles; recarga de la página con el servicio detenido no pierde los hallazgos (AG-025, AG-030, SC-A7)
+- [ ] T079 [P] [US9] Ampliar con un archivo **nuevo** `tests/e2e/ia-real-a11y.spec.ts` las comprobaciones de la 001 para lo nuevo: axe sin violaciones, sin desplazamiento horizontal y objetivos táctiles ≥ 44 px a 320, 768 y 1280 px; selector, aviso, lista de archivos y `TraceView` operables con teclado; regiones `aria-live` para la carga y los errores (principios IV, V; SC-007, SC-008, SC-009 de la 001 aplicados a lo nuevo)
+- [ ] T080 [US9] Crear `src/providers/types.ts` (contrato de `contracts/api.md` como tipos), `src/providers/simulated.ts` (envuelve `DIAGNOSIS` y la plantilla de estrategia: **comportamiento actual sin cambios**), `src/providers/real.ts` (llama al servicio) y `src/providers/availability.ts` (`GET /api/health`) (AG-001, AG-002, AG-003)
+- [ ] T081 [US9] Actualizar `src/state/types.ts` (`SCHEMA_VERSION = 3`, `mode`, `serverFiles`, `real`), `src/state/initial.ts`, `src/state/reducer.ts` (acciones: fijar modo al generar, guardar resultado real, limpiar diagnóstico) y `src/state/persistence.ts` (migración v2 → v3 sin pérdida; validación por proyecto según el modo) (AG-025, AG-029; contracts/persisted-state-v3.md)
+- [ ] T082 [US9] **Refactor acotado** de los imports directos de `DIAGNOSIS` para que pasen por `getDiagnosis(proyecto)` en `src/components/PillarGroups.tsx`, `src/components/DerivedFrom.tsx`, `src/components/UnverifiedCount.tsx`, `src/domain/report.ts`, `src/domain/maturity.ts`, `src/screens/lider/DeliveryReview.tsx` y `src/data/projects.ts`; **las funciones puras conservan su firma** (el parámetro nuevo es opcional y por defecto usa `DIAGNOSIS.findings`). **Si alguna prueba de la 001 hay que tocarla, parar y corregir el cambio, no la prueba** (SC-A5; plan «Cambios a código de la 001»)
+- [ ] T083 [P] [US9] Crear `src/components/AiBadge.tsx` («Generado por IA (modelo X) · requiere revisión humana») y `src/components/ModeSelector.tsx` (selector «Simulado / IA real», modo activo siempre visible, estado no disponible), usando solo tokens de `src/styles/tokens.css` (AG-001, AG-023; principio V)
+- [ ] T084 [P] [US9] Crear `src/components/PrivacyNoticeReal.tsx` (aviso previo: nombra a OpenAI, texto al servicio local y a OpenAI, memoria del servicio y no se guarda en disco; distinto del aviso del modo Simulado, que no cambia) y conectarlo a `src/components/FileDropzone.tsx` y `src/components/EvidencePanel.tsx` **solo en modo real** (esto modifica FR-011 y SC-003 solo para el modo real, AG-005); ajustar el texto de «Restablecer demo» para decir que los hallazgos reales también se borran y que el servicio conserva los archivos hasta cerrarse, con una acción «Quitar archivos del servicio» **(RECORTABLE, AG-030)** (AG-004, AG-005, AG-028)
+- [ ] T085 [P] [US9] Crear `src/components/ServerFilesList.tsx` **(RECORTABLE, AG-030)**: lista de archivos del servicio (nombre, tipo y estado de extracción con el motivo claro), reconexión tras recargar y aviso de qué archivos volver a cargar si el servicio se reinició (AG-007, AG-030)
+- [ ] T086 [P] [US10] Crear `src/components/TraceView.tsx` («Traza del agente»): cada herramienta con su consulta, cada verificación fallida y su resolución, el modelo, los tokens y los errores; versión resumida cuando solo está lo persistido (AG-009, SC-A3)
+- [ ] T087 [US9] Conectar las pantallas: captura de evidencia (selector, aviso, carga al servicio, lista), diagnóstico (`getDiagnosis`, «Generar diagnóstico» real con indicador de carga y errores por categoría, `TraceView`, rótulo de IA) y el panel de revisión, emisión, calificación e informe de la 001 con hallazgos reales; en `src/components/CitationButton.tsx` mostrar «Extracto de tu archivo» con archivo, ubicación y fragmento para las citas reales; el informe imprimible lleva el rótulo de IA donde corresponda (US9, US10; AG-014, AG-018, AG-023, AG-024)
+- [ ] T088 [US9] Configurar Playwright para arrancar el servicio en modo falso (`MODEL_PROVIDER=fake`, guion de `tests/fixtures/`) junto a Vite en los tests nuevos, **sin alterar** la configuración de los tests de la 001 (SC-A5)
+- [ ] T089 [P] [US9] Si hacen falta estados visuales nuevos (IA real, error), añadirlos como tokens documentados en `src/styles/tokens.css` y pasar `npm run check` (principio V)
+- [ ] T090 [CIERRE] Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `npm run check` y `npm run test:e2e`; todo en verde. **Comprobar SC-A5**: `git diff --stat -- tests/unit tests/e2e` solo muestra archivos **añadidos**, ninguno de la 001 modificado
+- [ ] T091 [CIERRE] Actualizar «Estado de la sesión» de `docs/decisiones.md` (lote D cerrado, desviaciones, qué sigue) y registrar el tiempo real de reloj del lote D en `docs/tiempos-002.md`
+- [ ] T092 [CIERRE] Escribir en `docs/revision-002.md` la **«lista de revisión corta» del lote D** (a fondo; comprobación acotada a 10 min): `npm run dev:all` con `MODEL_PROVIDER=fake`; abrir la app, elegir «IA real», cargar un fixture, ejecutar, abrir la «Traza del agente», aceptar un hallazgo, emitir y abrir el informe; comprobar el aviso previo, el rótulo de IA, «Extracto de tu archivo», que el modo no cambia con diagnóstico generado y que recargar conserva hallazgos; y que en modo Simulado todo sigue igual
+- [ ] T093 [PERSONA] **Revisión humana a fondo del lote D** (plan: 3 a 4,5 h): lista corta, recorrido manual en celular, tableta y computador, solo con teclado, y lectura del refactor de T082; confirmar que el modo Simulado se ve **idéntico** al de antes. Devolver al agente lo que falle.
+- [ ] T094 [PERSONA] Ejecutar `npm run build && npm run check` con `.local/denylist.txt` presente y revisar `git status`.
+- [ ] T095 [PERSONA] Hacer el **commit del lote D**.
+- [ ] T096 [PERSONA] Repetir `npm run build && npm run check` con la lista presente antes del push, hacer el push de `main` y comprobar que **el sitio publicado muestra «IA real no disponible aquí…»** y que el modo Simulado funciona como antes.
+
+---
+
+## Lote E — Estrategia con agente real (P1 · US11)
+
+**Objetivo**: un agente propone riesgos y ruta solo a partir de hallazgos aceptados o editados y verificados; cada elemento indica de qué hallazgos deriva; un elemento sin respaldo válido no se muestra. Reutiliza `deriveStrategy`.
+
+**Criterio de salida (del plan)**: ningún elemento sin hallazgo aceptado y verificado (SC-A4), con pruebas unitarias y e2e.
+
+**Historia cubierta**: US11. **AG/SC**: AG-019, AG-020, AG-009, AG-023; SC-A4, SC-012.
+
+- [ ] T097 [P] [US11] Prueba `tests/server/tools-strategy.test.ts` (se ve fallar primero): `registrar_elemento(tipo, texto, nivel?, horizonte?, derivaDe[ids])` con «`tipo` ∈ `riesgo | fase`; `riesgo` requiere `nivel` ∈ `alto|medio|bajo`; `fase` requiere `horizonte`»; `derivaDe` no vacío; un id que no existe en la entrada → error al agente; un elemento sin ningún id válido **no se registra** (AG-019, AG-020; contracts/agent-tools.md)
+- [ ] T098 [P] [US11] Prueba `tests/server/strategy-route.test.ts` (se ve fallar primero): `POST /api/strategy/run` exige `findings` no vacío con ids únicos y devuelve `run`, `risks`, `route` (cada elemento con `supportedBy`), `trace` y `warnings`; el servicio no conserva hallazgos; mismas reglas de topes y de errores sin reintento que el diagnóstico (AG-019; contracts/api.md)
+- [ ] T099 [P] [US11] Prueba unitaria `tests/unit/realStrategy.test.ts` (se ve fallar primero): la estrategia real guardada como `{ risks, route }` con `supportedBy` pasa por `deriveStrategy` **sin cambios**; si la persona cambia una decisión después de generar (rechaza un hallazgo), el elemento **desaparece al mostrarse** sin volver a llamar al modelo; sector y mercado quedan vacíos y **no se muestran en modo real** (SC-A4, SC-012, FR-025; plan «Riesgos» 5)
+- [ ] T100 [P] [US11] Prueba e2e **nueva** `tests/e2e/ia-real-estrategia.spec.ts` con el servicio en modo falso (se ve fallar primero): «Generar estrategia» disponible solo con el diagnóstico emitido; se envían solo hallazgos aceptados o editados y verificados; cada riesgo y fase muestra «Deriva de…»; un hallazgo NO VERIFICADO aceptado muestra «No se usará como respaldo de la estrategia» y no respalda nada; «Enviar a revisión» crea la entrega sin duplicar; rótulo de IA y traza visibles; sin secciones de sector y mercado en modo real (AG-019, AG-020, AG-023; FR-024 a FR-027)
+- [ ] T101 [US11] Implementar `server/src/agent/strategy.ts` (prompt y herramienta `registrar_elemento` con su verificador de ids) y `server/src/routes/strategy.ts` (`POST /api/strategy/run`), registrándolo en `server/src/index.ts`; reutilizar `src/domain/strategy.ts` en el cliente, sin duplicar su lógica (AG-019, AG-020; plan «Resumen»)
+- [ ] T102 [US11] Añadir `getStrategy(proyecto)` a `src/providers/` (Simulado = plantilla actual; real = llama al servicio con los hallazgos aceptados/editados y verificados y su texto vigente) y guardar `real.strategy` y `strategyRun` en el estado (AG-019, AG-025)
+- [ ] T103 [US11] Conectar la pantalla de estrategia del Consultor y la vista del Líder para mostrar la estrategia real con `deriveStrategy`, `AiBadge` y `TraceView`, sin sector ni mercado en modo real (AG-019, AG-020, AG-023, AG-009)
+- [ ] T104 [CIERRE] Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `npm run check` y `npm run test:e2e`; todo en verde (pruebas de la 001 **sin modificar**, `git diff --stat -- tests/unit tests/e2e` sin archivos de la 001 modificados)
+- [ ] T105 [CIERRE] Actualizar «Estado de la sesión» de `docs/decisiones.md` (lote E cerrado, qué sigue) y registrar el tiempo real de reloj del lote E en `docs/tiempos-002.md`
+- [ ] T106 [CIERRE] Escribir en `docs/revision-002.md` la **«lista de revisión corta» del lote E** (máx. 10 min): `npm run dev:all` con `MODEL_PROVIDER=fake`; emitir un diagnóstico real, generar la estrategia; comprobar «Deriva de…» en cada elemento, rechazar un hallazgo y ver que desaparece el elemento que dependía solo de él, y que no hay sector ni mercado
+- [ ] T107 [PERSONA] **Revisión humana del lote E** con la lista de T106 (máx. 10 min).
+- [ ] T108 [PERSONA] Ejecutar `npm run build && npm run check` con `.local/denylist.txt` presente y revisar `git status`.
+- [ ] T109 [PERSONA] Hacer el **commit del lote E**.
+- [ ] T110 [PERSONA] Repetir `npm run build && npm run check` con la lista presente antes del push y hacer el push de `main`.
+
+---
+
+## Lote F — Cierre (P1/P2 · todas las historias construidas)
+
+**Objetivo**: accesibilidad y responsive de lo nuevo, documentación honesta, evidencia, repaso de todos los criterios y una **grabación de respaldo** de la demo por si falla la conexión o el crédito el día de la presentación.
+
+**Criterio de salida (del plan)**: suite verde; SC-A1 a SC-A5 y SC-A7 verificados; SC-A6 medido o declarado NO VERIFICADO.
+
+**AG/SC**: todos; SC-A1 a SC-A7.
+
+- [ ] T111 Ejecutar a mano los escenarios de `specs/002-agente-real/quickstart.md` §§1 a 5 y §7 que se puedan sin costo y anotar en `docs/evidencia/quickstart-002-resultados.md` qué prueba automática cubre cada escenario y cuáles no se ejecutaron (sin inventar resultados)
+- [ ] T112 Crear `docs/evidencia/sc-a-checklist.md` con SC-A1 a SC-A7: estado **Verificado (auto)**, **Verificado (manual)** o **NO VERIFICADO**, con la evidencia (prueba o archivo) de cada uno; SC-A6 con la medición real del lote C o «NO VERIFICADO» si no se midió
+- [ ] T113 Revisar la accesibilidad y las vistas responsive de lo nuevo (selector, aviso, lista, `TraceView`, estados de carga y error) a 320, 768 y 1280 px con la batería de axe y anotar lo que falle; **corregir primero en el spec si cambia el comportamiento** (principios IV y VI)
+- [ ] T114 Actualizar `README.md`: qué es el modo IA real, que **solo corre en el equipo de la persona** con un servicio local opcional, que **el sitio publicado funciona solo en modo Simulado**, cómo arrancarlo (`npm run dev:all`, `server/.env` a partir de `server/.env.example`), qué datos salen a OpenAI y cuáles no, que la clave nunca se versiona, límites conocidos y qué queda NO VERIFICADO (calidad de las conclusiones, tiempos y costos); quitar la línea de «Constitución 2.0.0 … solo de gobierno» que quedó provisional
+- [ ] T115 Actualizar `docs/decisiones.md` con las decisiones del lote F, las medidas reales y las desviaciones del plan; conciliar `plan.md`, `data-model.md` y `contracts/` con lo construido (spec → plan → tareas antes del código si algo cambió)
+- [ ] T116 Actualizar `docs/evidencia/` con la prueba de humo documentada (T064), el resumen de seguridad (`check-secrets` en repositorio y `dist/`) y las capturas de lo nuevo a 320, 768 y 1280 px (todo ficticio, **sin clave ni documentos reales**)
+- [ ] T117 Escribir `docs/evidencia/guion-grabacion.md`: guion de la **grabación de respaldo** de la demo (qué mostrar y en qué orden: ingreso, selector, aviso previo, carga de los 6 formatos, ejecución, traza, revisión, emisión, estrategia, informe) con **uso de datos ficticios**, y una lista de **qué NO mostrar** (el archivo `server/.env`, la clave, la consola con la clave, la consola de facturación con datos personales)
+- [ ] T118 [CIERRE] Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `BASE_PATH=/mi-repo/ npm run build`, `npm run check` y `npm run test:e2e` completo (incluida la batería de la 001 **sin modificar**); anotar los conteos reales
+- [ ] T119 [CIERRE] Actualizar «Estado de la sesión» de `docs/decisiones.md` (lote F cerrado) y registrar el tiempo real de reloj del lote F, y **el total de A a F**, en `docs/tiempos-002.md`, comparándolo con la estimación del plan
+- [ ] T120 [CIERRE] Escribir en `docs/revision-002.md` la **«lista de revisión corta» del lote F** (máx. 10 min): abrir `docs/evidencia/sc-a-checklist.md` y confirmar el estado de cada SC-A; abrir el README y comprobar que dice «solo Simulado en el sitio publicado» y que nada afirma resultados no verificados; correr `npm run check`
+- [ ] T121 [PERSONA] **Grabación de respaldo de la demo** siguiendo `docs/evidencia/guion-grabacion.md`: grabar una corrida completa en modo IA real con datos ficticios, comprobar al verla que **no aparece la clave, `server/.env` ni datos de facturación**, y guardar el video **fuera del repositorio** (o en `.local/`, ignorado por git) como respaldo para el día de la presentación
+- [ ] T122 [PERSONA] Decidir cómo propagar la enmienda 2.0.0 de la constitución a `specs/001-demo-consultor-agentico/` (spec, plan y tareas) y, si procede, si el principio I debe aclarar «sesión» como «mientras el servicio esté en ejecución» (PATCH); registrar la decisión en `docs/decisiones.md` (principio VI)
+- [ ] T123 [PERSONA] **Revisión humana del lote F** con la lista de T120 (máx. 10 min) más la revisión de teclado y de lector de pantalla que decidas hacer (el lector de pantalla sigue NO VERIFICADO en la 001).
+- [ ] T124 [PERSONA] Ejecutar `npm run build && npm run check` con `.local/denylist.txt` presente y revisar `git status`.
+- [ ] T125 [PERSONA] Hacer el **commit del lote F**.
+- [ ] T126 [PERSONA] Repetir `npm run build && npm run check` con la lista presente antes del push, hacer el push de `main` y comprobar el despliegue en Pages (solo modo Simulado).
+
+---
+
+## Lote G — Agente Crítico (P3 · US13) · **DIFERIDO**
+
+**No se ejecuta** salvo decisión de la persona registrada en `docs/decisiones.md` (T072). Si se ejecuta, es el último lote y depende de C y D.
+
+**Historia cubierta**: US13. **AG/SC**: AG-022, AG-023, AG-009.
+
+- [ ] T127 [P] [US13] (DIFERIDO) Prueba `tests/server/tools-critic.test.ts` (se ve fallar primero): `registrar_objecion(hallazgoId, tipo, texto)` con «`tipo` ∈ `debil | contradice | sin_respaldo`»; solo guarda texto y **no** altera hallazgos ni decisiones (AG-022; contracts/agent-tools.md)
+- [ ] T128 [P] [US13] (DIFERIDO) Prueba `tests/server/critic-route.test.ts`: `POST /api/critic/run` con `findings` generados devuelve `run`, `objections[]` y `trace`; mismas reglas de topes y errores sin reintento (AG-022)
+- [ ] T129 [P] [US13] (DIFERIDO) Prueba e2e **nueva** `tests/e2e/ia-real-critico.spec.ts`: con hallazgos que se contradicen se muestran objeciones rotuladas como IA junto al hallazgo; la persona puede aceptar, editar o rechazar igual que sin Crítico y las objeciones no cambian el estado por sí solas (AG-022, AG-023)
+- [ ] T130 [US13] (DIFERIDO) Implementar `server/src/agent/critic.ts` y `server/src/routes/critic.ts` (`OPENAI_MODEL_CRITICO`; sin valor por defecto, principio IX) y registrarlo en `server/src/index.ts` (AG-022)
+- [ ] T131 [P] [US13] (DIFERIDO) Crear `src/components/Objections.tsx`, conectar la llamada al Crítico antes de la revisión y guardar `real.objections` y `criticRun` en el estado (AG-022, AG-025)
+- [ ] T132 [CIERRE] (DIFERIDO) Ejecutar `npm run typecheck`, `npm test`, `npm run build`, `npm run check` y `npm run test:e2e`; todo en verde (pruebas de la 001 **sin modificar**)
+- [ ] T133 [CIERRE] (DIFERIDO) Actualizar «Estado de la sesión» de `docs/decisiones.md` y registrar el tiempo real de reloj del lote G en `docs/tiempos-002.md`
+- [ ] T134 [CIERRE] (DIFERIDO) Escribir en `docs/revision-002.md` la **«lista de revisión corta» del lote G** (máx. 10 min): ejecutar con `MODEL_PROVIDER=fake`, abrir un diagnóstico con hallazgos contradictorios y comprobar que aparecen objeciones y que aceptar un hallazgo con objeción sigue funcionando
+- [ ] T135 [PERSONA] (DIFERIDO) **Revisión humana del lote G** con la lista de T134 (máx. 10 min).
+- [ ] T136 [PERSONA] (DIFERIDO) Ejecutar `npm run build && npm run check` con `.local/denylist.txt` presente y revisar `git status`.
+- [ ] T137 [PERSONA] (DIFERIDO) Hacer el **commit del lote G**.
+- [ ] T138 [PERSONA] (DIFERIDO) Repetir `npm run build && npm run check` con la lista presente antes del push y hacer el push de `main`.
+
+---
+
+## Dependencias y orden
+
+- **Orden de ejecución**: A → B → C → D → E → F; **G diferido**. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
+- **Las tareas de cuenta y crédito (T001, T002, T003) no bloquean A** y se pueden hacer mientras el agente trabaja; **bloquean la prueba de humo del lote C** (T064). La clave y `server/.env` (T018) también.
+- **A bloquea todo**: T004 primero; T005, T006, T008, T010 y T012 en paralelo; T007 depende de T006; T009 de T008; T011 de T010 y T009; T013 de T011; T014 de T007.
+- **B depende de A**: T023 antes de los extractores; T025 antes de las pruebas que usan los fixtures; las pruebas T026, T027, T028, T029 y T030 antes de su implementación; T037 depende de T033, T034, T035 y T036; T040 de T037, T038 y T039.
+- **C depende de B**: T048 antes de T049; las cinco pruebas (T050 a T054) antes de su implementación; T059 depende de T055, T057 y T058; T060 de T059, T031 y T039; T061 de T060; T064 de T056, T061, T062, T018 y T049; T072 de T065 y de la revisión y el commit de C.
+- **D depende de C** (necesita el contrato del servicio): T080 y T081 antes de T082; T083, T084, T085, T086 y T089 en paralelo; T087 depende de todas ellas; T088 antes de ejecutar los e2e nuevos.
+- **E depende de D**; **F depende de E**; **G (diferido) depende de C y D**.
+- Dentro de cada lote: **pruebas → implementación → componentes y pantallas → e2e → cierre**.
+
+## Oportunidades de paralelismo
+
+- **A**: T005, T006, T008, T010 y T012 a la vez.
+- **B**: T024, T026, T027, T028, T029 y T030 a la vez (archivos de prueba distintos); luego T031, T033, T034, T035, T036, T038 y T039 a la vez.
+- **C**: T050, T051, T052, T053 y T054 a la vez; T057 en paralelo con T055.
+- **D**: las cinco pruebas unitarias y e2e (T073 a T079) a la vez; T083, T084, T085, T086 y T089 a la vez.
+- **E**: T097, T098, T099 y T100 a la vez.
+- **Persona**: T001, T002 y T003 en paralelo con el trabajo del agente en el lote A.
+
+## Estrategia de implementación
+
+1. **Mínimo coherente (P1)**: A, B, C, D y E: IA real con traza, verificación y estrategia, con el flujo de revisión de la 001. **Punto de control tras C**: la persona decide con tiempos medidos si sigue y si recorta AG-021 y AG-030.
+2. **Cierre (F)**: documentación honesta, evidencia, repaso de SC-A1 a SC-A7 y la grabación de respaldo.
+3. **Diferido (G)**: el Crítico solo si sobra tiempo y la persona lo decide.
+4. **Siempre**: un lote a la vez; cada uno termina con el lote cerrado, revisado y commiteado por la persona; el agente **no hace commit ni push**.
