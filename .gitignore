@@ -2,6 +2,9 @@ referencias/
 node_modules/
 dist/
 .env*
+!.env.example
+!server/.env.example
+server/.env
 
 # locales
 .local/

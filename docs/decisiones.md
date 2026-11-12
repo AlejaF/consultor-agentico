@@ -2,6 +2,7 @@
 
 ## Estado de la sesión
 
+- **Especificación 002 (agente real con IA) — lote A cerrado por el agente (2026-11-11, T004 a T017)**; pendientes de la persona: T001 a T003 (cuenta, crédito y límites de gasto), T018 (clave y `server/.env`), T019 (revisión), T020 (build y check con la lista de nombres), T021 (commit) y T022 (push). **Qué sigue**: lote B (extracción y verificador) cuando la persona apruebe y haga el commit del lote A. Ningún modelo se fijó por defecto (principio IX). Verificación al cierre de A: `typecheck` sin errores; `npm test` 307 en verde (276 de la 001 sin modificar + 31 nuevas); `npm run build` y `npm run check` OK (nombres, tokens y secretos); `npm run test:e2e` 507 pasadas, 75 omitidas, 0 fallos (igual que antes). Detalle en «Lote A de la 002» y tiempos en `docs/tiempos-002.md`.
 - **Lote cerrado**: L6 (cierre) en lo que no es de la persona (T081 a T092), más las correcciones A a C. L4 ya está en el commit `7c9c329`. **Pendientes de la persona**: T093 (la revisión de teclado se hizo el 2026-11-02; falta la del lector de pantalla), T095 (pulido), T096 (volcar resultados de T095), T097 a T099 (revisión final, commit y publicación).
 - **Tiempos del agente**: L1 15:34 a 15:48; L2 16:06:58 a 16:18; L3 16:48:07 a 17:04:02; ajustes F a I y L4 18:49:51 a 19:06:55; siete ajustes previos al commit de L4 (sin hora de inicio registrada); correcciones A a C y L6 19:52:15 a 20:17:38 (25 min con pausas). Acumulado de agente ≈ 1,3 h (más revisiones humanas); los puntos de control de L1, L3 y L4 se cumplen con holgura.
 - **Verificación al cierre de L6**: `typecheck` sin errores; `npm test` 231 en verde; `npm run build` y `BASE_PATH=/mi-repo/ npm run build` correctos; `npm run check` OK; `EVIDENCIA=1 npx playwright test` 325 pasadas y 8 omitidas.
@@ -404,4 +405,16 @@ Decididas por la persona responsable al revisar `specs/002-agente-real/plan.md`:
 4. **Alcance**: solo el lote G (agente Crítico, P3) queda **diferido**. **AG-021 (información faltante) y AG-030 (reabrir archivos al recargar) quedan marcados como «recortables»** pero siguen en el spec y en los lotes; se decide en el **punto de control posterior al lote C**, con tiempos medidos. El spec no se modificó por esto.
 5. **Forma de trabajo**: un lote a la vez; el agente no genera código de un lote hasta que la persona apruebe el anterior; revisión y commit de la persona entre lotes (principio VIII).
 6. **Calibración**: el tiempo real de reloj de cada lote se registra en `docs/tiempos-002.md`.
+
+## Lote A de la 002 «Agente real con IA» (2026-11-11)
+
+Servicio local mínimo y vigilante de claves. Sin IA todavía; el modo Simulado no cambió.
+
+- **`server/`** (paquete aparte, versiones exactas, `npm audit` sin vulnerabilidades): `config.ts` (sin modelo por defecto; la clave no se enumera ni serializa; valores vacíos = ausentes), `log.ts` (solo método, ruta sin consulta, estado, duración, tokens y categoría), `app.ts` (solo `127.0.0.1`; valida `Host` y `Origin`; CORS con lista; multipart con límites; errores en el formato del contrato), `routes/health.ts` y `index.ts`. Comprobado con el servicio real: escucha solo en `127.0.0.1:8787`, `Host` ajeno y `Origin` ajeno responden 403.
+- **`scripts/check-secrets.mjs`** + `scripts/lib/secrets.mjs`, dentro de `npm run check`: revisa archivos versionados, `dist/` y `server/.env.example` (que debe ir sin valores), y falla si `server/.env` figura versionado. Prueba negativa en `docs/evidencia/seguridad-a.md`.
+- **`.gitignore`**: se añadió `!.env.example`, `!server/.env.example` y `server/.env` (el `.env*` previo ignoraba también el ejemplo).
+- **Desviaciones menores respecto de las tareas**: (1) `tsconfig.json` raíz con `allowImportingTsExtensions` (para que las pruebas de `tests/server` importen `server/src/*.ts`; solo afecta al chequeo de tipos, no al código que se publica); (2) `npm run typecheck` ahora es `tsc --noEmit && tsc --noEmit -p server`; (3) `MAX_OUTPUT_TOKENS` tiene un valor inicial provisional de 4096, **NO VERIFICADO**, que se fija con la prueba de humo del lote C; (4) se aceptan como `Host` los de los orígenes permitidos (el proxy de Vite conserva el `Host` del navegador).
+- **Pruebas nuevas** (31): `tests/unit/secrets.test.ts` (11), `tests/server/config.test.ts` (9), `tests/server/health.test.ts` (11); total 307 = 276 de la 001 + 31 nuevas. Las pruebas de la 001 no se tocaron.
+- **`scripts/dev-all.mjs`**: al probarlo se vio que, al cerrarlo, dejaba encendidos los procesos hijos; se corrigió para cerrar el grupo completo de procesos y se comprobó que no quedan sobrantes.
+- **Pendiente de decisión de la persona (no urgente)**: la regla genérica `asignacion-secreta` del escáner puede dar falsos positivos en archivos futuros; si ocurre, se añade `secrets:allow` en esa línea con una justificación.
 
