@@ -5,10 +5,10 @@ import { join } from 'node:path';
 import { denylistMode, findMatches, findPdfFiles, parseDenylist, referenciasTracked } from './lib/names.mjs';
 
 const DENYLIST = join('.local', 'denylist.txt');
-const ROOTS = ['src', 'index.html', 'README.md', 'docs', 'dist', 'specs', '.specify', '.claude'];
+const ROOTS = ['src', 'index.html', 'README.md', 'docs', 'dist', 'specs', '.specify', '.claude', 'tests/fixtures'];
 const SKIP_DIRS = new Set(['node_modules', '.git']);
 const SKIP_FILES = new Set(['settings.local.json']);
-const TEXT_EXT = /\.(md|mjs|js|cjs|ts|tsx|json|css|html|svg|txt|yml|yaml|sh|map)$/i;
+const TEXT_EXT = /\.(md|mjs|js|cjs|ts|tsx|json|css|html|svg|txt|vtt|srt|yml|yaml|sh|map)$/i;
 
 function walk(p, out = []) {
   if (!existsSync(p)) return out;

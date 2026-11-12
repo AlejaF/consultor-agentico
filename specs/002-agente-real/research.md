@@ -199,3 +199,30 @@ Detalle en [contracts/env.md](./contracts/env.md). Se leen con `node --env-file=
 | 5 | ¿Migración v2 → v3? | Sin pérdida (§12); **confirmar**. |
 | 6 | ¿Sector y mercado en modo real? | Ocultos (plan, riesgo 5); **confirmar**. |
 | 7 | ¿Token entre navegador y servicio? | No incluido; se anota como mejora (§5). |
+
+## 16. Spike de las librerías de extracción (lote B, tarea T023; 2026-11-11)
+
+Se probó cada librería con archivos de ejemplo armados a mano (PDF, DOCX y XLSX mínimos) en un directorio temporal fuera del repositorio. Resultado **verificado** en Node v26.13.0:
+
+| Caso | Resultado observado | Decisión |
+|---|---|---|
+| `unpdf` 2.1.0 `extractText(Uint8Array)` | `{ totalPages, text: string[] }`, un texto por página; las tildes y la `ñ` salen bien. Emite el aviso «Indexing all PDF objects» por consola | `pág. N` = índice + 1 |
+| PDF sin texto (solo un dibujo) | `text: [""]` | `pdf_sin_texto` si todas las páginas están vacías |
+| PDF cifrado | lanza `PasswordException` («No password given») | `cifrado` |
+| PDF dañado | lanza `InvalidPDFException` | `danado` |
+| `mammoth` 1.13.0 `extractRawText({ buffer })` | devuelve `{ value }` con los párrafos separados por una línea en blanco; un párrafo vacío añade más líneas en blanco | `párrafo N` = N.º de párrafo **no vacío** (no coincide con la numeración de Word si hay párrafos vacíos; se documenta) |
+| DOCX dañado | lanza «Can't find end of central directory…» | `danado` |
+| DOCX o XLSX cifrados con contraseña (contenedor OLE, firma `D0CF11E0A1B11AE1`) | `mammoth` da el mismo error que para un archivo dañado | **se detecta la firma antes de abrir** y se informa `cifrado` |
+| `read-excel-file` 9.3.15 `readXlsx(Buffer)` (`read-excel-file/node`) | `[{ sheet, data: filas[][] }]` con todas las hojas | `hoja` = nombre; `fila` = índice + 1 |
+| XLSX dañado | lanza `InvalidInputError` («Doesn't look like an `.xlsx` file») | `danado` |
+
+Lo que **NO se comprobó**: archivos reales de Word/Excel/PDF producidos por programas de oficina (solo los armados a mano), bombas de compresión ni PDF cifrados de verdad (el de prueba es una imitación con un diccionario `/Encrypt` inválido; la librería lo trata como cifrado). El modo Simulado no se ve afectado por nada de esto.
+
+### Ajustes del lote B respecto de lo previsto
+
+- **`fflate` no se usa**: los DOCX y XLSX de prueba se arman sin compresión con `zlib.crc32` de Node (sin dependencias). **Se retiró de `server/package.json` el 2026-11-11** (a petición de la persona); sigue instalada solo como dependencia interna de `read-excel-file`.
+- **Motivos nuevos** de fallo: `sin_texto` y `tiempo_agotado`; aviso nuevo `tope_paginas_alcanzado` (ver `contracts/api.md`).
+- **Un archivo demasiado grande no falla toda la carga**: el plugin de multipart se configura con `throwFileSizeLimit: false` y se rechaza solo ese archivo.
+- **Tope de páginas del PDF**: se extrae todo el PDF y luego se recortan las primeras 200 páginas (el tope acota lo que se guarda y se envía, no el trabajo de lectura; la protección de tiempo es el máximo de 20 s por archivo). **NO VERIFICADO** el comportamiento con PDF de miles de páginas.
+- **Búsqueda**: un término coincide con una palabra del fragmento si son iguales, o si el término tiene al menos 5 letras y la palabra empieza por él (sin lematización). **NO VERIFICADO** su calidad con documentos reales; se evalúa en la corrida de humo del lote C.
+

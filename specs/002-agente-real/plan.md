@@ -37,7 +37,6 @@ Enfoque técnico:
 | `mammoth` | 1.13.0 | BSD-2-Clause | texto de DOCX por párrafo | |
 | `read-excel-file` | 9.3.15 | MIT | XLSX por hoja y fila | `npm audit` limpio; **API por confirmar en el lote B** |
 | `tsx` | 4.23.15 | MIT | ejecutar/vigilar TypeScript en desarrollo | desarrollo |
-| `fflate` | por fijar | MIT | armar DOCX/XLSX ficticios en el script de fixtures | desarrollo |
 
 `xlsx` (SheetJS de npm) y `exceljs` se descartaron (research.md §Extracción). `@openai/agents` 0.21.0 se evaluó y se descartó (research.md §Bucle).
 

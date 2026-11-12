@@ -33,6 +33,19 @@ Valida (mismos criterios que la 001, FR-010): formato, 25 MB, nombre ≤ 150 car
 
 Si un archivo falla, los demás se procesan. Parcial por tope de filas: `status: "extracted"` con `warning: "tope_filas_alcanzado"`.
 
+**Motivos de fallo (`reason`) y avisos (`warning`) construidos en el lote B** (cada fallo trae su `message` en español, sin texto del documento):
+
+| `reason` | Cuándo |
+|---|---|
+| `formato_no_permitido`, `vacio`, `demasiado_grande`, `nombre_largo` | Las mismas reglas y mensajes que FR-010 de la 001 (se validan en el servicio; no se guardan) |
+| `pdf_sin_texto` | PDF sin texto seleccionable (escaneado): «Este PDF no tiene texto seleccionable (parece escaneado). Esta versión no usa OCR.» |
+| `cifrado` | PDF con contraseña, o DOCX/XLSX protegidos (contenedor OLE) |
+| `danado` | El archivo no se puede abrir o no es del tipo que indica su extensión |
+| `sin_texto` | El archivo se abrió pero no tiene texto (DOCX, XLSX, TXT, VTT o SRT) |
+| `tiempo_agotado` | La lectura tardó más del máximo por archivo (20 s por defecto) |
+
+Avisos de extracción parcial (`status: "extracted"` con `warning`): `tope_filas_alcanzado` (más de `MAX_XLSX_ROWS` filas con contenido en una hoja) y `tope_paginas_alcanzado` (PDF con más de 200 páginas; solo se usan las primeras 200). Los archivos con fallo de extracción **sí** quedan en `GET /api/evidence/:projectId` (con su motivo); los rechazados por validación (formato, nombre, tamaño) solo figuran en la respuesta del `POST`.
+
 ## `GET /api/evidence/:projectId`
 
 Lista lo que el servicio tiene en memoria para ese proyecto (AG-030). Si el servicio se reinició, `{ "files": [] }`.

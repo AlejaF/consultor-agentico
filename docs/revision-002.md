@@ -31,3 +31,33 @@ se cuela en el repositorio o en la página publicada (`dist/`), y se dejó la co
 
 **Antes del commit (tareas tuyas)**: crear tu clave y `server/.env` (T018); `npm run build && npm run check` con la lista de nombres
 presente (T020). **No pegues la clave en el chat.**
+
+## Lote B — Extracción y verificador (revisión corta)
+
+**Qué se hizo, en palabras simples**: el servicio local ahora sabe **recibir archivos** (PDF, Word, Excel, TXT, VTT, SRT), **leer su texto**
+y guardarlo **solo en su memoria** (nunca en el disco), anotando de dónde viene cada frase (página, párrafo, hoja y fila, línea o minuto).
+También tiene el **verificador de citas**: una función que comprueba, sin IA, que una frase citada está de verdad en el documento.
+Si un archivo no se puede leer (PDF escaneado, con contraseña o dañado), dice el motivo en español. Se crearon 12 archivos de ejemplo
+ficticios para probar. **Todavía no hay IA ni cambios en lo que ves en la demo.**
+
+1. **Correr** (2 min): `npm run typecheck && npm test && npm run build && npm run check`.
+   **Comprobar**: todo termina sin errores; `check` imprime tres «OK».
+2. **Abrir** (2 min): la carpeta `tests/fixtures/`.
+   **Comprobar**: hay 12 archivos; ábrelos (el PDF, el Word y el Excel con tu programa) y confirma que **todo es ficticio** («Empresa Ficticia Alfa»,
+   «documento de ejemplo ficticio»). `escaneado.pdf` se ve como una página con un recuadro gris y sin texto; `cifrado.*` y `danado.*` no se abren a propósito.
+3. **Correr** (3 min): `MODEL_PROVIDER=fake npm run dev:server` y, en otra terminal:
+   `curl -s -F "files=@tests/fixtures/politica-datos.pdf" -F "files=@tests/fixtures/escaneado.pdf" "http://127.0.0.1:8787/api/evidence?projectId=P-A"`.
+   **Comprobar**: el primero sale `"status":"extracted"` (con cuántos caracteres y fragmentos) y el segundo `"status":"failed"` con el motivo
+   «parece escaneado… no usa OCR». La respuesta **no** trae el texto del documento. Luego `curl -s http://127.0.0.1:8787/api/evidence/P-A`
+   lista ambos. Detén el servicio con Ctrl+C y vuélvelo a encender: la lista queda **vacía** (la memoria se pierde, como debe ser).
+4. **Correr** (1 min): `ls /tmp | wc -l` antes y después de la prueba anterior.
+   **Comprobar**: no aparecen archivos nuevos (nada se guarda en disco).
+5. **Abrir** (1 min): `server/src/verify.ts` (corto, unas 40 líneas).
+   **Comprobar**: la regla es «el fragmento debe estar dentro del texto de **esa** ubicación, ignorando mayúsculas, tildes y espacios»,
+   y con menos de 20 caracteres no vale.
+6. **Abrir** (1 min): `docs/decisiones.md` («Estado de la sesión» y «Lote B de la 002») y `docs/tiempos-002.md`.
+   **Comprobar**: el lote B figura cerrado, con las desviaciones anotadas, y la fila de tiempos tiene lo medido.
+7. **Mira el modo Simulado** (1 min): `npm run dev` y abre la demo. **Comprobar**: se ve igual que antes.
+
+**Antes del commit (tareas tuyas)**: T044 (esta revisión; si tienes un documento propio de ejemplo **ficticio**, súbelo con el `curl` del paso 3),
+T045 (`npm run build && npm run check` con tu lista de nombres) y T046 (commit). **No abras ni pegues `server/.env`.**

@@ -1,0 +1,11 @@
+1
+00:00:12,000 --> 00:00:18,000
+Entrevista de ejemplo ficticio con operaciones de Empresa Ficticia Alfa.
+
+2
+00:02:30,000 --> 00:02:37,000
+Jefe de operaciones (ficticio): Los datos están en tres sistemas que no se hablan entre sí.
+
+3
+00:04:05,000 --> 00:04:11,000
+Jefe de operaciones (ficticio): Armar un informe nos toma tres días de trabajo manual.

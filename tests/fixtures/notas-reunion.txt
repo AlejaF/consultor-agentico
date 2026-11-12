@@ -1,0 +1,9 @@
+Notas de la reunión de Empresa Ficticia Alfa (documento de ejemplo ficticio).
+
+Participan la gerente general y el jefe de operaciones (personas ficticias).
+Cada área lleva sus propias cifras y no hay un responsable único de los indicadores.
+Nadie revisa los indicadores cada semana; se miran solo al cierre del mes.
+El equipo de ventas usa una hoja de cálculo distinta a la del equipo de bodega.
+
+Se acordó pedir un presupuesto para integrar los sistemas de facturación, inventario y atención al cliente.
+Varias personas temen que la automatización les quite el trabajo.

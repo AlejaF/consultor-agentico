@@ -5,7 +5,9 @@ import multipart from '@fastify/multipart';
 import Fastify, { type FastifyInstance } from 'fastify';
 import type { Config } from './config.ts';
 import type { Logger } from './log.ts';
+import { evidenceRoutes } from './routes/evidence.ts';
 import { healthRoute } from './routes/health.ts';
+import { createStore, type Store } from './store.ts';
 
 export const HOST = '127.0.0.1' as const;
 
@@ -33,7 +35,7 @@ export function errorBody(category: ErrorCategory, message: string, retryable = 
   return { error: { category, message, retryable } };
 }
 
-export async function buildServer(config: Config, logger: Logger): Promise<FastifyInstance> {
+export async function buildServer(config: Config, logger: Logger, store: Store = createStore()): Promise<FastifyInstance> {
   const app = Fastify({ logger: false, bodyLimit: 1_048_576 });
 
   // Hosts aceptados: el propio servicio y los de los orígenes permitidos (el proxy de Vite conserva el Host del navegador).
@@ -61,6 +63,8 @@ export async function buildServer(config: Config, logger: Logger): Promise<Fasti
 
   await app.register(cors, { origin: config.allowedOrigins, methods: ['GET', 'POST', 'DELETE', 'OPTIONS'] });
   await app.register(multipart, {
+    // throwFileSizeLimit: false → un archivo demasiado grande se marca como truncado y se rechaza solo a él.
+    throwFileSizeLimit: false,
     limits: { fileSize: config.limits.maxFileBytes, files: 20, fields: 10, fieldNameSize: 100, headerPairs: 100 },
   });
 
@@ -78,6 +82,7 @@ export async function buildServer(config: Config, logger: Logger): Promise<Fasti
   });
 
   healthRoute(app, config);
+  evidenceRoutes(app, config, store);
   return app;
 }
 
