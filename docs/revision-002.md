@@ -11,7 +11,7 @@ más adelante hablará con OpenAI), se puso un «vigilante de claves» (`check-s
 se cuela en el repositorio o en la página publicada (`dist/`), y se dejó la configuración lista sin ningún modelo elegido.
 **Todavía no hay IA**: el servicio solo contesta «estoy vivo» y la demo se ve exactamente igual que antes.
 
-1. **Correr** (2 min): `npm run typecheck && npm test && npm run build && npm run check`.
+1. **Correr** (2 min): `npm run typecheck:all && npm run test:all && npm run build && npm run check`.
    **Comprobar**: todo termina sin errores; `check` imprime tres líneas «OK» (nombres, tokens y secretos).
 2. **Correr** (2 min): `npm run dev:server`, y en otra terminal `curl http://127.0.0.1:8787/api/health`.
    **Comprobar**: responde `"ok":true`, `"keyConfigured"` según tengas o no `server/.env`, los tres modelos en `null`
@@ -40,7 +40,7 @@ También tiene el **verificador de citas**: una función que comprueba, sin IA, 
 Si un archivo no se puede leer (PDF escaneado, con contraseña o dañado), dice el motivo en español. Se crearon 12 archivos de ejemplo
 ficticios para probar. **Todavía no hay IA ni cambios en lo que ves en la demo.**
 
-1. **Correr** (2 min): `npm run typecheck && npm test && npm run build && npm run check`.
+1. **Correr** (2 min): `npm run typecheck:all && npm run test:all && npm run build && npm run check`.
    **Comprobar**: todo termina sin errores; `check` imprime tres «OK».
 2. **Abrir** (2 min): la carpeta `tests/fixtures/`.
    **Comprobar**: hay 12 archivos; ábrelos (el PDF, el Word y el Excel con tu programa) y confirma que **todo es ficticio** («Empresa Ficticia Alfa»,

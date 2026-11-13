@@ -96,14 +96,17 @@ Para probar la publicación bajo una subruta: `BASE_PATH=/mi-repo/ npm run build
 ## Cómo se prueba
 
 ```bash
-npm run typecheck   # tipos
+npm run typecheck   # tipos de la app (es lo que corre el CI de Pages; no necesita server/)
 npm test            # Vitest: reglas de negocio (derivación, rúbrica, archivos, persistencia, acceso, contrastes)
+npm run typecheck:all  # app + servicio local (requiere `npm ci --prefix server`)
+npm run test:all       # pruebas de la app + pruebas del servicio (tests/server)
+npm run check:all   # typecheck:all + test:all + check, en un solo paso (local)
 npm run check       # nombres reales, referencias/ no versionada, colores fuera de los tokens, ningún PDF en dist/
 npm run test:e2e    # Playwright + axe a 320, 768 y 1280 px
 EVIDENCIA=1 npm run test:e2e   # además guarda capturas y salidas de axe en docs/evidencia/
 ```
 
-**Playwright corre en local, no en CI.** El flujo de CI (GitHub Actions) ejecuta typecheck, pruebas unitarias, compilación y `check` (este último omite la lista local de nombres vetados, que no se versiona). Las pruebas de extremo a extremo y la evidencia se ejecutan a mano antes de cada commit.
+**Playwright corre en local, no en CI.** El flujo de CI (GitHub Actions) solo instala las dependencias de la raíz y ejecuta `typecheck`, `test`, compilación y `check` (este último omite la lista local de nombres vetados, que no se versiona). Las pruebas de extremo a extremo y la evidencia se ejecutan a mano antes de cada commit.
 
 Las capturas y los resultados de axe están en `docs/evidencia/` (ver su `README.md`). La revisión manual de teclado se hizo el 2026-11-02; la del lector de pantalla **NO se hizo** (NO VERIFICADO); ver `docs/evidencia/revision-manual.md`.
 

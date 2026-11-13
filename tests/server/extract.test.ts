@@ -140,7 +140,7 @@ describe('extractFile: topes', () => {
   });
 
   it('tiempo máximo por archivo: se corta con motivo «tiempo_agotado»', async () => {
-    const lento = { pdf: () => new Promise<never>((resolve) => setTimeout(resolve, 200)) } as never;
+    const lento = { pdf: () => new Promise<never>((resolve) => setTimeout(() => resolve(undefined as never), 200)) } as never;
     const r = await extractFile({ name: 'x.pdf', bytes: Buffer.from('%PDF-1.4') }, { timeoutMs: 20, extractors: lento });
     expect(r).toMatchObject({ status: 'failed', reason: 'tiempo_agotado' });
   });
