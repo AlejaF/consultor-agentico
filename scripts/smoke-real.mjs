@@ -5,14 +5,14 @@
 // documentos ficticios) en .local/trazas/ (ignorada por git); no pasa por docs/ ni por check-secrets. Nunca la clave.
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { lineaDeCosto } from './lib/tarifas.mjs';
 import { buildTraceRecord, saveTrace, wantsTrace } from './lib/traza.mjs';
 
 const BASE = process.env.SERVICE_URL ?? 'http://127.0.0.1:8787';
 const PROJECT = 'P-HUMO';
 const FIXTURES = 'tests/fixtures';
-// Tarifa por 1M de tokens (research.md §3, leída 2026-11-12, contexto corto). Se puede sobrescribir por entorno.
-const RATE_IN = Number(process.env.RATE_INPUT_PER_M ?? 0.1);
-const RATE_OUT = Number(process.env.RATE_OUTPUT_PER_M ?? 0.5);
+// El costo usa la tarifa del modelo REALMENTE usado (scripts/lib/tarifas.mjs, de research.md §3); sin tarifa, no se estima.
+// RATE_INPUT_PER_M y RATE_OUTPUT_PER_M (las dos) permiten fijar una tarifa a mano.
 
 const health = await fetch(`${BASE}/api/health`).then((r) => r.json()).catch(() => null);
 if (!health) {
@@ -65,7 +65,6 @@ if (!res.ok) {
 } else {
   const cites = body.findings.flatMap((f) => f.citations);
   const ok = cites.filter((c) => c.verified).length;
-  const cost = (body.run.tokens.input * RATE_IN + body.run.tokens.output * RATE_OUT) / 1e6;
   const tools = {};
   for (const s of body.trace) if (s.type === 'tool' || s.type === 'tool_error') tools[s.name] = (tools[s.name] ?? 0) + 1;
   md = [
@@ -77,7 +76,7 @@ if (!res.ok) {
     `- Iteraciones: ${body.run.iterations}${body.run.partial ? ' (**parcial**: se alcanzó un tope)' : ''}`,
     `- Tokens: entrada ${body.run.tokens.input}, salida ${body.run.tokens.output}, total ${body.run.tokens.total}`,
     `- Tiempo total: ${seconds} s`,
-    `- Costo estimado: US$ ${cost.toFixed(4)} (tarifa por 1M: entrada ${RATE_IN}, salida ${RATE_OUT}; **estimación**, contrástala con el panel de uso de la plataforma)`,
+    lineaDeCosto(body.run.model, body.run.tokens, process.env),
     `- Hallazgos: ${body.findings.length} (verificados: ${body.findings.filter((f) => f.verified).length})`,
     `- Citas: ${cites.length} (verificadas: ${ok}, no verificadas: ${cites.length - ok})`,
     `- Herramientas usadas: ${Object.entries(tools).map(([k, v]) => `${k} ×${v}`).join(', ') || 'ninguna'}`,
