@@ -5,10 +5,27 @@
 ## Formato de error
 
 ```json
-{ "error": { "category": "spend_limit | balance | rate_limit | auth | usage_limit | provider_unavailable | no_model_configured | input_too_large | bad_request | extraction_failed | internal",
-             "message": "Texto claro en español", "retryable": false, "retryAfterSeconds": 12 } }
+{ "error": { "category": "spend_limit | balance | rate_limit | auth | usage_limit | invalid_request | model_unavailable | access_denied | provider_unavailable | no_model_configured | input_too_large | bad_request | extraction_failed | internal",
+             "message": "Texto claro en español", "retryable": false, "retryAfterSeconds": 12,
+             "providerStatus": 404, "providerCode": "model_not_found" } }
 ```
-`retryable` es solo informativo: **el servicio nunca reintenta por su cuenta** ante `spend_limit`, `balance`, `auth` ni `usage_limit` (AG-011).
+`providerStatus` y `providerCode` (el estado HTTP y el `error.code` reales del proveedor) aparecen solo si existen. El mensaje nunca incluye la clave: se tacha la exacta y todo lo que tenga forma de clave, y se acota a 300 caracteres.
+
+**Cómo se clasifican los errores del proveedor** (de arriba abajo; la primera regla que aplica gana):
+
+| Condición del proveedor | `category` | HTTP del servicio |
+|---|---|---|
+| código de gasto (`*_spend_limit_exceeded`) | `spend_limit` | 402 |
+| saldo agotado (`credit_balance_exhausted`, `insufficient_quota`) | `balance` | 402 |
+| `organization_usage_limit_exceeded` | `usage_limit` | 429 |
+| 429 o `rate_limit_exceeded` | `rate_limit` | 429 |
+| 401, `invalid_api_key`, o 403 sin código | `auth` | 401 |
+| 404 o código `model_not_found` (modelo inexistente o no permitido en el proyecto) | `model_unavailable` | 502 |
+| otro 403 con código (país no admitido, permisos…) | `access_denied` | 502 |
+| otro 4xx (400, 413, 422…) salvo 408 y 409 | `invalid_request` | 502 |
+| 5xx, 408, 409, red | `provider_unavailable` | 502 |
+
+`retryable` es solo informativo: **el servicio nunca reintenta por su cuenta** ante `spend_limit`, `balance`, `auth` ni `usage_limit` (AG-011), y tampoco ante `invalid_request`, `model_unavailable` ni `access_denied` (reintentar no los arregla).
 
 ## `GET /api/health`
 

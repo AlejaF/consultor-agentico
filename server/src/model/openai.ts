@@ -8,6 +8,7 @@ const BALANCE = new Set(['credit_balance_exhausted', 'insufficient_quota']);
 
 interface ProviderErrorLike {
   status?: number;
+  message?: unknown;
   code?: unknown;
   type?: unknown;
   headers?: unknown;
@@ -23,8 +24,21 @@ function headerValue(headers: unknown, name: string): string | undefined {
   return undefined;
 }
 
-/** Traduce un error del SDK (o de red) a `ModelError`. Decide por `error.code` y, si falta, por `type` o por el estado HTTP. */
-export function toModelError(err: unknown): ModelError {
+const MAX_PROVIDER_MESSAGE = 300;
+
+/** Mensaje del proveedor apto para mostrar: sin la clave (exacta o con forma de clave), en una línea y acotado. */
+export function sanitizeProviderMessage(raw: unknown, apiKey?: string): string {
+  let t = typeof raw === 'string' ? raw : '';
+  if (apiKey && apiKey.length >= 8) t = t.split(apiKey).join('[clave omitida]');
+  t = t.replace(/sk-[A-Za-z0-9_*-]{6,}/g, '[clave omitida]').replace(/\s+/g, ' ').trim();
+  return t.length > MAX_PROVIDER_MESSAGE ? `${t.slice(0, MAX_PROVIDER_MESSAGE)}…` : t;
+}
+
+/**
+ * Traduce un error del SDK (o de red) a `ModelError`. Decide por `error.code` y, si falta, por `type` o por el estado HTTP.
+ * `apiKey` (opcional) se usa solo para tachar la clave de los mensajes del proveedor.
+ */
+export function toModelError(err: unknown, apiKey?: string): ModelError {
   if (err instanceof ModelError) return err;
   const e = (err ?? {}) as ProviderErrorLike;
   const codeRaw = e.code ?? e.error?.code;
@@ -40,7 +54,31 @@ export function toModelError(err: unknown): ModelError {
     const ra = Number(headerValue(e.headers, 'retry-after'));
     return new ModelError('rate_limit', 'Hay demasiadas solicitudes; reintenta en unos segundos.', { ...extra, ...(Number.isFinite(ra) && ra > 0 ? { retryAfterSeconds: Math.ceil(ra) } : {}) });
   }
-  if (e.status === 401 || e.status === 403 || code === 'invalid_api_key') return new ModelError('auth', 'Falta la clave de OpenAI o no es válida.', extra);
+  // Clave: 401, código de clave inválida, o 403 sin código (se conserva el comportamiento anterior).
+  if (e.status === 401 || code === 'invalid_api_key' || (e.status === 403 && !code)) return new ModelError('auth', 'Falta la clave de OpenAI o no es válida.', extra);
+
+  const status = typeof e.status === 'number' ? e.status : undefined;
+  const detail = () => {
+    const raw = e.error && typeof e.error === 'object' && 'message' in e.error ? (e.error as { message?: unknown }).message : e.message;
+    // El SDK antepone «<estado> » al mensaje; se quita para no repetirlo.
+    return sanitizeProviderMessage(raw, apiKey).replace(/^\d{3}\s+/, '');
+  };
+  const describe = (lead: string, hint = '') => {
+    const d = detail();
+    return `${lead} (HTTP ${status ?? '?'}${code ? `, código «${code}»` : ''})${d ? `: ${d}` : '.'}${hint}`;
+  };
+  const withStatus = status !== undefined ? { ...extra, providerStatus: status } : extra;
+
+  // Modelo inexistente (404) o no permitido en el proyecto (403 con código de modelo).
+  if (status === 404 || code === 'model_not_found') {
+    return new ModelError('model_unavailable', describe('El modelo no está disponible', ' Revisa el nombre en OPENAI_MODEL_DIAGNOSTICO y que tu proyecto tenga acceso.'), withStatus);
+  }
+  // Otro 403 con código real (país no admitido, permisos de la clave, etc.).
+  if (status === 403) return new ModelError('access_denied', describe('OpenAI negó el acceso'), withStatus);
+  // Cualquier otro 4xx (400, 413, 422…) es un problema de la solicitud, no de red: no se reintenta. 408 y 409 son transitorios.
+  if (status !== undefined && status >= 400 && status < 500 && status !== 408 && status !== 409) {
+    return new ModelError('invalid_request', describe('OpenAI rechazó la solicitud'), withStatus);
+  }
   return new ModelError('provider_unavailable', 'El proveedor de IA no respondió.', extra);
 }
 
@@ -90,7 +128,7 @@ export function createOpenAIClient(opts: OpenAIClientOptions): ModelClient {
         );
       } catch (e) {
         if (signal?.aborted || (e as { name?: string })?.name === 'AbortError') throw e;
-        throw toModelError(e);
+        throw toModelError(e, opts.apiKey);
       }
       const items: ConversationItem[] = [];
       const toolCalls: ModelResponse['toolCalls'] = [];

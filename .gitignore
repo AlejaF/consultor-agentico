@@ -11,3 +11,6 @@ server/.env
 test-results/
 playwright-report/
 .claude/settings.local.json
+
+# trazas completas de la prueba de humo (pueden traer texto de documentos; nunca la clave)
+.local/trazas/

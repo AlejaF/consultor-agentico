@@ -38,6 +38,39 @@ const GUION: Step[] = [
   { text: 'Resumen final.' },
 ];
 
+describe('POST /api/diagnosis/run — error 400 del proveedor', () => {
+  it('se muestra con su código real y un mensaje claro, no como provider_unavailable, y sin la clave', async () => {
+    const err = new ModelError('invalid_request', 'OpenAI rechazó la solicitud (HTTP 400, código «unsupported_parameter»): reasoning.effort no es compatible.', { providerCode: 'unsupported_parameter', providerStatus: 400 });
+    const { app, client } = await make([{ throw: err }]);
+    const r = await post(app, { projectId: 'P-A' });
+    expect(r.statusCode).toBe(502);
+    const e = r.json().error;
+    expect(e).toMatchObject({ category: 'invalid_request', providerStatus: 400, providerCode: 'unsupported_parameter', retryable: false });
+    expect(e.message).toContain('unsupported_parameter');
+    expect(e.trace.at(-1)).toMatchObject({ type: 'model_error', category: 'invalid_request' });
+    expect(r.body).not.toContain(KEY);
+    expect(r.body).not.toContain('provider_unavailable');
+    expect(client.calls).toBe(1); // sin reintentos
+  });
+});
+
+describe('POST /api/diagnosis/run — otros 4xx del proveedor', () => {
+  it.each([
+    ['model_unavailable', 404, 'model_not_found'],
+    ['access_denied', 403, 'unsupported_country_region_territory'],
+    ['invalid_request', 422, 'invalid_value'],
+  ] as const)('%s (HTTP %i, %s): se muestra con su categoría y código, sin reintentos ni clave', async (category, providerStatus, providerCode) => {
+    const err = new ModelError(category, `Mensaje claro (HTTP ${providerStatus}, código «${providerCode}»).`, { providerCode, providerStatus });
+    const { app, client } = await make([{ throw: err }]);
+    const r = await post(app, { projectId: 'P-A' });
+    expect(r.statusCode).toBe(502);
+    expect(r.json().error).toMatchObject({ category, providerStatus, providerCode, retryable: false });
+    expect(r.body).not.toContain(KEY);
+    expect(r.body).not.toContain('provider_unavailable');
+    expect(client.calls).toBe(1);
+  });
+});
+
 describe('POST /api/diagnosis/run', () => {
   it('devuelve run, findings, missingInfo, trace y warnings con la forma del contrato', async () => {
     const { app, client } = await make(GUION);

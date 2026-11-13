@@ -10,7 +10,7 @@ import type { Store } from '../store.ts';
 
 const bodySchema = z.object({ projectId: z.string().regex(/^[A-Za-z0-9-]{1,32}$/), empresa: z.string().max(200).optional() });
 
-const HTTP: Record<ModelErrorCategory, number> = { spend_limit: 402, balance: 402, rate_limit: 429, usage_limit: 429, auth: 401, provider_unavailable: 502 };
+const HTTP: Record<ModelErrorCategory, number> = { spend_limit: 402, balance: 402, rate_limit: 429, usage_limit: 429, auth: 401, invalid_request: 502, model_unavailable: 502, access_denied: 502, provider_unavailable: 502 };
 
 export function diagnosisRoutes(app: FastifyInstance, config: Config, store: Store, getClient: () => ModelClient): void {
   const running = new Set<string>();
@@ -46,7 +46,7 @@ export function diagnosisRoutes(app: FastifyInstance, config: Config, store: Sto
         const me = e.loop.error;
         const retryable = me.category === 'rate_limit' || me.category === 'provider_unavailable';
         const base = errorBody(me.category as ErrorCategory, me.message, retryable);
-        return reply.code(HTTP[me.category]).send({ error: { ...base.error, ...(me.retryAfterSeconds !== undefined ? { retryAfterSeconds: me.retryAfterSeconds } : {}), trace: e.trace } });
+        return reply.code(HTTP[me.category]).send({ error: { ...base.error, ...(me.retryAfterSeconds !== undefined ? { retryAfterSeconds: me.retryAfterSeconds } : {}), ...(me.providerStatus !== undefined ? { providerStatus: me.providerStatus } : {}), ...(me.providerCode !== undefined ? { providerCode: me.providerCode } : {}), trace: e.trace } });
       }
       if (e instanceof ConfigError) return reply.code(400).send(errorBody(e.category === 'no_model_configured' ? 'no_model_configured' : 'bad_request', e.message));
       if (e instanceof ModelError) return reply.code(HTTP[e.category]).send(errorBody(e.category, e.message));

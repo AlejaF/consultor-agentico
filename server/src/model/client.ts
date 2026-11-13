@@ -1,24 +1,27 @@
 // Interfaz propia que aísla al proveedor (contracts/model-client.md). El bucle solo conoce esto.
 import type { z } from 'zod';
 
-export type ModelErrorCategory = 'spend_limit' | 'balance' | 'rate_limit' | 'auth' | 'usage_limit' | 'provider_unavailable';
+export type ModelErrorCategory = 'spend_limit' | 'balance' | 'rate_limit' | 'auth' | 'usage_limit' | 'invalid_request' | 'model_unavailable' | 'access_denied' | 'provider_unavailable';
 
 /** Toda falla del proveedor se lanza así. El mensaje nunca contiene la clave ni el cuerpo de la solicitud. */
 export class ModelError extends Error {
   readonly category: ModelErrorCategory;
   readonly retryAfterSeconds?: number;
   readonly providerCode?: string;
-  constructor(category: ModelErrorCategory, message: string, extra: { retryAfterSeconds?: number; providerCode?: string } = {}) {
+  /** Estado HTTP real que devolvió el proveedor (en `invalid_request`, `model_unavailable` y `access_denied`). */
+  readonly providerStatus?: number;
+  constructor(category: ModelErrorCategory, message: string, extra: { retryAfterSeconds?: number; providerCode?: string; providerStatus?: number } = {}) {
     super(message);
     this.name = 'ModelError';
     this.category = category;
     if (extra.retryAfterSeconds !== undefined) this.retryAfterSeconds = extra.retryAfterSeconds;
     if (extra.providerCode !== undefined) this.providerCode = extra.providerCode;
+    if (extra.providerStatus !== undefined) this.providerStatus = extra.providerStatus;
   }
 }
 
 /** Categorías tras las cuales el servicio NO reintenta nunca (AG-011). Las demás tampoco reintentan solas, pero la persona puede pulsar «Reintentar». */
-export const NEVER_RETRY: readonly ModelErrorCategory[] = ['spend_limit', 'balance', 'auth', 'usage_limit'];
+export const NEVER_RETRY: readonly ModelErrorCategory[] = ['spend_limit', 'balance', 'auth', 'usage_limit', 'invalid_request', 'model_unavailable', 'access_denied'];
 
 export type ConversationItem =
   | { type: 'message'; role: 'user' | 'assistant'; content: string }

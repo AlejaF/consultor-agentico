@@ -58,6 +58,56 @@ describe('traducción de errores del proveedor (por error.code)', () => {
     expect(cat({ status: 503 })).toBe('provider_unavailable');
     expect(cat(new Error('ECONNRESET'))).toBe('provider_unavailable');
   });
+  it('400 → invalid_request con el código y el mensaje reales del proveedor (sin la clave)', () => {
+    const e = toModelError(
+      { status: 400, code: 'unsupported_parameter', message: '400 Unsupported parameter', error: { code: 'unsupported_parameter', message: `El parámetro «reasoning.effort» no es compatible con este modelo. Clave: ${KEY}` } },
+      KEY,
+    );
+    expect(e).toMatchObject({ category: 'invalid_request', providerStatus: 400, providerCode: 'unsupported_parameter' });
+    expect(e.message).toContain('HTTP 400');
+    expect(e.message).toContain('unsupported_parameter');
+    expect(e.message).toContain('reasoning.effort');
+    expect(e.message).not.toContain(KEY);
+    expect(e.message).not.toMatch(/sk-/);
+  });
+  it('400 sin código ni cuerpo: mensaje claro igualmente; mensaje largo acotado; el prefijo «400 » del SDK no se repite', () => {
+    expect(toModelError({ status: 400 }).message).toBe('OpenAI rechazó la solicitud (HTTP 400).');
+    expect(toModelError({ status: 400, message: '400 Modelo inexistente' }).message).toBe('OpenAI rechazó la solicitud (HTTP 400): Modelo inexistente');
+    expect(toModelError({ status: 400, message: 'x'.repeat(2000) }).message.length).toBeLessThan(400);
+  });
+  it('404 modelo inexistente → model_unavailable con estado y código reales', () => {
+    const e = toModelError({ status: 404, code: 'model_not_found', message: '404 The model `gpt-inexistente` does not exist', error: { code: 'model_not_found', message: 'The model `gpt-inexistente` does not exist' } }, KEY);
+    expect(e).toMatchObject({ category: 'model_unavailable', providerStatus: 404, providerCode: 'model_not_found' });
+    expect(e.message).toContain('HTTP 404');
+    expect(e.message).toContain('model_not_found');
+    expect(e.message).toContain('gpt-inexistente');
+    expect(e.message).toContain('OPENAI_MODEL_DIAGNOSTICO');
+    expect(toModelError({ status: 404 }).category).toBe('model_unavailable'); // 404 sin cuerpo
+  });
+  it('403 por modelo no permitido en el proyecto → model_unavailable (no auth)', () => {
+    const e = toModelError({ status: 403, code: 'model_not_found', error: { code: 'model_not_found', message: 'Project `proj_x` does not have access to model `m`' } });
+    expect(e).toMatchObject({ category: 'model_unavailable', providerStatus: 403, providerCode: 'model_not_found' });
+    expect(e.message).toContain('does not have access');
+  });
+  it('403 con otro código → access_denied con el código real', () => {
+    const e = toModelError({ status: 403, code: 'unsupported_country_region_territory', error: { message: `Country, region, or territory not supported ${KEY}` } }, KEY);
+    expect(e).toMatchObject({ category: 'access_denied', providerStatus: 403, providerCode: 'unsupported_country_region_territory' });
+    expect(e.message).not.toContain(KEY);
+  });
+  it('otros 4xx (413, 422) → invalid_request con su estado; 408 y 409 siguen siendo provider_unavailable', () => {
+    expect(toModelError({ status: 422, code: 'invalid_value' })).toMatchObject({ category: 'invalid_request', providerStatus: 422, providerCode: 'invalid_value' });
+    expect(toModelError({ status: 413 })).toMatchObject({ category: 'invalid_request', providerStatus: 413 });
+    expect(cat({ status: 408 })).toBe('provider_unavailable');
+    expect(cat({ status: 409 })).toBe('provider_unavailable');
+  });
+  it('NO cambian las categorías existentes: clave (401, 403 sin código), gasto y tasa', () => {
+    expect(cat({ status: 401, code: 'invalid_api_key' })).toBe('auth');
+    expect(cat({ status: 403 })).toBe('auth');
+    expect(cat({ status: 403, code: 'invalid_api_key' })).toBe('auth');
+    expect(cat({ status: 404, code: 'organization_spend_limit_exceeded' })).toBe('spend_limit'); // el código manda sobre el estado
+    expect(cat({ status: 429 })).toBe('rate_limit');
+    expect(cat({ status: 400, code: 'insufficient_quota' })).toBe('balance');
+  });
   it('el mensaje nunca contiene la clave ni el cuerpo de la solicitud', () => {
     const e = toModelError({ status: 401, message: `Incorrect API key provided: ${KEY}. body: {"input":"texto secreto"}`, code: 'invalid_api_key' });
     expect(e.message).not.toContain(KEY);
@@ -92,6 +142,38 @@ describe('cliente OpenAI (con HTTP sustituido; sin red)', () => {
     const e = await c.respond(req()).catch((x) => x);
     expect(e).toBeInstanceOf(ModelError);
     expect(e.category).toBe('spend_limit');
+    expect(e.message).not.toContain(KEY);
+    expect(n).toBe(1);
+  });
+  it('un 400 real del proveedor llega con su código y mensaje, una sola llamada y sin la clave', async () => {
+    let n = 0;
+    const fetchFn = (async () => {
+      n += 1;
+      return new Response(JSON.stringify({ error: { code: 'unsupported_value', type: 'invalid_request_error', param: 'reasoning.effort', message: `Valor no admitido para reasoning.effort (clave ${KEY})` } }), { status: 400, headers: { 'content-type': 'application/json' } });
+    }) as unknown as typeof fetch;
+    const e = await createOpenAIClient({ apiKey: KEY, fetch: fetchFn }).respond(req()).catch((x) => x);
+    expect(e).toBeInstanceOf(ModelError);
+    expect(e).toMatchObject({ category: 'invalid_request', providerStatus: 400, providerCode: 'unsupported_value' });
+    expect(e.message).toContain('unsupported_value');
+    expect(e.message).toContain('Valor no admitido');
+    expect(e.message).not.toContain(KEY);
+    expect(e.category).not.toBe('provider_unavailable');
+    expect(n).toBe(1);
+  });
+  it.each([
+    [404, 'model_not_found', 'model_unavailable'],
+    [403, 'model_not_found', 'model_unavailable'],
+    [403, 'unsupported_country_region_territory', 'access_denied'],
+    [422, 'invalid_value', 'invalid_request'],
+  ] as const)('HTTP %i (%s) real → %s con su código, sin la clave y con UNA sola llamada', async (status, code, category) => {
+    let n = 0;
+    const fetchFn = (async () => {
+      n += 1;
+      return new Response(JSON.stringify({ error: { code, message: `detalle del proveedor ${KEY}` } }), { status, headers: { 'content-type': 'application/json' } });
+    }) as unknown as typeof fetch;
+    const e = await createOpenAIClient({ apiKey: KEY, fetch: fetchFn }).respond(req()).catch((x) => x);
+    expect(e).toMatchObject({ category, providerStatus: status, providerCode: code });
+    expect(e.message).toContain(code);
     expect(e.message).not.toContain(KEY);
     expect(n).toBe(1);
   });

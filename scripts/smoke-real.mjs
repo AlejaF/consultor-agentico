@@ -1,8 +1,11 @@
 // Prueba de humo MANUAL con el modelo real (con costo). Requiere el servicio en marcha (`npm run dev:server`) con
 // `server/.env` listo y los modelos decididos. Sube los fixtures de tests/fixtures/, corre un diagnóstico y escribe
 // un RESUMEN en docs/evidencia/humo-real.md. Nunca imprime ni escribe la clave ni texto de documentos.
+// Opción --guardar-traza: además guarda la respuesta COMPLETA (traza, hallazgos y citas, que sí traen texto de los
+// documentos ficticios) en .local/trazas/ (ignorada por git); no pasa por docs/ ni por check-secrets. Nunca la clave.
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { buildTraceRecord, saveTrace, wantsTrace } from './lib/traza.mjs';
 
 const BASE = process.env.SERVICE_URL ?? 'http://127.0.0.1:8787';
 const PROJECT = 'P-HUMO';
@@ -45,6 +48,15 @@ const res = await fetch(`${BASE}/api/diagnosis/run`, {
 });
 const seconds = ((Date.now() - t0) / 1000).toFixed(1);
 const body = await res.json();
+
+if (wantsTrace(process.argv.slice(2))) {
+  try {
+    const file = saveTrace(buildTraceRecord({ status: res.status, body, seconds, projectId: PROJECT }), { extraSecrets: [process.env.OPENAI_API_KEY] });
+    console.log(`Traza completa guardada en ${file} (carpeta ignorada por git; puede contener texto de los documentos ficticios).`);
+  } catch (e) {
+    console.error(`No se guardó la traza: ${e instanceof Error ? e.message : 'error desconocido'}`);
+  }
+}
 
 let md;
 if (!res.ok) {
