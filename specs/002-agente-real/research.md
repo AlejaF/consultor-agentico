@@ -81,6 +81,24 @@ Los cuatro tienen ventana de 1.05 M y salida máxima de 128 K. La página recomi
 
 El costo real depende de los documentos y de los tokens de razonamiento; se mide en la prueba de humo (lote C) y la traza lo muestra (AG-009).
 
+### Re-verificación (T048, 2026-11-12)
+
+Leídas el 2026-11-12 las páginas oficiales `developers.openai.com/api/docs/models/gpt-6-luna`, `…/models/gpt-6.1-sol`, `…/models/compare` y `…/pricing.md` (HTTP 200). Ninguna muestra fecha de publicación ni «última actualización».
+
+| Dato | `gpt-6-luna` | `gpt-6.1-sol` | `gpt-6.1-terra` |
+|---|---|---|---|
+| ID exacto de API | `gpt-6-luna` (confirmado) | `gpt-6.1-sol` (confirmado) | `gpt-6.1-terra` (solo en la tabla de precios) |
+| Precio por 1M (entrada / caché / salida, contexto ≤ 272K) | $0.10 / $0.01 / $0.50 | $2.00 / $0.10 / $10.00 | $1.00 / $0.05 / $5.00 |
+| *Function calling* | Sí («function_calling»); en Chat Completions solo con `reasoning_effort` `none` | Sí; «Tool calling requires the Responses API» | **NO VERIFICADO** (página del modelo no leída) |
+| `v1/responses` | Compatible | Compatible | **NO VERIFICADO** |
+| `reasoning.effort` | `none`, `low`, `medium` (por defecto), `high`, `xhigh`, `max` | `low`, `medium` (por defecto), `high`, `xhigh`, `max` (sin `none`) | **NO VERIFICADO** |
+| Contexto / salida máxima | 1 050 000 / 128 000 | 1 050 000 / 128 000 | **NO VERIFICADO** |
+
+- La promoción citada en la página de precios («available until November 30, 2026») es de **otro modelo** (GPT-5.6 Sol); no aplica a `gpt-6.1-sol`. Para Luna y Sol no aparece promoción.
+- La tarifa para estimar costos en `docs/evidencia/humo-real.md` es la de la tabla anterior (contexto corto). Con contexto largo (> 272K) sería más alta; el diagnóstico no debería llegar ahí (tope de entrada 120 000 caracteres).
+- `gpt-6.1-terra` sigue **descartado hasta confirmar sus capacidades** (decisión de la persona, `docs/decisiones.md`, 2026-11-12).
+- Por defecto el nivel de razonamiento de ambos es `medium`; el valor que se usará lo decide la persona en T049.
+
 ## 4. Servidor HTTP
 
 **Decisión**: Fastify 5.12.8 (MIT) con `@fastify/cors` 11.4.1 y `@fastify/multipart` 10.1.8.
@@ -225,4 +243,12 @@ Lo que **NO se comprobó**: archivos reales de Word/Excel/PDF producidos por pro
 - **Un archivo demasiado grande no falla toda la carga**: el plugin de multipart se configura con `throwFileSizeLimit: false` y se rechaza solo ese archivo.
 - **Tope de páginas del PDF**: se extrae todo el PDF y luego se recortan las primeras 200 páginas (el tope acota lo que se guarda y se envía, no el trabajo de lectura; la protección de tiempo es el máximo de 20 s por archivo). **NO VERIFICADO** el comportamiento con PDF de miles de páginas.
 - **Búsqueda**: un término coincide con una palabra del fragmento si son iguales, o si el término tiene al menos 5 letras y la palabra empieza por él (sin lematización). **NO VERIFICADO** su calidad con documentos reales; se evalúa en la corrida de humo del lote C.
+
+## 17. Cliente OpenAI del lote C (T056; 2026-11-12)
+
+Verificado **contra los tipos y con HTTP simulado** (sin red y sin clave): `openai` 7.55.0, `responses.create` con `tools: [{ type: 'function', name, description, parameters, strict: false }]`, `store: false`, `max_output_tokens`, `reasoning: { effort }` (solo si la persona lo configuró) e `include: ['reasoning.encrypted_content']`. Opciones del cliente: `maxRetries: 0` (comprobado: ante un 429 de gasto se hace **una sola** llamada HTTP). La respuesta se lee de `output`: elementos `function_call` (`call_id`, `name`, `arguments`), `message` (`output_text`) y `reasoning`; los resultados de herramientas vuelven como `function_call_output` con el mismo `call_id`.
+
+**NO VERIFICADO** (se confirma en la prueba de humo T064, que hace la persona): que el proveedor acepte devolver los elementos `reasoning` cifrados tal cual con `store: false` en la siguiente vuelta; que `reasoning.effort` sea válido para el modelo elegido (Sol no admite `none`); el comportamiento real de las llamadas a función con estos modelos.
+
+Otras decisiones del lote: `MAX_OUTPUT_TOKENS` queda en 4096 como valor inicial provisional (se ajusta con la prueba de humo); `registrar_hallazgo` recibe la ubicación como texto («pág. 3», «hoja “Ventas”, fila 7»…) y el servicio la convierte con `parseLocation`; si la ubicación no se entiende, se devuelve el error al agente.
 

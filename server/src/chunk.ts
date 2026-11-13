@@ -46,3 +46,15 @@ export function sameLocation(a: Location, b: Location): boolean {
       return a.start === (b as typeof a).start;
   }
 }
+
+/** Inverso de `formatLocation`: lee la ubicación que escribe el modelo («pág. 3», «hoja “Ventas”, fila 7»…). `undefined` si no se reconoce. */
+export function parseLocation(text: string): Location | undefined {
+  const s = text.trim().replace(/\s+/g, ' ');
+  let m: RegExpMatchArray | null;
+  if ((m = s.match(/^p[áa]g(?:ina|\.)?\s*(\d+)$/i))) return { kind: 'page', page: Number(m[1]) };
+  if ((m = s.match(/^p[áa]rrafo\s*(\d+)$/i))) return { kind: 'paragraph', n: Number(m[1]) };
+  if ((m = s.match(/^l[íi]nea\s*(\d+)$/i))) return { kind: 'line', n: Number(m[1]) };
+  if ((m = s.match(/^minuto\s*(\d{1,3}:\d{2})$/i))) return { kind: 'time', start: m[1]!.padStart(5, '0') };
+  if ((m = s.match(/^hoja\s*["“'«](.+?)["”'»],?\s*fila\s*(\d+)$/i))) return { kind: 'sheet', sheet: m[1]!, row: Number(m[2]) };
+  return undefined;
+}

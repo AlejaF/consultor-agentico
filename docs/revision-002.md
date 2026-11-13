@@ -61,3 +61,27 @@ ficticios para probar. **Todavía no hay IA ni cambios en lo que ves en la demo.
 
 **Antes del commit (tareas tuyas)**: T044 (esta revisión; si tienes un documento propio de ejemplo **ficticio**, súbelo con el `curl` del paso 3),
 T045 (`npm run build && npm run check` con tu lista de nombres) y T046 (commit). **No abras ni pegues `server/.env`.**
+
+## Lote C — lista de revisión corta (máx. 10 minutos de comprobación)
+
+**Qué se hizo, en palabras simples**: el servicio local ahora tiene un **agente de Diagnóstico**: un programa que le pide a la IA que busque en tus
+documentos, anote hallazgos y **cite frases literales**; el servicio comprueba **sin IA** que cada frase esté de verdad en el documento y, si no,
+se lo devuelve a la IA para que la corrija (máximo 2 veces). Si la IA se equivoca al llamar una herramienta, el error vuelve a la IA y no rompe
+nada. Si se acaba el dinero o el saldo, **se detiene al instante, sin reintentar**. Toda corrida deja una **traza** (qué hizo, modelo, tokens).
+**Todavía no hay pantalla ni IA real probada**: todo se probó con una IA «de mentira» guionada, sin gastar un centavo. El modo Simulado no cambió.
+
+1. **Correr** (2 min): `npm run typecheck:all && npm run test:all && npm run build && npm run check`.
+   **Comprobar**: todo sin errores (`test:all`: 293 de la 001 + 125 del servicio); `check` imprime tres «OK».
+2. **Correr** (1 min): `npm run test:server`.
+   **Comprobar**: 12 archivos de prueba en verde, entre ellos `loop`, `tools-diagnosis`, `injection`, `diagnosis-route` y `model-client`.
+3. **Abrir** (3 min): `server/src/agent/loop.ts` (unas 80 líneas). **Comprobar a la vista tres cosas**:
+   a) una llamada con argumentos mal formados **no rompe** (la función `executeToolCall` en `tools.ts` devuelve `{ ok: false, error }` y nunca lanza);
+   b) un error de gasto **termina con una sola llamada**: en el `catch` del bucle se devuelve `status: 'error'` y no hay ningún `continue` ni reintento;
+   c) en `diagnosis.ts`, `verified: true` solo se asigna cuando **todas** las citas pasaron el verificador (busca `verified: true`: aparece en dos sitios, ambos con citas ya verificadas).
+4. **Abrir** (1 min): `server/src/model/openai.ts`. **Comprobar**: `maxRetries: 0`, `store: false`, y que los mensajes de error son frases fijas (no incluyen la clave).
+5. **Abrir** (1 min): `docs/evidencia/humo-real.md`. **Comprobar**: **todavía no existe**; se crea cuando tú corres la prueba de humo (T064). No hay ninguna clave en el repositorio (`npm run check` lo confirma).
+6. **Abrir** (1 min): `specs/002-agente-real/research.md` §3 («Re-verificación, T048») y §17. **Comprobar**: la fecha (2026-11-12), los IDs y precios leídos, y lo que quedó **NO VERIFICADO**.
+7. **Mira el modo Simulado** (1 min): `npm run dev` y abre la demo. **Comprobar**: se ve igual que antes.
+
+**Tareas tuyas del lote C**: T049 (decidir modelos en `server/.env`; la decisión ya está en `docs/decisiones.md`, faltan los IDs en el `.env` y el nivel de razonamiento), T064 (prueba de humo real, con costo: `npm run dev:server` y en otra terminal `node scripts/smoke-real.mjs`), T065 (revisar la traza), T066 (pasar las cifras a `docs/tiempos-002.md`), T068 (revisión a fondo), T069, T070 (commit), T071 y T072 (punto de control). **No abras ni pegues `server/.env`.**
+

@@ -2,6 +2,7 @@
 
 ## Estado de la sesión
 
+- **Especificación 002 (agente real con IA) — lote C construido por el agente (2026-11-12, T048 a T063 y T067)**, con el cliente FALSO; **sin prueba con el modelo real todavía**. Pendientes de la persona: T049 (IDs en `server/.env` y nivel de razonamiento), T064 (prueba de humo real), T065, T066 (cifras y tiempos), T068 a T072. Ver «Lote C de la 002».
 - **Especificación 002 (agente real con IA) — lote B cerrado por el agente (2026-11-11, T023 a T043)**; el lote A ya está en el commit `8d384f3`. Pendientes de la persona: T044 (revisión), T045 (build y check con la lista de nombres), T046 (commit) y T047 (push). **Qué sigue**: lote C (agente de Diagnóstico, **revisión a fondo**) cuando la persona apruebe y haga el commit del lote B; antes, T048 (re-verificar modelos y precios, lo hace el agente) y T049 (la persona decide los modelos). Verificación al cierre de B: `typecheck` sin errores; `npm test` 367 en verde (307 anteriores + 60 nuevas; las 276 de la 001 sin modificar); `npm run build` y `npm run check` OK; `npm run test:e2e` 507 pasadas, 75 omitidas, 0 fallos (igual que antes). Detalle en «Lote B de la 002».
 - **Especificación 002 (agente real con IA) — lote A cerrado por el agente (2026-11-11, T004 a T017)**; pendientes de la persona: T001 a T003 (cuenta, crédito y límites de gasto), T018 (clave y `server/.env`), T019 (revisión), T020 (build y check con la lista de nombres), T021 (commit) y T022 (push). **Qué sigue**: lote B (extracción y verificador) cuando la persona apruebe y haga el commit del lote A. Ningún modelo se fijó por defecto (principio IX). Verificación al cierre de A: `typecheck` sin errores; `npm test` 307 en verde (276 de la 001 sin modificar + 31 nuevas); `npm run build` y `npm run check` OK (nombres, tokens y secretos); `npm run test:e2e` 507 pasadas, 75 omitidas, 0 fallos (igual que antes). Detalle en «Lote A de la 002» y tiempos en `docs/tiempos-002.md`.
 - **Lote cerrado**: L6 (cierre) en lo que no es de la persona (T081 a T092), más las correcciones A a C. L4 ya está en el commit `7c9c329`. **Pendientes de la persona**: T093 (la revisión de teclado se hizo el 2026-11-02; falta la del lector de pantalla), T095 (pulido), T096 (volcar resultados de T095), T097 a T099 (revisión final, commit y publicación).
@@ -430,4 +431,30 @@ Extracción de texto y verificador de citas en el servicio local. Sin modelo ni 
 - **Pruebas nuevas (60)**: `fixtures` (6), `verify` (10), `extract` (21), `limits` (5), `store-search` (10), `evidence-route` (10), más una guarda estática: ningún módulo de `server/src` importa el sistema de archivos.
 - **Comprobación con el servicio real** (sin modelo): `curl` subió 3 archivos (2 extraídos, el escaneado con motivo `pdf_sin_texto`), la lista los mostró, `/tmp` no ganó ningún archivo, y tras reiniciar la lista quedó vacía.
 - **NO VERIFICADO**: lectura de archivos reales de Word, Excel y PDF hechos por programas de oficina (solo los armados a mano); PDF de miles de páginas (el tope recorta después de leer); calidad de la búsqueda por palabras clave con documentos reales (se evalúa en el lote C).
+
+## Decisión de modelos por etapa de la 002 (2026-11-12)
+
+Decisión de la persona (corresponde a T049). Los nombres exactos de los modelos **se confirman en T048**; hasta entonces son los vigentes en la propuesta, no verificados en la página oficial.
+
+| Etapa | Desarrollo | Demo |
+|---|---|---|
+| Diagnóstico | `gpt-6-luna` | `gpt-6.1-sol` |
+| Estrategia | `gpt-6-luna` | `gpt-6.1-sol` |
+| Crítico | ninguno por ahora (lote G diferido) | ninguno por ahora (lote G diferido) |
+
+- **`gpt-6.1-terra`: descartado** hasta confirmar sus capacidades; solo se reconsidera si T048 las confirma.
+- **Razón**: costo por corrida bajo en desarrollo, mayor calidad en la demo, y *function calling* confirmado en Luna y Sol.
+- **Cómo se aplica**: el servicio sigue sin modelo por defecto; el modelo se elige por entorno en `server/.env` (que no se abre ni se imprime). Si T048 muestra un ID distinto, se corrige aquí y en la configuración, no en el código.
+- **Pendiente**: nivel de razonamiento de cada etapa (también se decide a la vista de T048).
+
+## Lote C de la 002 «Agente real con IA» (2026-11-12)
+
+Agente de Diagnóstico en el servicio local, probado solo con el cliente FALSO (sin red ni gasto). El modo Simulado, `src/` y las pruebas de la 001 no cambiaron; no se tocó ningún modelo por defecto (el servicio sigue sin modelo por defecto).
+
+- **T048**: re-verificación en las páginas oficiales de OpenAI (2026-11-12) anotada en `research.md` §3: IDs y precios de `gpt-6-luna` y `gpt-6.1-sol` confirmados, *function calling* en Responses confirmado para ambos; `gpt-6.1-terra` sigue sin verificar y descartado.
+- **Servidor** (`server/src/`): `model/` (`client.ts` interfaz y `ModelError`; `fake.ts` guionado; `openai.ts` con `maxRetries: 0`, `store: false` y errores por `error.code`; `index.ts` elige el cliente), `agent/` (`trace.ts`, `tools.ts`, `loop.ts`, `diagnosis.ts`), `routes/diagnosis.ts` (`POST /api/diagnosis/run`) y `parseLocation` en `chunk.ts`.
+- **Decisiones menores** (ninguna cambia el spec): (1) el bucle termina con error ante **cualquier** error del proveedor, no solo los cuatro sin reintento; `rate_limit` y `provider_unavailable` los reintenta la persona a mano; (2) `registrar_hallazgo` recibe la ubicación como texto y el servicio la convierte; (3) los resultados de búsqueda escapan un «</documento>» dentro del texto para que no cierre el envoltorio; (4) un detector heurístico opcional anota `injection_suspected` en la traza (no es la defensa); (5) `MAX_OUTPUT_TOKENS` sigue en 4096, provisional hasta la prueba de humo; (6) con `MODEL_PROVIDER=fake` el servicio usa un guion mínimo (sin hallazgos); el guion de verdad llega con las pruebas del lote D.
+- **Pruebas nuevas (51)** en `tests/server/`: `model-client` (12), `loop` (14), `tools-diagnosis` (13), `injection` (2), `diagnosis-route` (10) y su propiedad de SC-A1 sobre 60 guiones aleatorios. Total: 293 de la 001 + 125 del servicio. `typecheck:all`, `test:all`, `build`, `check` y `test:e2e` (507 pasadas, 75 omitidas) en verde.
+- **NO VERIFICADO**: todo lo que depende del modelo real (calidad de los hallazgos y las citas, que el proveedor acepte el razonamiento cifrado de vuelta con `store: false`, tiempo y costo por corrida). Se mide en T064.
+- **Orden de tareas**: las pruebas y el código se escribieron en la misma sesión y las pruebas no se vieron fallar antes de implementar (T050 a T054); sí se corrigieron tres fallos de las propias pruebas al correrlas.
 

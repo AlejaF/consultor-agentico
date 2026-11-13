@@ -6,6 +6,9 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import type { Config } from './config.ts';
 import type { Logger } from './log.ts';
 import { evidenceRoutes } from './routes/evidence.ts';
+import { createModelClient } from './model/index.ts';
+import type { ModelClient } from './model/client.ts';
+import { diagnosisRoutes } from './routes/diagnosis.ts';
 import { healthRoute } from './routes/health.ts';
 import { createStore, type Store } from './store.ts';
 
@@ -35,7 +38,7 @@ export function errorBody(category: ErrorCategory, message: string, retryable = 
   return { error: { category, message, retryable } };
 }
 
-export async function buildServer(config: Config, logger: Logger, store: Store = createStore()): Promise<FastifyInstance> {
+export async function buildServer(config: Config, logger: Logger, store: Store = createStore(), deps: { modelClient?: ModelClient } = {}): Promise<FastifyInstance> {
   const app = Fastify({ logger: false, bodyLimit: 1_048_576 });
 
   // Hosts aceptados: el propio servicio y los de los orígenes permitidos (el proxy de Vite conserva el Host del navegador).
@@ -83,6 +86,9 @@ export async function buildServer(config: Config, logger: Logger, store: Store =
 
   healthRoute(app, config);
   evidenceRoutes(app, config, store);
+  // El cliente del modelo se crea al primer uso (y solo si hay clave), para que el servicio arranque sin clave.
+  let client = deps.modelClient;
+  diagnosisRoutes(app, config, store, () => (client ??= createModelClient(config)));
   return app;
 }
 
