@@ -63,6 +63,7 @@ export function RealGenerate({ projectId, companyName }: { projectId: string; co
     <section className="card" aria-labelledby="gen-real-titulo">
       <h2 id="gen-real-titulo">Generar diagnóstico con IA real</h2>
       <p>El agente busca en los documentos que cargaste, propone hallazgos con citas literales y un proceso determinista verifica cada cita.</p>
+      <p data-testid="real-company-notice">Se analizarán los documentos como si fueran de {companyName}. Confirma que corresponden a esta empresa.</p>
       <button type="button" className="primary" aria-disabled={running || blocked !== null} aria-busy={running} aria-describedby="gen-real-estado" onClick={() => void run()}>
         Generar diagnóstico
       </button>
