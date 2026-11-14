@@ -26,6 +26,7 @@ export default defineConfig({
         ...(process.env as Record<string, string>),
         MODEL_PROVIDER: 'fake',
         OPENAI_MODEL_DIAGNOSTICO: 'modelo-falso-e2e',
+        OPENAI_MODEL_ESTRATEGIA: 'modelo-falso-e2e', // solo para estas pruebas con el cliente falso (lote E)
         ALLOWED_ORIGINS: `http://localhost:${WEB},http://127.0.0.1:${WEB}`,
         // El servicio no lee archivos (AG-026): el guion le llega como texto en el entorno.
         FAKE_SCRIPT: readFileSync('tests/e2e/fixtures/guion-servicio.json', 'utf8'),

@@ -353,5 +353,104 @@
     }
    }
   ]
+ },
+ "estrategia": {
+  "porEmpresa": {
+   "Empresa Ficticia Alfa": [
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "riesgo",
+        "derivaDe": [
+         "R1"
+        ],
+        "titulo": "Decisiones con cifras dispersas",
+        "texto": "Cada área calcula sus cifras y la dirección decide sin una sola versión de los datos.",
+        "nivel": "alto"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "riesgo",
+        "derivaDe": [
+         "R4"
+        ],
+        "titulo": "Decisiones con cifras dispersas",
+        "texto": "Cada área calcula sus cifras y la dirección decide sin una sola versión de los datos.",
+        "nivel": "alto"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "fase",
+        "derivaDe": [
+         "R2",
+         "R3"
+        ],
+        "titulo": "Nombrar un responsable de indicadores",
+        "texto": "Designar a una persona responsable y unificar las cifras en un tablero común.",
+        "horizonte": "0-3 meses"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "fase",
+        "derivaDe": [
+         "R9"
+        ],
+        "titulo": "Nombrar un responsable de indicadores",
+        "texto": "Designar a una persona responsable y unificar las cifras en un tablero común.",
+        "horizonte": "0-3 meses"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "text": "Estrategia propuesta.",
+     "usage": {
+      "input": 100,
+      "output": 20
+     }
+    }
+   ]
+  },
+  "porDefecto": [
+   {
+    "text": "Sin elementos."
+   }
+  ]
  }
 }

@@ -4,7 +4,7 @@ import { SURVEY_QUESTIONS } from '../data/survey';
 import { canIssue, isValidEdit } from '../domain/review';
 import { getDiagnosis, modeOf } from '../providers';
 import { average, isGradingComplete } from '../domain/rubric';
-import type { Decision, DiagnosisState, LocalFileMeta, Mode, PersistedState, ProjectState, RealState, ServerFileMeta } from './types';
+import type { Decision, DiagnosisState, LocalFileMeta, Mode, PersistedState, ProjectState, RealState, RealStrategy, ServerFileMeta, TraceSummary } from './types';
 
 export type Action =
   | { type: 'setRole'; role: Role | null }
@@ -22,7 +22,8 @@ export type Action =
   | { type: 'decide'; projectId: string; findingId: string; decision: 'accepted' | 'rejected' | 'pending' }
   | { type: 'edit'; projectId: string; findingId: string; text: string }
   | { type: 'issue'; projectId: string; at: string }
-  | { type: 'generateStrategy'; projectId: string; at: string }
+  /** `real`: estrategia generada por el agente (modo IA real); se guarda dentro de `real`. Sin `real` = la de la 001. */
+  | { type: 'generateStrategy'; projectId: string; at: string; real?: { strategy: RealStrategy; strategyRun: TraceSummary } }
   | { type: 'sendStrategy'; projectId: string; at: string }
   | { type: 'submitSurvey'; projectId: string; answers: Record<string, number>; at: string }
   | { type: 'saveGrading'; deliveryId: string; levels: Record<string, number>; comment: string; at: string };
@@ -138,7 +139,14 @@ export function reducer(state: PersistedState, action: Action): PersistedState {
     case 'generateStrategy': {
       const p = state.projects[action.projectId];
       if (!p || p.diagnosis.status !== 'issued' || p.strategy.status !== 'none') return state; // idempotente
-      return updateProject(state, action.projectId, (pp) => ({ ...pp, strategy: { status: 'generated', generatedAt: action.at } }));
+      // AG-029: una estrategia real solo entra en un proyecto real, y una simulada nunca en uno real.
+      if (action.real ? modeOf(p) !== 'real' || !p.real : modeOf(p) === 'real') return state;
+      const real = action.real;
+      return updateProject(state, action.projectId, (pp) => ({
+        ...pp,
+        ...(real && pp.real ? { real: { ...pp.real, strategy: real.strategy, strategyRun: real.strategyRun } } : {}),
+        strategy: { status: 'generated', generatedAt: action.at },
+      }));
     }
     case 'sendStrategy': {
       const p = state.projects[action.projectId];

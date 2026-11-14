@@ -10,6 +10,7 @@ import { createModelClient } from './model/index.ts';
 import type { ModelClient } from './model/client.ts';
 import { diagnosisRoutes } from './routes/diagnosis.ts';
 import { healthRoute } from './routes/health.ts';
+import { strategyRoutes } from './routes/strategy.ts';
 import { createStore, type Store } from './store.ts';
 
 export const HOST = '127.0.0.1' as const;
@@ -92,6 +93,7 @@ export async function buildServer(config: Config, logger: Logger, store: Store =
   // El cliente del modelo se crea al primer uso (y solo si hay clave), para que el servicio arranque sin clave.
   let client = deps.modelClient;
   diagnosisRoutes(app, config, store, () => (client ??= createModelClient(config)));
+  strategyRoutes(app, config, () => (client ??= createModelClient(config)));
   return app;
 }
 

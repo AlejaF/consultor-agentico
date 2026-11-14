@@ -148,3 +148,18 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 5. **Abrir** (1 min): `docs/evidencia/mutacion-d3.md`. **Comprobar**: cada mutación hizo fallar al menos una prueba; lee la nota honesta sobre M1.
 
 **Pendiente tuyo**: T175 (esta revisión), T176 (`build && check` con tu lista de nombres) y T177 (commit).
+
+
+## Lote E — Estrategia con IA real (lista corta, máx. 15 min)
+
+**Para quien no es técnico**: con el diagnóstico real ya emitido, la pantalla «Estrategia» ahora deja pedirle a la IA riesgos y una ruta por fases. **Cada elemento dice de qué hallazgos sale** («Deriva de…»). El programa (no la IA) comprueba que esos hallazgos existan, estén verificados y hayan sido aceptados o editados por ti; si no, **el elemento se descarta**. Si no hay ningún hallazgo así, no se llama a la IA. Si la IA falla, se avisa «Estrategia real no disponible» y **no se pone la estrategia de ejemplo**. No hay análisis de sector ni de mercado en modo real. Los datos técnicos (modelo, fecha, tokens) solo los ven Consultor y Líder.
+
+1. **Correr** (3 min): `npm run typecheck:all && npm run test:all && npm run build && npm run check`. **Comprobar**: sin errores y todo en verde.
+2. **Consultor** (5 min): `npm run dev:all` con `MODEL_PROVIDER=fake` y los modelos con cualquier nombre (incluido `OPENAI_MODEL_ESTRATEGIA`); elige «IA real», genera y emite un diagnóstico y abre «Estrategia». **Comprobar**: aparece «Generar estrategia con IA real»; al generar, cada riesgo y fase trae «Deriva de: R… · título (Pilar)»; el rótulo dice «Generado por IA · requiere revisión humana» **sin modelo**; no hay secciones de sector ni mercado; «Ver cómo trabajó el agente» está cerrado. (Con el guion vacío del modo falso no salen elementos: para ver elementos usa `npx playwright test -c playwright.real.config.ts tests/e2e/ia-real-estrategia.spec.ts --headed`.)
+3. **Sin respaldo** (2 min): emite un diagnóstico donde solo aceptes el hallazgo NO VERIFICADO. **Comprobar**: la pantalla explica que no hay con qué generar y no ofrece el botón.
+4. **Líder y Empresa** (3 min): envía la estrategia, cambia a «Líder» y abre la entrega; luego a «Empresa» y abre su informe. **Comprobar**: el Líder ve la estrategia, la traza cerrada y la «Ficha técnica» en el informe; la Empresa no ve nada técnico.
+5. **Abrir** (2 min): `docs/evidencia/mutacion-e.md`. **Comprobar**: las 13 mutaciones hicieron fallar alguna prueba y quedaron restauradas; lee la nota de M12.
+
+**No se pudo comprobar con ojos humanos en la pantalla** que desaparece un elemento al rechazar un hallazgo: un diagnóstico emitido no se puede cambiar, así que eso solo lo prueban las pruebas unitarias.
+
+**Pendiente tuyo**: T107 (esta revisión), T108 (`build && check` con tu lista de nombres), T109 (commit) y T110 (push, solo cuando lo decidas).

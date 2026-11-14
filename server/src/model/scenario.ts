@@ -8,6 +8,8 @@ type RawStep = Exclude<Step, { throw: ModelError }> | { throw: { category: Model
 export interface ScenarioFile {
   porDefecto: RawStep[];
   porEmpresa?: Record<string, RawStep[]>;
+  /** Guion de la etapa de Estrategia (se elige cuando la solicitud declara la herramienta `registrar_elemento`). */
+  estrategia?: { porDefecto: RawStep[]; porEmpresa?: Record<string, RawStep[]> };
 }
 
 const toSteps = (raw: RawStep[]): Step[] => raw.map((s) => ('throw' in s ? { throw: new ModelError(s.throw.category, s.throw.message) } : s));
@@ -19,14 +21,16 @@ function companyOf(req: ModelRequest): string {
 }
 
 export function createScenarioClient(file: ScenarioFile): ModelClient {
-  let current: { client: FakeClient; length: number } | null = null;
+  let current: { client: FakeClient; length: number; stage: string } | null = null;
   return {
     name: 'fake',
     async respond(req, signal): Promise<ModelResponse> {
       // Una corrida nueva empieza cuando la anterior consumió todo su guion.
-      if (current === null || current.client.calls >= current.length) {
-        const raw = file.porEmpresa?.[companyOf(req)] ?? file.porDefecto;
-        current = { client: createFakeClient(toSteps(raw)), length: raw.length };
+      const stage = req.tools.some((t) => t.name === 'registrar_elemento') ? 'strategy' : 'diagnosis';
+      if (current === null || current.stage !== stage || current.client.calls >= current.length) {
+        const set = stage === 'strategy' ? (file.estrategia ?? { porDefecto: [{ text: 'Sin guion de estrategia.' }] }) : file;
+        const raw = set.porEmpresa?.[companyOf(req)] ?? set.porDefecto;
+        current = { client: createFakeClient(toSteps(raw)), length: raw.length, stage };
       }
       return current.client.respond(req, signal);
     },

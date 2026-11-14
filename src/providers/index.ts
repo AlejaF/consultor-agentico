@@ -1,5 +1,7 @@
 // Capa de proveedor: dos implementaciones (Simulado = la de la 001; IA real = servicio local). AG-001, AG-003.
 import type { Finding } from '../data/diagnosis';
+import { STRATEGY, type StrategyTemplate } from '../data/strategy';
+import { realStrategyTemplate } from '../domain/realStrategy';
 import type { Mode, ProjectState, RealFinding } from '../state/types';
 import { simulatedDiagnosis, type DiagnosisView } from './simulated';
 
@@ -34,4 +36,18 @@ export function getDiagnosis(ps?: Pick<ProjectState, 'mode' | 'real'>): Diagnosi
     return { mode: 'real', findings, ids: findings.map((f) => f.id) };
   }
   return simulatedDiagnosis();
+}
+
+export interface StrategyViewData {
+  mode: Mode;
+  template: StrategyTemplate;
+}
+
+/**
+ * La plantilla de estrategia del proyecto según su modo (AG-019, AG-029). Simulado = la plantilla de la 001 (misma referencia);
+ * real = SOLO lo que generó el agente (vacío si aún no hay): un proyecto real nunca toma la estrategia ilustrativa.
+ */
+export function getStrategy(ps?: Pick<ProjectState, 'mode' | 'real'>): StrategyViewData {
+  if (ps && modeOf(ps) === 'real') return { mode: 'real', template: realStrategyTemplate(ps.real) };
+  return { mode: 'simulated', template: STRATEGY };
 }

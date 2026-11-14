@@ -4,6 +4,7 @@ import { resolveName } from '../data/evidence';
 import { resolveCitation } from '../domain/evidence';
 import { countOf, formatDateTime, formatDecimal } from '../domain/format';
 import type { MaturityEvaluation } from '../domain/maturity';
+import type { Finding } from '../data/diagnosis';
 import type { ReportContent } from '../domain/report';
 import { resolveRealCitation } from '../domain/realCitation';
 import { AiBadge } from './AiBadge';
@@ -22,7 +23,7 @@ type Available = Extract<ReportContent, { available: true }>;
  * Cuerpo del informe imprimible (FR-044 a FR-048). La cabecera «DEMO · datos ficticios» va en el `thead` de una tabla de maquetación:
  * el navegador repite el `thead` en cada página impresa y le reserva su espacio (print.css). En pantalla no se ve (ya está el aviso de la app).
  */
-export function PrintReport({ content, companyName, projectLabel, ai = false, maturity, techSheet }: { content: Available; companyName: string; projectLabel: string; ai?: boolean; maturity?: MaturityEvaluation; techSheet?: readonly TechSheetRow[] }) {
+export function PrintReport({ content, companyName, projectLabel, ai = false, maturity, techSheet, findings }: { findings?: readonly Finding[]; content: Available; companyName: string; projectLabel: string; ai?: boolean; maturity?: MaturityEvaluation; techSheet?: readonly TechSheetRow[] }) {
   const includedLine = `${countOf(content.findings.length, 'hallazgo incluido', 'hallazgos incluidos')}`;
   return (
     <div className="print-report" data-testid="print-report">
@@ -123,7 +124,7 @@ export function PrintReport({ content, companyName, projectLabel, ai = false, ma
               {content.strategy.kind === 'derived' && (
                 <section aria-labelledby="inf-st">
                   <h2 id="inf-st">Estrategia</h2>
-                  <StrategyView derived={content.strategy.derived} />
+                  <StrategyView derived={content.strategy.derived} ai={ai} {...(findings ? { findings } : {})} />
                 </section>
               )}
               {techSheet && techSheet.length > 0 && <TechSheet rows={techSheet} />}

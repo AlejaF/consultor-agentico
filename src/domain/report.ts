@@ -1,5 +1,5 @@
 import { DIAGNOSIS, type Finding } from '../data/diagnosis';
-import { STRATEGY } from '../data/strategy';
+import { STRATEGY, type StrategyTemplate } from '../data/strategy';
 import type { DiagnosisState, StrategyState } from '../state/types';
 import { deriveStrategy, type DerivedStrategy } from './strategy';
 
@@ -42,6 +42,8 @@ export function reportContent(
   scope: ReportScope,
   maturityIndex: number | null = DIAGNOSIS.maturityIndex,
   findingList: readonly Finding[] = DIAGNOSIS.findings,
+  /** Plantilla de estrategia: la de la 001 por defecto; en modo IA real, la que generó el agente (AG-019). */
+  strategyTemplate: StrategyTemplate = STRATEGY,
 ): ReportContent {
   if (diagnosis.status !== 'issued') {
     return { available: false, reason: 'El informe se genera a partir de un diagnóstico emitido. Emite primero el diagnóstico de este proyecto.' };
@@ -60,7 +62,7 @@ export function reportContent(
 
   let strat: ReportStrategy;
   if (scope === 'dx') strat = { kind: 'omitted' };
-  else if (scope === 'st' || strategy.status !== 'none') strat = { kind: 'derived', derived: deriveStrategy(STRATEGY, findingList, diagnosis.decisions) };
+  else if (scope === 'st' || strategy.status !== 'none') strat = { kind: 'derived', derived: deriveStrategy(strategyTemplate, findingList, diagnosis.decisions) };
   else strat = { kind: 'unavailable', note: 'Estrategia aún no disponible' };
 
   return {

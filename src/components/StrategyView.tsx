@@ -1,3 +1,5 @@
+import type { Finding } from '../data/diagnosis';
+import { AiBadge } from './AiBadge';
 import { countOf } from '../domain/format';
 import type { DerivedAnalysis, DerivedStrategy } from '../domain/strategy';
 import { DerivedFrom } from './DerivedFrom';
@@ -42,11 +44,15 @@ function AnalysisSection({ id, title, analysis }: { id: string; title: string; a
   );
 }
 
-export function StrategyView({ derived }: { derived: DerivedStrategy }) {
+/**
+ * `ai`: estrategia generada por el agente (modo IA real): rótulo de IA sin modelo, «Deriva de» con los hallazgos reales y SIN análisis de
+ * sector ni mercado (no hay contenido ilustrativo en modo real). Sin `ai` es la vista de la 001, idéntica.
+ */
+export function StrategyView({ derived, ai = false, findings }: { derived: DerivedStrategy; ai?: boolean; findings?: readonly Finding[] }) {
   return (
     <div>
       <p>
-        <SimBadge />
+        {ai ? <AiBadge /> : <SimBadge />}
       </p>
       {derived.unverifiedAdopted > 0 && (
         <p className="subtitle no-support" data-testid="unverified-unused">
@@ -67,16 +73,16 @@ export function StrategyView({ derived }: { derived: DerivedStrategy }) {
             <h2 id="estr-riesgos">Riesgos</h2>
             <div className="stack">
               {derived.risks.map((r) => (
-                <RiskCard key={r.id} item={r} />
+                <RiskCard key={r.id} item={r} {...(findings ? { findings } : {})} />
               ))}
             </div>
           </section>
           <section aria-labelledby="estr-ruta">
             <h2 id="estr-ruta">Ruta sugerida</h2>
-            <RouteTimeline items={derived.route} />
+            <RouteTimeline items={derived.route} {...(findings ? { findings } : {})} />
           </section>
-          <AnalysisSection id="estr-sector" title="Análisis de sector" analysis={derived.sector} />
-          <AnalysisSection id="estr-mercado" title="Análisis de mercado" analysis={derived.market} />
+          {!ai && <AnalysisSection id="estr-sector" title="Análisis de sector" analysis={derived.sector} />}
+          {!ai && <AnalysisSection id="estr-mercado" title="Análisis de mercado" analysis={derived.market} />}
         </div>
       )}
     </div>

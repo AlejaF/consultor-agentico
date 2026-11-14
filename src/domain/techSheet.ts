@@ -13,7 +13,7 @@ export interface TechSheetRow {
  * `null` si el proyecto es Simulado o no hay corrida. Nunca incluye texto de documentos ni de la traza.
  */
 export function buildTechSheet(real: RealState | undefined): TechSheetRow[] | null {
-  const run = real?.diagnosisRun;
-  if (!run) return null;
-  return [{ stage: run.stage, model: run.model, startedAt: run.startedAt, finishedAt: run.finishedAt, tokens: run.tokens }];
+  const runs = [real?.diagnosisRun, real?.strategyRun].filter((r): r is TraceSummary => r !== undefined);
+  if (runs.length === 0) return null;
+  return runs.map((run) => ({ stage: run.stage, model: run.model, startedAt: run.startedAt, finishedAt: run.finishedAt, tokens: run.tokens }));
 }

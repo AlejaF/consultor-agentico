@@ -1,6 +1,6 @@
 import type { Role } from '../app/router';
 import { clip } from '../providers/real';
-import { SCHEMA_VERSION, type Catalogs, type MissingInfo, type PersistedState, type ProjectState, type RealCitation, type RealFinding, type RealMaturityLevel, type RealState, type TraceSummary } from './types';
+import { SCHEMA_VERSION, type Catalogs, type MissingInfo, type PersistedState, type ProjectState, type RealCitation, type RealFinding, type RealMaturityLevel, type RealState, type RealStrategy, type RealStrategyItem, type TraceSummary } from './types';
 
 export const STORAGE_KEY = 'consultor-agentico-demo:state';
 export const FLUSH_DELAY_MS = 200;
@@ -70,9 +70,21 @@ function validMaturity(m: unknown): m is RealMaturityLevel {
   return m.insufficient ? m.level === null : typeof m.level === 'number' && Number.isInteger(m.level) && m.level >= 1 && m.level <= 5;
 }
 
+function validStrategyItem(kind: 'riesgo' | 'fase') {
+  return (it: unknown): boolean =>
+    isObj(it) && isStr(it.id) && it.id.length <= 20 && isStr(it.label) && it.label.length <= 160 && isStr(it.detail) && it.detail.length <= 600 &&
+    Array.isArray(it.supportedBy) && it.supportedBy.length >= 1 && it.supportedBy.length <= 10 && it.supportedBy.every((x) => isStr(x) && /^R\d+$/.test(x)) &&
+    (kind === 'riesgo' ? it.level === 'alto' || it.level === 'medio' || it.level === 'bajo' : isStr(it.horizon) && it.horizon.length <= 60);
+}
+function validStrategy(s: unknown): s is RealStrategy {
+  return isObj(s) && Array.isArray(s.risks) && s.risks.every(validStrategyItem('riesgo')) && Array.isArray(s.route) && s.route.every(validStrategyItem('fase'));
+}
+
 function validRun(r: unknown): r is TraceSummary {
   return isObj(r) && isStr(r.model) && isObj(r.tokens) && typeof r.iterations === 'number' && Array.isArray(r.steps) && Array.isArray(r.errors) && isObj(r.toolCounts);
 }
+
+const copyItem = (i: RealStrategyItem): RealStrategyItem => ({ id: i.id, label: i.label, detail: i.detail, ...(i.level ? { level: i.level } : {}), ...(i.horizon ? { horizon: i.horizon } : {}), supportedBy: [...i.supportedBy] });
 
 /** Deja solo lo permitido de lo real: el fragmento citado (acotado) y la traza con argumentos recortados; nunca el texto completo (AG-025). */
 function sanitizeReal(r: RealState): RealState {
@@ -87,6 +99,8 @@ function sanitizeReal(r: RealState): RealState {
     objections: [],
     ...(r.maturity ? { maturity: r.maturity.map((m) => ({ dimension: m.dimension, level: m.level, insufficient: m.insufficient, justification: m.justification.slice(0, MAX_JUSTIFICATION), derivesFrom: [...m.derivesFrom] })) } : {}),
     ...(r.diagnosisRun ? { diagnosisRun: { ...r.diagnosisRun, steps: r.diagnosisRun.steps.map((st) => (st.type === 'tool' ? { ...st, args: clip(st.args) } : st)) } } : {}),
+    ...(r.strategy ? { strategy: { risks: r.strategy.risks.map(copyItem), route: r.strategy.route.map(copyItem) } } : {}),
+    ...(r.strategyRun ? { strategyRun: { ...r.strategyRun, steps: r.strategyRun.steps.map((st) => (st.type === 'tool' ? { ...st, args: clip(st.args) } : st)) } } : {}),
   };
 }
 
@@ -142,6 +156,19 @@ function dropInvalidReal(raw: Obj): number {
       delete real.diagnosisRun;
       dropped += 1;
     }
+    if (real.strategyRun !== undefined && !validRun(real.strategyRun)) {
+      delete real.strategyRun;
+      dropped += 1;
+    }
+    if (isObj(real.strategy)) {
+      for (const [key, kind] of [['risks', 'riesgo'], ['route', 'fase']] as const) {
+        const list = real.strategy[key];
+        if (!Array.isArray(list)) continue;
+        const kept = (list as unknown[]).filter(validStrategyItem(kind));
+        dropped += list.length - kept.length;
+        real.strategy[key] = kept;
+      }
+    }
   }
   return dropped;
 }
@@ -165,6 +192,8 @@ function validProject(p: unknown, c: Catalogs): boolean {
     if (!Array.isArray(p.real.missingInfo) || !p.real.missingInfo.every(validMissing)) return false;
     if (p.real.maturity !== undefined && (!Array.isArray(p.real.maturity) || !p.real.maturity.every(validMaturity))) return false;
     if (p.real.diagnosisRun !== undefined && !validRun(p.real.diagnosisRun)) return false;
+    if (p.real.strategyRun !== undefined && !validRun(p.real.strategyRun)) return false;
+    if (p.real.strategy !== undefined && !validStrategy(p.real.strategy)) return false;
   }
   // En modo real los ids de las decisiones son los de `real.findings` (dinámicos); en Simulado, los fijos de la plantilla.
   const validIds: readonly string[] = p.mode === 'real' ? (isObj(p.real) && Array.isArray(p.real.findings) ? (p.real.findings as RealFinding[]).map((f) => f.id) : []) : c.findingIds;

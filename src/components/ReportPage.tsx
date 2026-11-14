@@ -4,7 +4,7 @@ import { evaluateMaturity, maturityOf } from '../domain/maturity';
 import { reportContent, type ReportScope } from '../domain/report';
 import { buildTechSheet } from '../domain/techSheet';
 import { canSeeTechSheet } from '../domain/visibility';
-import { getDiagnosis } from '../providers';
+import { getDiagnosis, getStrategy } from '../providers';
 import { useAppState } from '../state/context';
 
 /** Pantalla del informe: bloqueo explicado, o el informe con el botón de impresión del navegador (FR-044, FR-045, FR-048). */
@@ -18,7 +18,7 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
   const techSheet = ai && canSeeTechSheet(state.session.role) ? buildTechSheet(ps.real) : null;
   // IA real: el índice sale de los niveles con respaldo vigente (calculado por código); Simulado: el valor ilustrativo sembrado.
   const maturity = ai ? evaluateMaturity(ps.real?.maturity, view.findings, ps.diagnosis.decisions) : undefined;
-  const content = reportContent(ps.diagnosis, ps.strategy, scope, maturity ? maturity.index : maturityOf(projectId), view.findings);
+  const content = reportContent(ps.diagnosis, ps.strategy, scope, maturity ? maturity.index : maturityOf(projectId), view.findings, getStrategy(ps).template);
   const what = scope === 'dx' ? 'Diagnóstico' : scope === 'st' ? 'Estrategia con su diagnóstico' : 'Diagnóstico y estrategia';
   return (
     <>
@@ -47,7 +47,7 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
               Imprimir o guardar como PDF
             </button>
           </p>
-          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} {...(ai ? { ai } : {})} {...(maturity ? { maturity } : {})} {...(techSheet ? { techSheet } : {})} />
+          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} {...(ai ? { ai, findings: view.findings } : {})} {...(maturity ? { maturity } : {})} {...(techSheet ? { techSheet } : {})} />
         </>
       )}
     </>

@@ -37,7 +37,7 @@ Registra una sugerencia de evidencia por pilar (texto, máx. 400 caracteres). Se
 
 Entrada: solo hallazgos aceptados o editados y verificados (los pasa el cliente).
 
-### `registrar_elemento(tipo, texto, nivel?, horizonte?, derivaDe[ids])`
+### `registrar_elemento(tipo, titulo, texto, nivel?, horizonte?, derivaDe[ids])`
 - `tipo` ∈ `riesgo | fase`; `riesgo` requiere `nivel` ∈ `alto|medio|bajo`; `fase` requiere `horizonte`.
 - El verificador comprueba que `derivaDe` no esté vacío y que **todos** los ids existan en la entrada. Un id desconocido → error al agente.
 - Un elemento sin ningún id válido **no se registra** (AG-020).

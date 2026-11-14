@@ -1,8 +1,9 @@
+import type { Finding } from '../data/diagnosis';
 import type { DerivedItem } from '../domain/strategy';
 import { DerivedFrom } from './DerivedFrom';
 
 /** Ruta sugerida por fases, con su horizonte. */
-export function RouteTimeline({ items }: { items: readonly DerivedItem[] }) {
+export function RouteTimeline({ items, findings }: { items: readonly DerivedItem[]; findings?: readonly Finding[] }) {
   return (
     <ol className="timeline list-plain">
       {items.map((it, i) => (
@@ -16,7 +17,7 @@ export function RouteTimeline({ items }: { items: readonly DerivedItem[] }) {
             </p>
           )}
           <p>{it.detail}</p>
-          <DerivedFrom itemId={it.id} ids={it.derivedFrom} />
+          <DerivedFrom itemId={it.id} ids={it.derivedFrom} {...(findings ? { findings } : {})} />
         </li>
       ))}
     </ol>

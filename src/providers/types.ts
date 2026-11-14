@@ -68,6 +68,28 @@ export interface DiagnosisResponse {
   warnings: { code: string; message: string }[];
 }
 
+/** Elemento de la estrategia tal como lo devuelve el servicio. */
+export interface ServiceStrategyItem {
+  id: string;
+  label: string;
+  detail: string;
+  level?: 'alto' | 'medio' | 'bajo';
+  horizon?: string;
+  supportedBy: string[];
+}
+export interface StrategyRequest {
+  projectId: string;
+  empresa: string;
+  findings: { id: string; dimension: ServiceFinding['dimension']; title: string; text: string; state: 'accepted' | 'edited'; quotes: { file: string; location: RealLocation; quote: string }[] }[];
+}
+export interface StrategyResponse {
+  run: { stage: 'strategy'; model: string; reasoning: string | null; iterations: number; partial: boolean; tokens: { input: number; output: number; total: number } };
+  risks: ServiceStrategyItem[];
+  route: ServiceStrategyItem[];
+  trace: ServiceTraceStep[];
+  warnings: { code: string; message: string }[];
+}
+
 /** Error del servicio ya normalizado: el navegador decide por `category`, nunca por el código HTTP. */
 export interface ServiceError {
   category: ErrorCategory;

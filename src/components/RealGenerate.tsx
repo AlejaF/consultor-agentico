@@ -7,8 +7,8 @@ import type { TraceSummary } from '../state/types';
 import { AiBadge } from './AiBadge';
 import { TraceView } from './TraceView';
 
-const RETRYABLE = new Set(['rate_limit', 'provider_unavailable', 'unreachable']);
-const HINT: Record<string, string> = {
+export const RETRYABLE = new Set(['rate_limit', 'provider_unavailable', 'unreachable']);
+export const HINT: Record<string, string> = {
   spend_limit: 'No se reintentó. Sube el límite de gasto en tu cuenta de OpenAI o espera al próximo periodo.',
   balance: 'No se reintentó. Agrega crédito a tu cuenta de OpenAI.',
   auth: 'No se reintentó. Revisa la clave en el archivo del servicio local (server/.env).',

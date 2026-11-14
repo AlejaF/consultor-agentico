@@ -1,9 +1,10 @@
+import type { Finding } from '../data/diagnosis';
 import type { DerivedItem } from '../domain/strategy';
 import { DerivedFrom } from './DerivedFrom';
 
 const LEVEL_CLASS = { alto: 'badge-danger', medio: 'badge-warn', bajo: 'badge-ok' } as const;
 
-export function RiskCard({ item }: { item: DerivedItem }) {
+export function RiskCard({ item, findings }: { item: DerivedItem; findings?: readonly Finding[] }) {
   return (
     <article className="card" data-testid={`risk-${item.id}`}>
       <h3>{item.label}</h3>
@@ -13,7 +14,7 @@ export function RiskCard({ item }: { item: DerivedItem }) {
         </p>
       )}
       <p>{item.detail}</p>
-      <DerivedFrom itemId={item.id} ids={item.derivedFrom} />
+      <DerivedFrom itemId={item.id} ids={item.derivedFrom} {...(findings ? { findings } : {})} />
     </article>
   );
 }

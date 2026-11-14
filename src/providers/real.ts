@@ -1,7 +1,8 @@
 // Proveedor «IA real»: habla con el servicio local por `/api/…`. El navegador decide por `error.category`, no por el HTTP.
 import { DIMENSIONS } from '../data/diagnosis';
-import type { MissingInfo, RealFinding, RealMaturityLevel, RealState, TraceStepSummary, TraceSummary } from '../state/types';
-import type { DiagnosisResponse, ErrorCategory, Result, ServerFileResult, ServiceError, ServiceTraceStep } from './types';
+import { usesAsSupport } from '../domain/review';
+import type { Decision, MissingInfo, RealFinding, RealMaturityLevel, RealState, RealStrategy, RealStrategyItem, TraceStepSummary, TraceSummary } from '../state/types';
+import type { DiagnosisResponse, ErrorCategory, Result, ServerFileResult, ServiceError, ServiceStrategyItem, ServiceTraceStep, StrategyRequest, StrategyResponse } from './types';
 
 const MAX_ARG = 200;
 
@@ -29,12 +30,12 @@ function summarizeStep(s: ServiceTraceStep): TraceStepSummary {
 }
 
 /** Resumen de la traza para guardar (data-model «Traza»). Sin texto completo de archivos. */
-export function summarizeTrace(r: DiagnosisResponse, startedAt: string, finishedAt: string): TraceSummary {
+export function summarizeTrace(r: Pick<DiagnosisResponse | StrategyResponse, 'run' | 'trace'>, startedAt: string, finishedAt: string): TraceSummary {
   const steps = r.trace.map(summarizeStep);
   const toolCounts: Record<string, number> = {};
   for (const s of steps) if (s.type === 'tool' || s.type === 'tool_error') toolCounts[s.name] = (toolCounts[s.name] ?? 0) + 1;
   return {
-    stage: 'diagnosis',
+    stage: r.run.stage,
     model: r.run.model,
     reasoning: r.run.reasoning,
     iterations: r.run.iterations,
@@ -90,6 +91,36 @@ export function toMaturity(raw: DiagnosisResponse['maturity'], findings: readonl
     if (!backed) return none;
     return { dimension: id, level: m.level as RealMaturityLevel['level'], insufficient: false, justification: m.justification.slice(0, MAX_JUSTIFICATION), derivesFrom: ids };
   });
+}
+
+const MAX_LABEL = 160;
+const MAX_DETAIL = 600;
+const MAX_HORIZON = 60;
+
+/**
+ * Estrategia real a guardar. El servicio ya filtró, pero aquí se vuelve a exigir (AG-020, SC-A4): cada id de `supportedBy` debe
+ * existir, estar verificado y tener una decisión aceptada o editada; el que no cumple se quita y el elemento que se queda sin ids,
+ * o con forma inválida, se DESCARTA. Nunca se confía solo en el servicio.
+ */
+export function toRealStrategy(r: StrategyResponse, findings: readonly RealFinding[], decisions: Record<string, Decision>, startedAt: string, finishedAt: string): { strategy: RealStrategy; strategyRun: TraceSummary } {
+  const backed = new Set(findings.filter((f) => usesAsSupport(f.verified, decisions[f.id]?.state ?? 'pending')).map((f) => f.id));
+  const clean = (kind: 'riesgo' | 'fase', it: ServiceStrategyItem): RealStrategyItem | null => {
+    if (!it || typeof it.id !== 'string' || typeof it.label !== 'string' || it.label.trim() === '' || typeof it.detail !== 'string' || !Array.isArray(it.supportedBy)) return null;
+    if (kind === 'riesgo' && !(it.level === 'alto' || it.level === 'medio' || it.level === 'bajo')) return null;
+    if (kind === 'fase' && (typeof it.horizon !== 'string' || it.horizon.trim() === '')) return null;
+    const ids = [...new Set(it.supportedBy.filter((x): x is string => typeof x === 'string' && backed.has(x)))];
+    if (ids.length === 0) return null;
+    return {
+      id: it.id.slice(0, 20),
+      label: it.label.slice(0, MAX_LABEL),
+      detail: it.detail.slice(0, MAX_DETAIL),
+      ...(kind === 'riesgo' ? { level: it.level! } : { horizon: it.horizon!.slice(0, MAX_HORIZON) }),
+      supportedBy: ids,
+    };
+  };
+  const risks = (Array.isArray(r.risks) ? r.risks : []).flatMap((x) => clean('riesgo', x) ?? []);
+  const route = (Array.isArray(r.route) ? r.route : []).flatMap((x) => clean('fase', x) ?? []);
+  return { strategy: { risks, route }, strategyRun: summarizeTrace(r, startedAt, finishedAt) };
 }
 
 const KNOWN: readonly ErrorCategory[] = [
@@ -150,6 +181,9 @@ export function createRealProvider(fetchFn: typeof fetch = fetch) {
     },
     removeFile(projectId: string, fileId: string): Promise<Result<true>> {
       return call(`/api/evidence/${enc(projectId)}/${enc(fileId)}`, { method: 'DELETE' }, () => true as const);
+    },
+    runStrategy(body: StrategyRequest, signal?: AbortSignal): Promise<Result<StrategyResponse>> {
+      return call('/api/strategy/run', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal }, (b) => b as StrategyResponse);
     },
     runDiagnosis(projectId: string, empresa: string, signal?: AbortSignal): Promise<Result<DiagnosisResponse>> {
       return call(

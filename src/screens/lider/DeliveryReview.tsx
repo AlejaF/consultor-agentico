@@ -8,8 +8,7 @@ import { SimBadge } from '../../components/badges';
 import { UnverifiedCount } from '../../components/UnverifiedCount';
 import { AiBadge } from '../../components/AiBadge';
 import { RunNotices, TraceView } from '../../components/TraceView';
-import { getDiagnosis } from '../../providers';
-import { STRATEGY } from '../../data/strategy';
+import { getDiagnosis, getStrategy } from '../../providers';
 import { evaluateMaturity, maturityOf } from '../../domain/maturity';
 import { MaturityPanel } from '../../components/MaturityPanel';
 import { countOf, formatDecimal } from '../../domain/format';
@@ -76,7 +75,9 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
       ) : (
         <section aria-labelledby="entrega-st">
           <h2 id="entrega-st">Estrategia enviada</h2>
-          <StrategyView derived={deriveStrategy(STRATEGY, view.findings, decisions)} />
+          {ai && ps.real?.strategyRun && <RunNotices run={ps.real.strategyRun} />}
+          <StrategyView derived={deriveStrategy(getStrategy(ps).template, view.findings, decisions)} ai={ai} {...(ai ? { findings: view.findings } : {})} />
+          {ai && ps.real?.strategyRun && <TraceView run={ps.real.strategyRun} />}
         </section>
       )}
 

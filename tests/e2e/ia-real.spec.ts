@@ -127,7 +127,7 @@ test.describe('diagnóstico real', () => {
     await expect(informe).toContainText('Índice de madurez: 3,0 de 5'); // AG-031: calculado por código con los niveles respaldados (2, 3 y 4)
     await expect(informe).toContainText('Estrategia aún no disponible');
     await abrir(page, 'P-A', 'estrategia');
-    await expect(page.getByTestId('strategy-real-pending')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Generar estrategia' })).toBeVisible(); // lote E: la estrategia real ya existe (antes: «aún no disponible»)
   });
 
   test('recargar la página conserva los hallazgos y el modo', async ({ page }) => {

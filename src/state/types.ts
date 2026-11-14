@@ -112,6 +112,21 @@ export interface TraceSummary {
   steps: TraceStepSummary[];
 }
 
+/** Riesgo o fase de la estrategia real (AG-019). `supportedBy` son ids de hallazgos reales (R…); se vuelve a filtrar al mostrarse (SC-A4). */
+export interface RealStrategyItem {
+  id: string;
+  label: string;
+  detail: string;
+  level?: 'alto' | 'medio' | 'bajo';
+  horizon?: string;
+  supportedBy: string[];
+}
+/** Estrategia real guardada: solo riesgos y ruta; sin sector ni mercado. */
+export interface RealStrategy {
+  risks: RealStrategyItem[];
+  route: RealStrategyItem[];
+}
+
 export interface RealState {
   findings: RealFinding[];
   missingInfo: MissingInfo[];
@@ -119,6 +134,9 @@ export interface RealState {
   /** Opcional dentro de v3 (sin subir la versión): ausente = las seis dimensiones «sin evidencia suficiente». */
   maturity?: RealMaturityLevel[];
   diagnosisRun?: TraceSummary;
+  /** Opcionales dentro de v3 (sin subir la versión): ausentes = sin estrategia real generada. */
+  strategy?: RealStrategy;
+  strategyRun?: TraceSummary;
 }
 
 /** `mode` y `serverFiles` son opcionales a propósito: ausentes equivalen a «simulated» y [] (contracts/persisted-state-v3.md). */
