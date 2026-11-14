@@ -184,7 +184,7 @@ export function createDiagnosisSession(files: readonly SearchableFile[], trace: 
       const check = verifyMaturityLevel(dim, a.derivaDe, findings);
       const prior = levelAttempts.get(dim) ?? 0;
       if (check.ok) {
-        levels.set(dim, { dimension: dim, level: a.nivel, insufficient: false, justification: a.justificacion, derivesFrom: [...new Set(a.derivaDe)] });
+        levels.set(dim, { dimension: dim, level: a.nivel, insufficient: false, justification: a.justificacion, derivesFrom: [...new Set<string>(a.derivaDe)] });
         trace.add({ type: 'verification', findingTempId: tempId, ok: true, ...(prior > 0 ? { resolution: 'corregida' as const } : {}) });
         return { ok: true, output: { ok: true }, summary: `nivel de ${dim}: ${a.nivel}` };
       }

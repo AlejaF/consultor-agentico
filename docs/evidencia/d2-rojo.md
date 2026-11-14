@@ -12,7 +12,7 @@ Resultado: **44 pruebas fallan, 8 pasan**, en 6 archivos.
 | `tests/server/diagnosis-maturity.test.ts` | la respuesta de `/api/diagnosis/run` no trae `maturity` |
 | `tests/unit/maturityIndex.test.ts` | `backedFindings`, `evaluateMaturity`, `maturityIndex`, `basedOnText` y `MATURITY_INDEX_LABEL` no existen; `projectMaturity` aún excluye el modo real |
 | `tests/unit/maturityState.test.ts` | `real.maturity` aún no se valida ni se conserva |
-| `tests/unit/sc-a8.test.ts` | el cliente falso rechaza llamar a una herramienta no declarada (502) y `toRealState` no produce `maturity` |
+| `tests/cross/sc-a8.test.ts` | el cliente falso rechaza llamar a una herramienta no declarada (502) y `toRealState` no produce `maturity` |
 | `tests/unit/maturityMixNote.test.ts` | `averageMixesModes` y `MIX_NOTE` no existen |
 
 ## Las 8 que pasan antes de implementar (y por qué es esperado)

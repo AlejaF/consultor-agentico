@@ -1,0 +1,7 @@
+{
+  // Pruebas que usan a la vez el frontend (src/) y el servicio (server/src/). Necesitan las dependencias de server/ (fastify, zod),
+  // que el CI de Pages NO instala: por eso NO están en tests/unit ni en el typecheck de la raíz (que la raíz excluye).
+  "extends": "../../tsconfig.json",
+  "include": ["./**/*.ts"],
+  "exclude": []
+}
