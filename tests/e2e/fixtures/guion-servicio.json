@@ -305,6 +305,39 @@
        "pilar": "cultura",
        "descripcion": "Faltan encuestas que midan la adopción de herramientas digitales."
       }
+     },
+     {
+      "name": "registrar_nivel_madurez",
+      "arguments": {
+       "dimension": "datos",
+       "nivel": 2,
+       "justificacion": "Las cifras viven en cada área y no hay un responsable único.",
+       "derivaDe": [
+        "R1"
+       ]
+      }
+     },
+     {
+      "name": "registrar_nivel_madurez",
+      "arguments": {
+       "dimension": "infraestructura",
+       "nivel": 3,
+       "justificacion": "Hay presupuesto pedido para integrar los sistemas, sin ejecutar.",
+       "derivaDe": [
+        "R2"
+       ]
+      }
+     },
+     {
+      "name": "registrar_nivel_madurez",
+      "arguments": {
+       "dimension": "gobernanza",
+       "nivel": 4,
+       "justificacion": "No hay responsable de la calidad de los datos, pero existe una política.",
+       "derivaDe": [
+        "R3"
+       ]
+      }
      }
     ]
    },

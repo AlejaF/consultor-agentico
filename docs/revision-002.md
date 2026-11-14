@@ -119,3 +119,19 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 **Lo que NO se probó con IA real**: nada de este lote se probó con el modelo real (eso fue el lote C). Tampoco se probó el sitio publicado.
 
 **Tareas tuyas del lote D**: T093 (revisión), T094 (`npm run build && npm run check` con tu lista de nombres), T095 (commit) y T096 (push y comprobar el sitio publicado).
+
+## Lote D2 — madurez en modo real (lista corta, máx. 15 min)
+
+**Para quien no es técnico**: ahora, cuando la IA analiza tus documentos, además de los hallazgos propone **un nivel de 1 a 5 por cada una de las seis áreas** (estrategia, infraestructura, datos, gobernanza, talento y cultura). Cada nivel dice «basado en N hallazgos» y de cuáles viene. **El promedio (el «índice») lo calcula el programa, nunca la IA**, y solo cuenta los niveles cuyos hallazgos **tú aceptaste o editaste** y que están verificados. Si rechazas todos los hallazgos de un nivel, ese nivel sale del promedio. Un área sin hallazgos verificados dice «Sin evidencia suficiente · NO VERIFICADO». Los proyectos simulados **no cambian** en nada.
+
+**Lo que corrió el agente**: `typecheck:all`, `test:all` (368 + 170), `build`, `check`, diez mutaciones y **una sola vez** la suite e2e (`npm run test:e2e`, 10,4 min): la de la 001 igual que siempre (507 pasadas, 75 omitidas, 0 fallos) y la del modo IA real con **7 fallos**, todos en la prueba nueva de madurez (ver abajo).
+
+1. **Correr** (3 min): `npm run typecheck:all && npm run test:all && npm run build && npm run check`. **Comprobar**: sin errores; 368 + 170 pruebas verdes; `check` con tres «OK».
+2. **Correr** (1 min): `git diff --stat -- tests/unit tests/e2e src/domain/review.ts`. **Comprobar**: solo aparecen `tests/e2e/ia-real.spec.ts` (2 aserciones), `tests/e2e/fixtures/guion-servicio.json` y `tests/unit/realFindings.test.ts` (título), todos de la 002; **`review.ts` no sale** y ninguna prueba de la 001.
+3. **Correr** (2 min): `npx playwright test -c playwright.real.config.ts tests/e2e/ia-real-madurez.spec.ts` (decide tú; el agente no la repitió por tu regla de una sola corrida). **Comprobar**: las 18 pruebas verdes. **Si siguen fallando**, puede haber un defecto real: avisa al agente.
+4. **Ver con tus ojos** (5 min): `npm run dev:all` con `MODEL_PROVIDER=fake` y `OPENAI_MODEL_DIAGNOSTICO=cualquier-nombre`; elige «IA real», sube archivos, genera. **Comprobar**: aparece «Madurez por dimensión» con seis áreas y el índice en «—»; en «Revisión», al aceptar hallazgos aparecen los números y el índice cambia; al rechazar todos los de un nivel, pasa a «Sin respaldo vigente». **No debe haber botones de aceptar/rechazar en los niveles.** (Con el guion vacío de ese modo no salen hallazgos: para ver niveles usa el paso 3.)
+5. **Abrir** (2 min): `docs/evidencia/mutacion-d2.md`. **Comprobar**: las 10 mutaciones tienen «Pruebas que fallaron» mayor que 0 y «restaurado idéntico: sí». Esto demuestra que las pruebas **sí detectan** un nivel sin hallazgos verificados.
+6. **Leer** (2 min): `docs/evidencia/d2-rojo.md`. **Comprobar** que entiendes la desviación: las pruebas de pantalla (e2e) no se vieron fallar antes de programar.
+7. **Tablero del Líder** (1 min): con los datos de ejemplo **no** debe verse la nota de mezcla; solo aparece tras emitir un diagnóstico real.
+
+**Pendiente tuyo**: aprobar la enmienda ya está hecho; T156 (esta revisión), T157 (`build && check` con tu lista de nombres) y T158 (commit). **Hasta D3**, el rótulo de IA todavía muestra el nombre del modelo (desviación transitoria).

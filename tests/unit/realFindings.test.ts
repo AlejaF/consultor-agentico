@@ -105,7 +105,7 @@ describe('el flujo de la 001 funciona con hallazgos reales', () => {
     expect(c.available && c.findings).toHaveLength(DIAGNOSIS.findings.length);
     expect(c.available && c.maturityIndex).toBe(DIAGNOSIS.maturityIndex);
   });
-  it('un proyecto en modo real emitido queda fuera de los promedios de madurez', () => {
+  it('un proyecto en modo real emitido sin niveles con respaldo vigente queda fuera de los promedios de madurez (AG-031)', () => {
     let s = reducer(createInitialState(), { type: 'setMode', projectId: 'P-A', mode: 'real' });
     s = reducer(s, { type: 'generateReal', projectId: 'P-A', at: 'x', real });
     s = reducer(reducer(s, { type: 'decide', projectId: 'P-A', findingId: 'R1', decision: 'accepted' }), { type: 'decide', projectId: 'P-A', findingId: 'R2', decision: 'rejected' });

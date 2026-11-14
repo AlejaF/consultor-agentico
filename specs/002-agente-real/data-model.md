@@ -42,6 +42,12 @@ Compatible con `Finding` de la 001, más campos:
 ### Información faltante (`MissingInfo`)
 `{ dimension, description }[]`. Texto de salida rotulado como IA (AG-021). No crea flujos.
 
+### Nivel de madurez (`RealMaturityLevel`, AG-031)
+`{ dimension, level: 1..5 | null, insufficient, justification (≤ 300), derivesFrom: id[] }`; siempre seis, una por dimensión.
+- `level` numérico solo si `derivesFrom` tiene al menos un hallazgo `verified: true` (SC-A8); si no, `level: null` e `insufficient: true` («Sin evidencia suficiente · NO VERIFICADO»).
+- **Respaldo vigente** (misma lógica que FR-025): el nivel cuenta solo si algún hallazgo de `derivesFrom` está aceptado o editado y verificado según las `decisions` actuales; `N` = cuántos. Con N = 0 se muestra «Sin respaldo vigente» y sale del cálculo. **No hay decisión por nivel.**
+- **Índice global** (no es una entidad guardada): `maturityIndex` = promedio de `level` de los niveles con respaldo vigente; `null` («—») si no hay ninguno. Lo calcula el código, nunca el modelo; se recalcula en cada vista. Rótulo: «Calculado por código a partir de niveles propuestos por IA».
+
 ### Objeción (`Objection`, P3)
 `{ findingId, text, kind: 'debil' | 'contradice' | 'sin_respaldo' }`. No cambia el estado de la decisión (AG-022).
 
@@ -72,6 +78,7 @@ ProjectState (v3) = v2 +
   real?: {
     findings: RealFinding[]
     missingInfo: MissingInfo[]
+    maturity?: RealMaturityLevel[]               // AG-031: seis entradas; el índice no se guarda
     objections: Objection[]
     diagnosisRun?: TraceSummary
     strategy?: RealStrategy

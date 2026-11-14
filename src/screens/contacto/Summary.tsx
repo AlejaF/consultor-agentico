@@ -2,7 +2,8 @@ import { COMPANY_PROJECT_ID, SAMPLE_ACTIVITY } from '../../data/survey';
 import { buildEvidenceItems } from '../../domain/evidence';
 import { adoptionSteps, nextStep } from '../../domain/company';
 import { formatDateTime, formatDecimal } from '../../domain/format';
-import { maturityOf } from '../../domain/maturity';
+import { MaturityIndexReal } from '../../components/MaturityPanel';
+import { maturityOf, projectMaturity } from '../../domain/maturity';
 
 import { projectInfo } from '../../domain/lookup';
 import { StatusBadge } from '../../components/badges';
@@ -29,7 +30,8 @@ export function Summary() {
         {company.name} · Proyecto {COMPANY_PROJECT_ID}
       </p>
 
-      {issued && (
+      {issued && ps.mode === 'real' && <MaturityIndexReal index={projectMaturity(state, COMPANY_PROJECT_ID)} />}
+      {issued && ps.mode !== 'real' && (
         <p data-testid="madurez-empresa">
           <strong>Índice de madurez: {formatDecimal(maturityOf(COMPANY_PROJECT_ID))} de 5</strong> (ilustrativo, ficticio)
         </p>

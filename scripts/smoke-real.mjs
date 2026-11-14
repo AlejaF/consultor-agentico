@@ -58,6 +58,31 @@ if (wantsTrace(process.argv.slice(2))) {
   }
 }
 
+/**
+ * Madurez por dimensión (AG-031) para el resumen: SOLO dimensión, nivel, número de hallazgos citados y sus ids; nunca la
+ * justificación (podría repetir texto de un documento) ni texto de documentos. El índice que imprime este script es
+ * PROVISIONAL: promedio de los niveles numéricos, como si se aceptaran todos los hallazgos verificados citados. En la
+ * aplicación el índice lo calcula el código del navegador y solo cuenta niveles con hallazgos aceptados o editados y verificados.
+ */
+function maturityLines(b) {
+  const levels = Array.isArray(b.maturity) ? b.maturity : [];
+  if (levels.length === 0) return ['- Madurez: la respuesta no trae niveles por dimensión'];
+  const rows = levels.map((m) =>
+    m.level === null || m.insufficient
+      ? `  - ${m.dimension}: Sin evidencia suficiente (NO VERIFICADO)`
+      : `  - ${m.dimension}: nivel ${m.level} de 5, basado en ${m.derivesFrom.length} hallazgo${m.derivesFrom.length === 1 ? '' : 's'} (${m.derivesFrom.join(', ')})`,
+  );
+  const nums = levels.filter((m) => m.level !== null && !m.insufficient).map((m) => m.level);
+  const index = nums.length === 0 ? '—' : (Math.round((nums.reduce((a, c) => a + c, 0) / nums.length) * 10) / 10).toFixed(1).replace('.', ',');
+  const levelRejections = (b.trace ?? []).filter((s) => s.type === 'verification' && !s.ok && String(s.findingTempId).startsWith('nivel:')).length;
+  return [
+    `- Niveles de madurez por dimensión (${nums.length} de ${levels.length} con evidencia):`,
+    ...rows,
+    `- Índice de madurez PROVISIONAL del script: ${index} de 5 (promedio de los niveles con evidencia; Calculado por código a partir de niveles propuestos por IA; la aplicación solo cuenta los respaldados por hallazgos aceptados o editados)`,
+    `- Niveles rechazados por el verificador de respaldo: ${levelRejections}`,
+  ];
+}
+
 let md;
 if (!res.ok) {
   const e = body.error ?? {};
@@ -82,10 +107,11 @@ if (!res.ok) {
     `- Herramientas usadas: ${Object.entries(tools).map(([k, v]) => `${k} ×${v}`).join(', ') || 'ninguna'}`,
     `- Verificaciones fallidas: ${body.trace.filter((s) => s.type === 'verification' && !s.ok).length}`,
     `- Avisos: ${body.warnings.map((w) => w.code).join(', ') || 'ninguno'}`,
+    ...maturityLines(body),
     '',
   ].join('\n');
 }
 mkdirSync('docs/evidencia', { recursive: true });
 writeFileSync('docs/evidencia/humo-real.md', md);
-console.log(md.split('\n').filter((l) => l.startsWith('- ') || l.startsWith('**')).join('\n'));
+console.log(md.split('\n').filter((l) => l.startsWith('- ') || l.startsWith('  - ') || l.startsWith('**')).join('\n'));
 console.log('\nResumen escrito en docs/evidencia/humo-real.md');

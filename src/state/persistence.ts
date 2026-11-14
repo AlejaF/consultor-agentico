@@ -1,6 +1,6 @@
 import type { Role } from '../app/router';
 import { clip } from '../providers/real';
-import { SCHEMA_VERSION, type Catalogs, type MissingInfo, type PersistedState, type ProjectState, type RealCitation, type RealFinding, type RealState, type TraceSummary } from './types';
+import { SCHEMA_VERSION, type Catalogs, type MissingInfo, type PersistedState, type ProjectState, type RealCitation, type RealFinding, type RealMaturityLevel, type RealState, type TraceSummary } from './types';
 
 export const STORAGE_KEY = 'consultor-agentico-demo:state';
 export const FLUSH_DELAY_MS = 200;
@@ -60,6 +60,16 @@ function validMissing(m: unknown): m is MissingInfo {
   return isObj(m) && isStr(m.dimension) && DIMS.includes(m.dimension) && isStr(m.description) && m.description.length <= MAX_MISSING;
 }
 
+const MAX_JUSTIFICATION = 300;
+
+function validMaturity(m: unknown): m is RealMaturityLevel {
+  if (!isObj(m) || !isStr(m.dimension) || !DIMS.includes(m.dimension) || typeof m.insufficient !== 'boolean') return false;
+  if (!isStr(m.justification) || m.justification.length > MAX_JUSTIFICATION) return false;
+  if (!Array.isArray(m.derivesFrom) || m.derivesFrom.length > 10 || !m.derivesFrom.every((x) => isStr(x) && x.length <= 20)) return false;
+  // Nivel numérico = entero de 1 a 5 y no «sin evidencia»; «sin evidencia» = sin nivel.
+  return m.insufficient ? m.level === null : typeof m.level === 'number' && Number.isInteger(m.level) && m.level >= 1 && m.level <= 5;
+}
+
 function validRun(r: unknown): r is TraceSummary {
   return isObj(r) && isStr(r.model) && isObj(r.tokens) && typeof r.iterations === 'number' && Array.isArray(r.steps) && Array.isArray(r.errors) && isObj(r.toolCounts);
 }
@@ -75,6 +85,7 @@ function sanitizeReal(r: RealState): RealState {
     })),
     missingInfo: r.missingInfo.map((m) => ({ dimension: m.dimension, description: m.description.slice(0, MAX_MISSING) })),
     objections: [],
+    ...(r.maturity ? { maturity: r.maturity.map((m) => ({ dimension: m.dimension, level: m.level, insufficient: m.insufficient, justification: m.justification.slice(0, MAX_JUSTIFICATION), derivesFrom: [...m.derivesFrom] })) } : {}),
     ...(r.diagnosisRun ? { diagnosisRun: { ...r.diagnosisRun, steps: r.diagnosisRun.steps.map((st) => (st.type === 'tool' ? { ...st, args: clip(st.args) } : st)) } } : {}),
   };
 }
@@ -121,6 +132,12 @@ function dropInvalidReal(raw: Obj): number {
       dropped += list.length - kept.length;
       real.missingInfo = kept;
     }
+    if (Array.isArray(real.maturity)) {
+      const list: unknown[] = real.maturity;
+      const kept = list.filter(validMaturity);
+      dropped += list.length - kept.length;
+      real.maturity = kept;
+    }
     if (real.diagnosisRun !== undefined && !validRun(real.diagnosisRun)) {
       delete real.diagnosisRun;
       dropped += 1;
@@ -146,6 +163,7 @@ function validProject(p: unknown, c: Catalogs): boolean {
     // Un hallazgo inválido ya se descartó antes (dropInvalidReal); aquí la forma de lo que queda debe ser exacta.
     if (!isObj(p.real) || !Array.isArray(p.real.findings) || !p.real.findings.every(validRealFinding)) return false;
     if (!Array.isArray(p.real.missingInfo) || !p.real.missingInfo.every(validMissing)) return false;
+    if (p.real.maturity !== undefined && (!Array.isArray(p.real.maturity) || !p.real.maturity.every(validMaturity))) return false;
     if (p.real.diagnosisRun !== undefined && !validRun(p.real.diagnosisRun)) return false;
   }
   // En modo real los ids de las decisiones son los de `real.findings` (dinámicos); en Simulado, los fijos de la plantilla.

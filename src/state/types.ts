@@ -68,6 +68,20 @@ export interface RealFinding {
   origin: 'agent';
 }
 
+/**
+ * Nivel de madurez de una dimensión, propuesto por el agente (AG-031). `level` es null cuando la dimensión no tiene hallazgos
+ * verificados («Sin evidencia suficiente»). No hay decisión por nivel ni índice guardado: el índice se recalcula por código
+ * con los niveles que tengan respaldo vigente (hallazgos aceptados o editados y verificados).
+ */
+export interface RealMaturityLevel {
+  dimension: RealFinding['dimension'];
+  level: 1 | 2 | 3 | 4 | 5 | null;
+  insufficient: boolean;
+  justification: string;
+  /** Ids (R…) de los hallazgos de los que deriva. */
+  derivesFrom: string[];
+}
+
 /** Información faltante por pilar (AG-021): texto de salida, sin flujos. */
 export interface MissingInfo {
   dimension: RealFinding['dimension'];
@@ -102,6 +116,8 @@ export interface RealState {
   findings: RealFinding[];
   missingInfo: MissingInfo[];
   objections: unknown[];
+  /** Opcional dentro de v3 (sin subir la versión): ausente = las seis dimensiones «sin evidencia suficiente». */
+  maturity?: RealMaturityLevel[];
   diagnosisRun?: TraceSummary;
 }
 

@@ -1,6 +1,6 @@
 import { PrintReport } from './PrintReport';
 import { projectInfo } from '../domain/lookup';
-import { maturityOf } from '../domain/maturity';
+import { evaluateMaturity, maturityOf } from '../domain/maturity';
 import { reportContent, type ReportScope } from '../domain/report';
 import { getDiagnosis } from '../providers';
 import { useAppState } from '../state/context';
@@ -12,7 +12,9 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
   const ps = state.projects[projectId];
   const view = getDiagnosis(ps);
   const aiModel = view.mode === 'real' ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
-  const content = reportContent(ps.diagnosis, ps.strategy, scope, aiModel ? null : maturityOf(projectId), view.findings);
+  // IA real: el índice sale de los niveles con respaldo vigente (calculado por código); Simulado: el valor ilustrativo sembrado.
+  const maturity = aiModel ? evaluateMaturity(ps.real?.maturity, view.findings, ps.diagnosis.decisions) : undefined;
+  const content = reportContent(ps.diagnosis, ps.strategy, scope, maturity ? maturity.index : maturityOf(projectId), view.findings);
   const what = scope === 'dx' ? 'Diagnóstico' : scope === 'st' ? 'Estrategia con su diagnóstico' : 'Diagnóstico y estrategia';
   return (
     <>
@@ -41,7 +43,7 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
               Imprimir o guardar como PDF
             </button>
           </p>
-          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} {...(aiModel ? { aiModel } : {})} />
+          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} {...(aiModel ? { aiModel } : {})} {...(maturity ? { maturity } : {})} />
         </>
       )}
     </>

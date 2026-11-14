@@ -22,8 +22,10 @@ Razón: el sitio público no puede tener secretos; la IA real solo se ejecuta ba
 
 ### III. Honestidad
 Lo simulado MUST mostrarse como simulado: el rótulo «Simulada» se conserva para el modo Simulado.
-Todo contenido producido por el modelo MUST rotularse «Generado por IA (modelo X) · requiere
-revisión humana». MUST NOT inventarse hechos. Lo que no se haya verificado MUST marcarse
+Todo contenido producido por el modelo MUST rotularse «Generado por IA · requiere revisión
+humana», sin nombre de modelo. El modelo, la fecha y los tokens MUST guardarse en los datos y
+mostrarse solo en la traza del agente y en la ficha técnica del informe, y solo a los roles
+internos (Consultor y Líder), nunca a la Empresa. MUST NOT inventarse hechos. Lo que no se haya verificado MUST marcarse
 NO VERIFICADO. Toda cita de un hallazgo MUST verificarse por código determinista contra el texto
 fuente; una cita no verificada MUST NOT presentarse como verificada. Todo aviso de privacidad MUST
 nombrar al proveedor al que se envía el texto.
@@ -88,8 +90,10 @@ El versionado es semántico: MAJOR por eliminar o redefinir principios de forma 
 MINOR por añadir principios o ampliar guía de forma material, PATCH por aclaraciones. Toda
 revisión de lote MUST comprobar el cumplimiento; cualquier excepción MUST justificarse por escrito.
 
-**Version**: 2.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-11
+**Version**: 2.1.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-14
 
 <!-- Enmienda 1.0.1 (PATCH, 2026-11-02): aclaración del principio VII (P3 puede incluirse o ampliarse por decisión escrita de la persona responsable). Aprobada por la persona responsable el 2026-11-02 al decidir incluir L5a y L5b y ampliar P3; propagada a spec.md, tasks.md, README.md, docs/decisiones.md y docs/cobertura-referencias.md. -->
 
 <!-- Enmienda 2.0.0 (MAJOR, 2026-11-11): redefinición incompatible del principio II («Solo sitio estático» → «Sitio estático publicado y backend local opcional»: ahora se permite un backend local con la clave de API). Principio I ampliado (documentos propios solo en memoria); principio III ampliado (rótulo de IA, verificación determinista de citas, proveedor en avisos de privacidad); nuevo principio IX «Seguridad y costo de la IA»; ajustadas «Restricciones adicionales» y la referencia I–IX. Principios IV–VIII sin cambios. Solicitada por la persona responsable el 2026-11-11; propagada a README.md y docs/decisiones.md. Pendiente propagar a spec.md, plan.md y tasks.md. -->
+
+<!-- Enmienda 2.1.0 (MINOR, 2026-11-14): principio III. El rótulo de todo contenido del modelo pasa de «Generado por IA (modelo X) · requiere revisión humana» a «Generado por IA · requiere revisión humana», sin nombre de modelo; el modelo, la fecha y los tokens se guardan en los datos y se muestran solo en la traza del agente y en la ficha técnica del informe, solo a los roles internos (Consultor y Líder), nunca a la Empresa. Clasificación según la regla de gobernanza: MINOR, porque cambia el texto de un MUST y añade una regla por rol (amplía la guía de forma material), pero no elimina ni redefine el principio de forma incompatible (no es MAJOR) y no es una simple aclaración (no es PATCH). Razón: la Empresa no necesita el nombre técnico del modelo para saber que el contenido es de IA. Riesgo aceptado: quien mira un hallazgo suelto ya no ve el modelo; sigue disponible y auditable en la traza y la ficha técnica. Aprobada por la persona responsable el 2026-11-14; propagada a spec.md (AG-023), plan.md, tasks.md, README.md y docs/decisiones.md. La implementación del nuevo rótulo es el lote D3; hasta entonces el código conserva el rótulo con el modelo (desviación transitoria registrada en docs/decisiones.md). Principios I, II y IV–IX sin cambios. -->

@@ -22,7 +22,14 @@ Búsqueda por palabras clave (sin vectores). Devuelve hasta `K = 5` resultados `
 - Una cita no verificada **nunca** se marca `verified: true` (AG-016, SC-A1).
 
 ### `declarar_informacion_faltante(pilar, descripcion)`
-Registra una línea de información faltante por pilar (texto, máx. 400 caracteres). Sin efectos más allá de guardar texto (AG-021).
+Registra una sugerencia de evidencia por pilar (texto, máx. 400 caracteres). Se muestra como «Evidencia sugerida para fortalecer el diagnóstico». Sin efectos más allá de guardar texto (AG-021); una sugerencia no es un hallazgo.
+
+### `registrar_nivel_madurez(dimension, nivel, justificacion, derivaDe[ids])` *(nuevo 2026-11-14, AG-031)*
+- `dimension` ∈ las seis; `nivel` entero de 1 a 5; `justificacion` no vacía, hasta 300 caracteres; `derivaDe` con 1 a 10 ids.
+- El **verificador** comprueba que **todos** los ids de `derivaDe` existan entre los hallazgos ya registrados en esta corrida, **sean del mismo pilar** y **estén `verified: true`**. Un id inexistente o no verificado → `{ ok: false, error: "El hallazgo R7 no existe / no está verificado. Cita solo hallazgos verificados." }`; máximo **2 reintentos por dimensión**; al agotarse la dimensión queda «Sin evidencia suficiente».
+- Una segunda llamada para la misma dimensión reemplaza a la anterior solo si es válida.
+- **No existe herramienta para el índice global**: lo calcula el código del cliente (`maturityIndex`). Un argumento `indice` o similar se rechaza como mal formado (AG-012).
+- Al terminar la corrida, **el código** (no el modelo) añade las dimensiones sin nivel válido como `{ level: null, insufficient: true }`.
 
 **Fin de la corrida**: el modelo responde sin pedir más herramientas, o se alcanza un tope.
 

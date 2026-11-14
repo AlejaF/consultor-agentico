@@ -79,7 +79,8 @@ test.describe('diagnóstico real', () => {
     await expect(page.getByText('Evidencia de ejemplo (ficticia)')).toHaveCount(0);
     await expect(card(page, 'R4')).toContainText('NO VERIFICADO');
     await expect(page.getByTestId('cited-count')).toContainText('de 4 hallazgos con evidencia citada');
-    await expect(page.getByText(/Índice de madurez: \d/)).toHaveCount(0);
+    // AG-031 (reemplaza «sin índice en modo real»): antes de aceptar hallazgos ningún nivel tiene respaldo vigente, el índice es «—»
+    await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: —');
   });
 
   test('la «Traza del agente» muestra herramientas, consultas, verificaciones fallidas y su resolución, modelo y tokens', async ({ page }) => {
@@ -123,7 +124,7 @@ test.describe('diagnóstico real', () => {
     await expect(informe).toContainText('Extracto de tu archivo');
     await expect(informe).toContainText(ROTULO);
     await expect(informe).not.toContainText('Evidencia de ejemplo (ficticia)');
-    await expect(informe).toContainText('Sin índice de madurez');
+    await expect(informe).toContainText('Índice de madurez: 3,0 de 5'); // AG-031: calculado por código con los niveles respaldados (2, 3 y 4)
     await expect(informe).toContainText('Estrategia aún no disponible');
     await abrir(page, 'P-A', 'estrategia');
     await expect(page.getByTestId('strategy-real-pending')).toBeVisible();

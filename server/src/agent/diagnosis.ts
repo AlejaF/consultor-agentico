@@ -1,6 +1,6 @@
 // Agente de Diagnóstico (AG-013, AG-014, AG-016, AG-017, AG-021; contracts/agent-tools.md).
 // Herramientas: buscar_en_evidencia, registrar_hallazgo (con verificador determinista y reintentos) y
-// declarar_informacion_faltante. El verificador NO usa el modelo: solo texto (SC-A1).
+// declarar_informacion_faltante y registrar_nivel_madurez (AG-031). El verificador NO usa el modelo: solo texto (SC-A1).
 import { z } from 'zod';
 import { formatLocation, parseLocation, type Location } from '../chunk.ts';
 import type { Config } from '../config.ts';
@@ -10,6 +10,7 @@ import { searchEvidence, type SearchHit } from '../search.ts';
 import type { SearchableFile } from '../store.ts';
 import { normalize, verifyQuote } from '../verify.ts';
 import { runLoop, type LoopResult } from './loop.ts';
+import { MAX_RETRIES_PER_LEVEL, completeMaturity, maturitySchema, verifyMaturityLevel, type Dimension, type MaturityLevel } from './maturity.ts';
 import { PILARES, type AgentTool, type ToolOutcome } from './tools.ts';
 import { createTrace, summarizeArgs, type Trace, type TraceStep } from './trace.ts';
 
@@ -25,6 +26,7 @@ export const SYSTEM_PROMPT = [
   'Si el verificador rechaza una cita, corrígela con el fragmento exacto (y la ubicación que te indique) o elimínala.',
   'No inventes archivos, ubicaciones ni cifras. Si falta evidencia sobre un pilar, decláralo con declarar_informacion_faltante.',
   `Los pilares son: ${PILARES.join(', ')}.`,
+  'Cuando ya hayas registrado los hallazgos, propón un nivel de madurez entero de 1 a 5 por pilar con registrar_nivel_madurez, citando solo hallazgos ya registrados y verificados DE ESE PILAR y con una justificación corta. Si un pilar no tiene hallazgos verificados, no registres su nivel. Nunca calcules ni propongas un índice global: lo calcula el programa.',
   'Cuando termines, responde con un breve resumen en texto y sin pedir más herramientas. Responde en español.',
 ].join('\n');
 
@@ -68,6 +70,8 @@ export interface DiagnosisSession {
   tools: AgentTool[];
   findings(): DiagnosisFinding[];
   missingInfo(): MissingInfo[];
+  /** Siempre las seis dimensiones; las que no tienen nivel válido salen «sin evidencia suficiente» (AG-031). */
+  maturity(): MaturityLevel[];
 }
 
 export function createDiagnosisSession(files: readonly SearchableFile[], trace: Trace): DiagnosisSession {
@@ -75,6 +79,9 @@ export function createDiagnosisSession(files: readonly SearchableFile[], trace: 
   const missing = new Map<string, MissingInfo>();
   const attempts = new Map<string, number>();
   const registered = new Set<string>();
+  const levels = new Map<Dimension, MaturityLevel>();
+  const levelAttempts = new Map<Dimension, number>();
+  const closedLevels = new Set<Dimension>();
 
   const buscar: AgentTool<typeof searchSchema> = {
     name: 'buscar_en_evidencia',
@@ -162,13 +169,55 @@ export function createDiagnosisSession(files: readonly SearchableFile[], trace: 
     },
   };
 
-  return { tools: [buscar, registrar, faltante] as AgentTool[], findings: () => findings, missingInfo: () => [...missing.values()] };
+  // AG-031: el modelo propone el nivel; el verificador comprueba el respaldo; el índice global NO existe aquí.
+  const nivel: AgentTool<typeof maturitySchema> = {
+    name: 'registrar_nivel_madurez',
+    description:
+      'Registra el nivel de madurez (entero de 1 a 5) de UN pilar con una justificación corta (máximo 300 caracteres) y los ids de los hallazgos verificados de ese pilar de los que deriva (por ejemplo «R1»). El verificador rechaza ids inexistentes, de otro pilar o NO verificados. No hay índice global: no lo calcules.',
+    schema: maturitySchema,
+    run(a): ToolOutcome {
+      const dim = a.dimension;
+      const tempId = `nivel:${dim}`;
+      if (closedLevels.has(dim)) {
+        return { ok: false, output: { ok: false, error: `El pilar ${dim} ya quedó «Sin evidencia suficiente» tras varios intentos; no se puede registrar.` }, summary: 'pilar cerrado' };
+      }
+      const check = verifyMaturityLevel(dim, a.derivaDe, findings);
+      const prior = levelAttempts.get(dim) ?? 0;
+      if (check.ok) {
+        levels.set(dim, { dimension: dim, level: a.nivel, insufficient: false, justification: a.justificacion, derivesFrom: [...new Set(a.derivaDe)] });
+        trace.add({ type: 'verification', findingTempId: tempId, ok: true, ...(prior > 0 ? { resolution: 'corregida' as const } : {}) });
+        return { ok: true, output: { ok: true }, summary: `nivel de ${dim}: ${a.nivel}` };
+      }
+      // Ya hay un nivel válido: una llamada inválida no lo pisa ni cierra el pilar.
+      if (levels.has(dim)) {
+        trace.add({ type: 'verification', findingTempId: tempId, ok: false, reason: check.error });
+        return { ok: false, output: { ok: false, error: check.error }, summary: 'nivel no verificado; se conserva el anterior' };
+      }
+      levelAttempts.set(dim, prior + 1);
+      if (prior + 1 <= MAX_RETRIES_PER_LEVEL) {
+        trace.add({ type: 'verification', findingTempId: tempId, ok: false, reason: check.error });
+        return { ok: false, output: { ok: false, error: check.error }, summary: 'respaldo no verificado; se pide corregir' };
+      }
+      closedLevels.add(dim);
+      trace.add({ type: 'verification', findingTempId: tempId, ok: false, reason: check.error, resolution: 'descartada' });
+      return { ok: false, output: { ok: false, error: `${check.error} El pilar ${dim} queda «Sin evidencia suficiente».` }, summary: `pilar ${dim} sin evidencia suficiente` };
+    },
+  };
+
+  return {
+    tools: [buscar, registrar, faltante, nivel] as AgentTool[],
+    findings: () => findings,
+    missingInfo: () => [...missing.values()],
+    maturity: () => completeMaturity(levels),
+  };
 }
 
 export interface DiagnosisRun {
   run: { stage: 'diagnosis'; model: string; reasoning: string | null; iterations: number; partial: boolean; tokens: { input: number; output: number; total: number } };
   findings: DiagnosisFinding[];
   missingInfo: MissingInfo[];
+  /** Siempre seis entradas; NO incluye ningún índice global (lo calcula el cliente, AG-031). */
+  maturity: MaturityLevel[];
   trace: TraceStep[];
   warnings: Array<{ code: string; message: string }>;
 }
@@ -203,6 +252,7 @@ export async function runDiagnosis(o: { client: ModelClient; config: Config; fil
     },
     findings: session.findings(),
     missingInfo: session.missingInfo(),
+    maturity: session.maturity(),
     trace: trace.steps.map(copyStep),
     warnings,
   };

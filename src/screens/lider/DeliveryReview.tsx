@@ -9,7 +9,8 @@ import { UnverifiedCount } from '../../components/UnverifiedCount';
 import { AiBadge } from '../../components/AiBadge';
 import { getDiagnosis } from '../../providers';
 import { STRATEGY } from '../../data/strategy';
-import { maturityOf } from '../../domain/maturity';
+import { evaluateMaturity, maturityOf } from '../../domain/maturity';
+import { MaturityPanel } from '../../components/MaturityPanel';
 import { countOf, formatDecimal } from '../../domain/format';
 import { projectInfo } from '../../domain/lookup';
 import { deriveStrategy } from '../../domain/strategy';
@@ -58,6 +59,7 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
               <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
             </p>
           )}
+          {aiModel && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, decisions)} model={aiModel} />}
           {excluded > 0 && <p className="subtitle">{countOf(excluded, 'hallazgo excluido', 'hallazgos excluidos')} por el Consultor (no se muestran).</p>}
           <PillarGroups
             idPrefix="ent"

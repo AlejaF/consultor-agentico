@@ -13,6 +13,7 @@ interface ProjectState {            // v2 + lo siguiente
     missingInfo: MissingInfo[];
     objections: Objection[];
     diagnosisRun?: TraceSummary;
+    maturity?: RealMaturityLevel[];    // nuevo 2026-11-14 (AG-031): siempre seis entradas; el índice NO se guarda
     strategy?: { risks: RealStrategyItem[]; route: RealStrategyItem[] };
     strategyRun?: TraceSummary;
     criticRun?: TraceSummary;
@@ -21,8 +22,13 @@ interface ProjectState {            // v2 + lo siguiente
 ```
 Tipos: ver [data-model.md](../data-model.md).
 
+`RealMaturityLevel = { dimension, level: 1|2|3|4|5|null, insufficient: boolean, justification: string, derivesFrom: string[] }`.
+
+**Sin subir la versión (decidido)**: `maturity` es opcional dentro de v3 (la v3 aún no se publicó). Un v3 sin él carga igual; un proyecto real así queda con las seis dimensiones «Sin evidencia suficiente» hasta volver a ejecutar. No hay decisiones por nivel: el respaldo vigente se deriva de las `decisions` de los hallazgos.
+
 ## Qué NO se guarda (AG-025)
 
+- El **índice global de madurez** (se recalcula con `maturityIndex`, AG-031).
 - El texto completo de los archivos.
 - La clave, los modelos configurados del servidor, ni respuestas crudas del proveedor.
 - La traza completa con fragmentos largos (se guarda un resumen con argumentos recortados).

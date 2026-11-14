@@ -84,10 +84,12 @@ Usa solo los archivos `extracted` del proyecto. Responde cuando termina:
   "findings": [ { "id": "R1", "dimension": "datos", "title": "…", "text": "…", "verified": true,
                   "citations": [ { "file": "politica.pdf", "location": { "kind": "page", "page": 3 }, "quote": "…", "verified": true } ] } ],
   "missingInfo": [ { "dimension": "talento", "description": "…" } ],
+  "maturity": [ { "dimension": "datos", "level": 3, "insufficient": false, "justification": "…", "derivesFrom": ["R1", "R2"] },
+                { "dimension": "talento", "level": null, "insufficient": true, "justification": "", "derivesFrom": [] } ],
   "trace": [ { "type": "tool", "name": "buscar_en_evidencia", "args": { "consulta": "…" }, "resultSummary": "5 fragmentos", "ok": true } ],
   "warnings": [ ] }
 ```
-`partial: true` + `warnings` cuando se alcanzó un tope (AG-008). Errores del proveedor terminan la corrida con el formato de error **e incluyen** la traza hasta ese punto en `error.trace` para no perderla.
+`maturity` trae siempre las seis dimensiones; **no hay índice global en la respuesta** (lo calcula el cliente, AG-031). `partial: true` + `warnings` cuando se alcanzó un tope (AG-008). Errores del proveedor terminan la corrida con el formato de error **e incluyen** la traza hasta ese punto en `error.trace` para no perderla.
 
 ## `POST /api/strategy/run`
 

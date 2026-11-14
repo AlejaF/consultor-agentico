@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { getDiagnosis } from '../../providers';
 import { AiBadge } from '../../components/AiBadge';
+import { MaturityPanel } from '../../components/MaturityPanel';
+import { evaluateMaturity } from '../../domain/maturity';
 import { FindingCard } from '../../components/FindingCard';
 import { DeliveryStatus } from '../../components/DeliveryStatus';
 import { IssuedNotice } from '../../components/IssuedNotice';
@@ -90,6 +92,8 @@ export function Review({ projectId }: { projectId: string }) {
       <div aria-live="polite" role="status" className="visually-hidden" data-testid="decision-announcer">
         {announcement}
       </div>
+
+      {aiModel && d.status !== 'none' && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} model={aiModel} />}
 
       {d.status !== 'none' && (
         <PillarGroups

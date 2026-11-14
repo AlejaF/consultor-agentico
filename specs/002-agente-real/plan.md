@@ -2,9 +2,11 @@
 
 **Rama**: `002-agente-real` (carpeta del spec; no se creó rama) | **Fecha**: 2026-11-11 | **Spec**: [spec.md](./spec.md)
 
-**Entrada**: `specs/002-agente-real/spec.md` (historias US9 a US13, AG-001 a AG-030, SC-A1 a SC-A7). Extiende `specs/001-demo-consultor-agentico/` sin romperla.
+**Entrada**: `specs/002-agente-real/spec.md` (historias US9 a US13, AG-001 a AG-031, SC-A1 a SC-A9). Extiende `specs/001-demo-consultor-agentico/` sin romperla.
 
 > Convención: toda cifra de tiempo o costo es una **estimación NO VERIFICADO**. Lo comprobado el 2026-11-11 lo indica con «verificado» y su evidencia está en [research.md](./research.md).
+
+> **Cambio de alcance 2026-11-14 (aprobado con decisiones; enmienda 2.1.0 aprobada y aplicada el 2026-11-14; D2 en implementación)**: AG-031 (madurez en modo real) → lote **D2**; ajustes de AG-009, AG-021 y AG-023 (traza por rol, «Evidencia sugerida», rótulo sin modelo) → lote **D3**; enmienda **2.1.0** propuesta al principio III. **Orden de ejecución decidido por la persona: D → D2 → D3 → E** (el índice es P1; D3 es presentación). D2 usa `AiBadge` tal como está y D3 lo cambia en todos sus usos, incluido `MaturityPanel`. Ver «Madurez en modo real» y «Presentación y roles» más abajo.
 
 ## Resumen
 
@@ -54,7 +56,7 @@ Enfoque técnico:
 
 **Escala/alcance**: 5 a 10 documentos por proyecto, 25 MB por archivo (límites de la 001), 6 pilares, decenas de fragmentos por documento.
 
-## Verificación de la constitución (2.0.0)
+## Verificación de la constitución (2.1.0)
 
 *COMPUERTA: debe pasar antes de la Fase 0. Se reevaluó tras el diseño de la Fase 1: ver «Re-evaluación».*
 
@@ -62,7 +64,7 @@ Enfoque técnico:
 |---|---|---|
 | **I. Datos ficticios y rotulados** | Repositorio, sitio publicado y fixtures (uno por formato, «Empresa Ficticia Alfa», generados por `scripts/make-fixtures.mjs`) son 100 % ficticios; `check-names` los revisa. En modo real los documentos propios viven solo en memoria del servicio y el estado del navegador no guarda su texto completo (AG-025, AG-026). Ningún informe de `docs/evidencia/` incluye documentos reales ni la clave. `referencias/` sigue en `.gitignore`. | Cumple |
 | **II. Sitio estático publicado y backend local opcional** | El sitio publicado no cambia: estático, solo Simulado. `server/` solo escucha en `127.0.0.1`, es el único lugar con la clave y **no se despliega**. `check-secrets` revisa repositorio, historial reciente (`git grep` sobre el árbol, ver Riesgos) y `dist/`. El frontend **no** usa variables `VITE_*` con claves. | Cumple |
-| **III. Honestidad** | Todo contenido del modelo lleva «Generado por IA (modelo X) · requiere revisión humana» (componente `AiBadge`, equivalente a `SimBadge`); «Simulada» solo en Simulado. Verificador determinista de citas (no el modelo). Aviso de privacidad que nombra a OpenAI y dice que el texto queda en memoria del servicio y no se guarda en disco (AG-004, AG-028). Lo no comprobado se marca NO VERIFICADO. | Cumple |
+| **III. Honestidad** | Todo contenido del modelo lleva el rótulo «Generado por IA · requiere revisión humana» (componente `AiBadge`, equivalente a `SimBadge`). **Enmienda 2.1.0 (aprobada y aplicada el 2026-11-14): el rótulo no lleva modelo; el modelo, la fecha y los tokens se ven solo en la traza y la ficha técnica para roles internos (AG-023). El código conserva el rótulo con modelo hasta el lote D3 (desviación transitoria registrada en `docs/decisiones.md`).** «Simulada» solo en Simulado. El índice de madurez lo calcula el código, nunca el modelo (AG-031). Verificador determinista de citas (no el modelo). Aviso de privacidad que nombra a OpenAI y dice que el texto queda en memoria del servicio y no se guarda en disco (AG-004, AG-028). Lo no comprobado se marca NO VERIFICADO. | Cumple |
 | **IV. Responsive y accesible** | Selector, aviso previo, `TraceView` y estados de carga/errores se construyen con elementos nativos, objetivos ≥ 44 px, regiones `aria-live` para el indicador de carga y los errores, y se verifican con la misma batería de la 001 (axe, 320/768/1280 px, teclado). | Cumple (verificación en lote D y F) |
 | **V. Diseño como tokens** | Sin colores ni fuentes nuevos fuera de `tokens.css`; los estados nuevos (IA real, error) reutilizan tokens existentes o añaden tokens documentados. `check-tokens` sigue vigente. | Cumple |
 | **VI. Especificación primero** | Este plan nace de `spec.md` vigente. **Brecha conocida**: la enmienda 2.0.0 aún no se refleja en spec/plan/tareas de la 001 (el AG-005 documenta las dos excepciones de FR-011 y SC-003). Hasta que la persona decida cómo propagarla, la 002 es el vehículo. Cambios de comportamiento durante la implementación vuelven al spec. | Cumple con una brecha anotada |
@@ -165,6 +167,8 @@ specs/002-agente-real/
 | **B. Extracción y verificador** | Extractores de los 6 formatos con ubicaciones y topes; `chunk.ts`; `verify.ts`; `store.ts` en memoria; `POST /api/evidence` (y `GET`/`DELETE` para AG-030); script de fixtures | AG-006, AG-007, AG-015, AG-026, AG-030 (servidor) | 1–1,5 h | 0,5–1 h | 1,5–2,5 h | Los 6 fixtures se extraen con su ubicación; PDF sin texto, cifrado y dañado dan motivo claro; ningún archivo a disco; verificador con pruebas |
 | **C. Agente de Diagnóstico** | `ModelClient` + FALSO + OpenAI, bucle con topes, herramientas, traza, errores normalizados, `POST /api/diagnosis/run`, prueba de humo con el modelo real | US9, US10, AG-008, AG-009, AG-011 a AG-013, AG-016, AG-017, AG-021 | 1,5–2,5 h | 0,5–1,5 h (incluye la corrida real) | 3–4,5 h (incluye decidir los modelos y la prueba de humo) | Pruebas con cliente FALSO verdes; una corrida real documentada con traza, modelo y tokens; **primera medición de SC-A6 y del costo** |
 | **D. Frontend y persistencia** | Capa de proveedor, selector, aviso previo, lista de archivos del servicio, resultado real en el flujo de la 001, `TraceView`, rótulos, estado v3 y migración, modo por proyecto | US9, US10, AG-001, AG-003 a AG-005, AG-018, AG-023 a AG-025, AG-028 a AG-030 | 2–3 h | 1–2 h (suite de la 001 y Playwright) | 3–4,5 h | Recorrido completo con servicio en modo falso (e2e); **toda la batería de la 001 pasa sin cambios**; recarga conserva hallazgos y archivos |
+| **D2. Madurez en modo real** | Herramienta `registrar_nivel_madurez`, verificador de respaldo, `maturityIndex` (índice por código con respaldo vigente), `real.maturity` en el estado v3, `projectMaturity` sin la exclusión del modo real, informe, entrega y promedios del Líder; **sin revisión por nivel y sin tocar `reviewProgress` ni `canIssue`** | AG-031, AG-018, AG-025; SC-A8 | 1,5–2,5 h | 0,5–1 h | 2–3 h | Pruebas escritas y vistas fallar primero; nivel sin hallazgos verificados rechazado; índice igual al cálculo por código; mutación comprobada; la batería de la 001 sigue sin cambios |
+| **D3. Presentación y roles** | Rótulo sin modelo, ficha técnica del informe (roles internos), «Evidencia sugerida…», traza plegada y solo para Consultor y Líder, avisos de revisión siempre visibles | AG-009, AG-021, AG-023; SC-A3, SC-A9 | 0,5–1 h | 0,5–1 h (e2e en 3 anchos y por rol) | 1–1,5 h | Pruebas por rol y ancho verdes; la Empresa no ve traza, modelo, fecha ni tokens |
 | **E. Estrategia** | Agente de Estrategia, `POST /api/strategy/run`, integración con `deriveStrategy`, vista | US11, AG-019, AG-020 | 1–1,5 h | 0,5–1 h | 1,5–2,5 h | Ningún elemento sin hallazgo aceptado y verificado (SC-A4) |
 | **F. Cierre** | Accesibilidad y responsive de lo nuevo, README, `docs/decisiones.md`, evidencia, suite completa, repaso de SC-A1 a SC-A7 | todos | 1–1,5 h | 1–1,5 h (suite completa) | 2–3 h | Suite verde; SC-A1 a SC-A5 y SC-A7 verificados; SC-A6 medido o NO VERIFICADO |
 | **G. Crítico (P3)** | Agente Crítico, `POST /api/critic/run`, objeciones | US13, AG-022 | 1–1,5 h | 0,5–1 h | 1–2 h | Objeciones visibles sin cambiar el estado de ningún hallazgo |
@@ -182,7 +186,29 @@ Como se trabaja un lote a la vez, **la suma es en serie**: ningún tramo se sola
 
 **Punto de control tras el lote C (decisión de la persona)**: (1) SC-A1 pasa en la prueba automática con el cliente falso; (2) una corrida real sobre los fixtures da hallazgos con citas verificadas, con modelo, tokens, tiempo y costo medidos (SC-A6); (3) límite de gasto y saldo agotado terminan sin ningún reintento (cliente falso); (4) el costo medido es aceptable; (5) con los tiempos reales de A a C se recalibra el resto y se decide sobre AG-021, AG-030 y el plazo.
 
-**Orden y dependencias**: A → B → C → D → E → F, cada uno con aprobación y commit de la persona antes del siguiente. G depende de C y D y está diferido. Al cerrar cada lote el agente anota su tiempo real en [docs/tiempos-002.md](../../docs/tiempos-002.md).
+**Orden y dependencias**: A → B → C → D → **D2 → D3** → E → F, cada uno con aprobación y commit de la persona antes del siguiente. G depende de C y D y está diferido. Al cerrar cada lote el agente anota su tiempo real en [docs/tiempos-002.md](../../docs/tiempos-002.md).
+
+## Madurez en modo real (AG-031) — diseño del lote D2
+
+**Qué cambia**: hoy `projectMaturity` devuelve `null` en modo real (`src/domain/maturity.ts`) y el índice de la plantilla es ilustrativo (FR-058). Esa exclusión se **reemplaza**: en modo real el índice sale de los niveles de las dimensiones.
+
+- **Nueva herramienta del agente de Diagnóstico**: `registrar_nivel_madurez(dimension, nivel, justificacion, derivaDe[ids])` (contrato en [contracts/agent-tools.md](./contracts/agent-tools.md)). El **verificador** (servidor, función pura) comprueba que `nivel` sea entero de 1 a 5, la justificación no esté vacía (hasta 300 caracteres) y que **todos** los ids de `derivaDe` existan entre los hallazgos ya registrados en esa corrida **y estén verificados**. Si no, devuelve el error al agente (máx. 2 reintentos por dimensión, como AG-016) y lo registra en la traza. Ninguna herramienta recibe ni escribe un «índice».
+- **Quién cierra las dimensiones**: al terminar la corrida, **el código** (no el modelo) completa las seis dimensiones: las que no tengan un nivel válido quedan `{ level: null, insufficient: true }` («Sin evidencia suficiente · NO VERIFICADO»). Así el prompt puede pedir los seis niveles, pero la salida siempre trae seis entradas.
+- **Respaldo vigente (misma lógica que FR-025)**: un nivel cuenta solo si al menos uno de los hallazgos que cita está **aceptado o editado y verificado** según las `decisions` actuales. Con ninguno (todos rechazados o aún sin revisar) el nivel se muestra «Sin respaldo vigente» y sale del promedio; un nivel que el agente dejó «Sin evidencia suficiente» sigue así. Se evalúa con una función pura (`backedFindings(level, findings, decisions)`) que sigue el mismo criterio que `deriveStrategy`, sin modificarlo.
+- **Cálculo del índice**: función pura `maturityIndex(levels, findings, decisions)` en `src/domain/maturity.ts` (la comparten el informe, la entrega, el inicio de la Empresa y el tablero del Líder): promedio de los niveles con respaldo vigente; `null` («—») si no hay ninguno. Se recalcula en cada vista y **no se persiste**. Cada nivel muestra «basado en N hallazgos» (N = hallazgos citados con respaldo vigente).
+- **Sin revisión por nivel (decisión de la persona)**: no hay decisiones por nivel. **No se modifican `reviewProgress` ni `canIssue`** (`src/domain/review.ts`), ni el contador (solo hallazgos), ni la regla de emisión de FR-021. Una prueba comprueba que su resultado no depende de los niveles.
+- **FR-058 solo en modo real**: `projectMaturity` conserva exactamente `maturityOf` para Simulado (2,4; 3,1; 1,8; 2,8; promedio 2,5 con los datos de ejemplo); solo en modo real llama a `maturityIndex`. El índice real lleva el rótulo constante «Calculado por código a partir de niveles propuestos por IA» (no «(ilustrativo, ficticio)»).
+- **Persistencia (v3, decidido)**: `real.maturity: RealMaturityLevel[]`, **opcional dentro de v3, sin subir `schemaVersion`** (la v3 aún no se publicó). Un v3 sin él carga igual y un proyecto real así muestra las seis dimensiones «Sin evidencia suficiente» hasta volver a ejecutar. La migración v2 → v3 no cambia.
+- **Contratos**: `POST /api/diagnosis/run` añade `maturity: [{ dimension, level | null, insufficient, justification, derivesFrom[ids] }]` y **no** devuelve índice; el frontend lo calcula.
+- **Cambios acotados al código de la 001** (para no romper SC-A5): `projectMaturity` deja de excluir el modo real y llama a `maturityIndex`; `PrintReport`, `DeliveryReview`, `ReportPage` y el inicio de la Empresa muestran el índice real con el rótulo de IA y sin «(ilustrativo, ficticio)». Ninguna prueba existente de la 001 se modifica.
+
+## Presentación y roles (AG-009, AG-021, AG-023) — diseño del lote D3
+
+- **Rótulo**: `AiBadge` deja de recibir el modelo y muestra «Generado por IA · requiere revisión humana». El modelo sigue en `TraceSummary.model` (datos).
+- **Rol**: el componente de traza y la **ficha técnica** del informe se renderizan solo si el rol de la sesión es Consultor o Líder; para Empresa (`contacto`) no se renderizan (no «se ocultan con CSS»: no están en el DOM). Función pura `canSeeTrace(role)` con prueba por rol.
+- **Traza**: `TraceView` pasa a un `<details>` cerrado por defecto con el título «Ver cómo trabajó el agente»; fuera del `<details>` quedan los avisos que afectan a la revisión (resultado parcial, errores) como región `aria-live`/`role="status"` para roles internos.
+- **Evidencia sugerida**: `MissingInfo` cambia su título a «Evidencia sugerida para fortalecer el diagnóstico» y añade la frase «Son sugerencias de la IA, no hallazgos ni contenido verificado.»
+- **Pruebas del lote D afectadas**: `tests/e2e/ia-real.spec.ts` y `tests/e2e/ia-real-faltante.spec.ts` (archivos **de la 002**, aún sin commit) afirman el rótulo y el título anteriores; se actualizan en D3 junto con sus pruebas nuevas. No hay ninguna prueba de la 001 afectada.
 
 ## Riesgos y decisiones abiertas
 
@@ -194,7 +220,9 @@ Como se trabaja un lote a la vez, **la suma es en serie**: ningún tramo se sola
 6. **`read-excel-file` y `unpdf`**: su API exacta y su comportamiento ante archivos cifrados/dañados no se comprobaron más allá de la instalación y las auditorías; el lote B empieza con un experimento corto (spike) con los fixtures.
 7. **Retención de datos en OpenAI**: la llamada usa `store: false` para no guardar respuestas; las políticas de retención del proveedor para entradas **NO VERIFICADO** y por eso el aviso previo lo dice sin prometer más.
 8. **Costo por corrida**: estimado en research.md; **NO VERIFICADO** hasta medir tokens reales.
-9. **Cierre de pestaña durante la ejecución**: el servicio no puede cancelar de forma fiable una llamada en curso; al desconectarse el cliente se aborta el bucle y se descarta el resultado (comportamiento a verificar en el lote C).
+9. **Madurez del modelo** *(cambio de alcance 2026-11-14; escala y revisión decididas por la persona)*: NO VERIFICADO que el modelo asigne niveles coherentes con la evidencia. La garantía es que cada nivel cita hallazgos verificados, que solo cuenta con respaldo vigente y que el índice lo calcula el código; no que el nivel sea «correcto». Por eso el rótulo del índice dice «niveles propuestos por IA».
+10. **Avisos técnicos**: decidido, la Empresa no ve ninguno (AG-009).
+11. **Cierre de pestaña durante la ejecución**: el servicio no puede cancelar de forma fiable una llamada en curso; al desconectarse el cliente se aborta el bucle y se descarta el resultado (comportamiento a verificar en el lote C).
 
 ## Re-evaluación tras el diseño (Fase 1)
 

@@ -8,7 +8,7 @@ import { TEAMS } from '../../data/teams';
 import { buildEvidenceItems } from '../../domain/evidence';
 import { deliveriesFor } from '../../domain/deliveries';
 import { formatDecimal, formatScore } from '../../domain/format';
-import { averageMaturity } from '../../domain/maturity';
+import { MIX_NOTE, averageMaturity, averageMixesModes } from '../../domain/maturity';
 import { projectProgress } from '../../domain/progress';
 import { averageOfGradings } from '../../domain/rubric';
 import { useAppState } from '../../state/context';
@@ -42,6 +42,11 @@ export function Dashboard() {
         <KpiCard testId="kpi-promedio" label="Promedio de calificaciones" value={mean} />
         <KpiCard testId="kpi-madurez" label="Madurez promedio (de 5)" value={maturity === null ? '—' : formatDecimal(maturity)} />
       </section>
+      {averageMixesModes(state) && (
+        <p className="subtitle" data-testid="mix-note">
+          {MIX_NOTE}
+        </p>
+      )}
       <section aria-labelledby="tab-equipos">
         <h2 id="tab-equipos">Equipos</h2>
         <div className="field">

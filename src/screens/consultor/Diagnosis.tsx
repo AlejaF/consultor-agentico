@@ -10,7 +10,8 @@ import { TraceView } from '../../components/TraceView';
 import { SimBadge } from '../../components/badges';
 import { getDiagnosis } from '../../providers';
 import { buildEvidenceItems, resolveCitation } from '../../domain/evidence';
-import { maturityOf } from '../../domain/maturity';
+import { evaluateMaturity, maturityOf } from '../../domain/maturity';
+import { MaturityPanel } from '../../components/MaturityPanel';
 import { formatDateTime, formatDecimal } from '../../domain/format';
 import { canGenerate } from '../../domain/progress';
 import { projectInfo } from '../../domain/lookup';
@@ -82,9 +83,7 @@ export function Diagnosis({ projectId }: { projectId: string }) {
             )}
             {issued && d.issuedAt && <p className="subtitle">Emitido el {formatDateTime(d.issuedAt)}</p>}
             {issued && <IssuedNotice projectId={projectId} />}
-            {real ? (
-              <p className="subtitle">Sin índice de madurez: en el modo IA real no se calcula.</p>
-            ) : (
+            {!real && (
               <p>
                 <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
               </p>
@@ -103,6 +102,8 @@ export function Diagnosis({ projectId }: { projectId: string }) {
               )}
             </p>
           </section>
+
+          {real && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} model={aiModel!} />}
 
           <PillarGroups
             idPrefix="dim"

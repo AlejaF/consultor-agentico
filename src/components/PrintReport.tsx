@@ -3,9 +3,11 @@ import { ACCOUNTS } from '../data/accounts';
 import { resolveName } from '../data/evidence';
 import { resolveCitation } from '../domain/evidence';
 import { countOf, formatDateTime, formatDecimal } from '../domain/format';
+import type { MaturityEvaluation } from '../domain/maturity';
 import type { ReportContent } from '../domain/report';
 import { resolveRealCitation } from '../domain/realCitation';
 import { AiBadge } from './AiBadge';
+import { MaturityIndexReal, MaturityPanel } from './MaturityPanel';
 import { SimBadge, UnverifiedBadge } from './badges';
 import { pillarLabel } from './PillarGroups';
 import { StrategyView } from './StrategyView';
@@ -18,7 +20,7 @@ type Available = Extract<ReportContent, { available: true }>;
  * Cuerpo del informe imprimible (FR-044 a FR-048). La cabecera «DEMO · datos ficticios» va en el `thead` de una tabla de maquetación:
  * el navegador repite el `thead` en cada página impresa y le reserva su espacio (print.css). En pantalla no se ve (ya está el aviso de la app).
  */
-export function PrintReport({ content, companyName, projectLabel, aiModel }: { content: Available; companyName: string; projectLabel: string; aiModel?: string }) {
+export function PrintReport({ content, companyName, projectLabel, aiModel, maturity }: { content: Available; companyName: string; projectLabel: string; aiModel?: string; maturity?: MaturityEvaluation }) {
   const includedLine = `${countOf(content.findings.length, 'hallazgo incluido', 'hallazgos incluidos')}`;
   return (
     <div className="print-report" data-testid="print-report">
@@ -43,15 +45,18 @@ export function PrintReport({ content, companyName, projectLabel, aiModel }: { c
                   {aiModel ? <AiBadge model={aiModel} /> : <SimBadge />} {content.issuedAt && <span>Diagnóstico emitido el {formatDateTime(content.issuedAt)} · </span>}
                   <span>Revisado por: {REVIEWER}</span>
                 </p>
-                <p>
-                  {content.maturityIndex === null ? (
-                    <strong>Sin índice de madurez: no se calcula en el modo IA real.</strong>
-                  ) : (
-                    <>
-                      <strong>Índice de madurez: {formatDecimal(content.maturityIndex)} de 5</strong> (ilustrativo, ficticio)
-                    </>
-                  )}
-                </p>
+                {aiModel ? (
+                  // IA real (AG-031): el índice sale de los niveles con respaldo vigente y se calcula por código.
+                  maturity ? <MaturityPanel evaluation={maturity} model={aiModel} /> : <MaturityIndexReal index={content.maturityIndex} />
+                ) : (
+                  <p>
+                    {content.maturityIndex !== null && (
+                      <>
+                        <strong>Índice de madurez: {formatDecimal(content.maturityIndex)} de 5</strong> (ilustrativo, ficticio)
+                      </>
+                    )}
+                  </p>
+                )}
                 <p>
                   {includedLine}
                   {content.unverifiedShown > 0 && (

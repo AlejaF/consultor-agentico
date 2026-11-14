@@ -1,5 +1,6 @@
 // Proveedor «IA real»: habla con el servicio local por `/api/…`. El navegador decide por `error.category`, no por el HTTP.
-import type { MissingInfo, RealFinding, RealState, TraceStepSummary, TraceSummary } from '../state/types';
+import { DIMENSIONS } from '../data/diagnosis';
+import type { MissingInfo, RealFinding, RealMaturityLevel, RealState, TraceStepSummary, TraceSummary } from '../state/types';
 import type { DiagnosisResponse, ErrorCategory, Result, ServerFileResult, ServiceError, ServiceTraceStep } from './types';
 
 const MAX_ARG = 200;
@@ -68,7 +69,27 @@ export function toRealState(r: DiagnosisResponse, startedAt: string, finishedAt:
     };
   });
   const missingInfo: MissingInfo[] = r.missingInfo.map((m) => ({ dimension: m.dimension, description: m.description.slice(0, 400) }));
-  return { findings, missingInfo, objections: [], diagnosisRun: summarizeTrace(r, startedAt, finishedAt) };
+  return { findings, missingInfo, objections: [], maturity: toMaturity(r.maturity, findings), diagnosisRun: summarizeTrace(r, startedAt, finishedAt) };
+}
+
+const MAX_JUSTIFICATION = 300;
+
+/**
+ * Siempre las seis dimensiones. Un nivel solo se acepta si tiene la forma exacta (entero de 1 a 5, justificación, ids) y TODOS
+ * los hallazgos que cita existen, son de esa dimensión y están verificados; la regla se aplica otra vez aquí, sin confiar solo
+ * en el servicio (AG-031). Si no, la dimensión queda «sin evidencia suficiente». Nunca se lee un índice de la respuesta.
+ */
+export function toMaturity(raw: DiagnosisResponse['maturity'], findings: readonly RealFinding[]): RealMaturityLevel[] {
+  return DIMENSIONS.map(({ id }): RealMaturityLevel => {
+    const none: RealMaturityLevel = { dimension: id, level: null, insufficient: true, justification: '', derivesFrom: [] };
+    const m = raw?.find((x) => x.dimension === id);
+    if (!m || m.insufficient || typeof m.level !== 'number' || !Number.isInteger(m.level) || m.level < 1 || m.level > 5) return none;
+    if (typeof m.justification !== 'string' || m.justification.trim() === '' || !Array.isArray(m.derivesFrom) || m.derivesFrom.length === 0) return none;
+    const ids = [...new Set(m.derivesFrom)];
+    const backed = ids.every((fid) => findings.some((f) => f.id === fid && f.dimension === id && f.verified));
+    if (!backed) return none;
+    return { dimension: id, level: m.level as RealMaturityLevel['level'], insufficient: false, justification: m.justification.slice(0, MAX_JUSTIFICATION), derivesFrom: ids };
+  });
 }
 
 const KNOWN: readonly ErrorCategory[] = [

@@ -62,6 +62,8 @@ export interface DiagnosisResponse {
   run: { stage: 'diagnosis'; model: string; reasoning: string | null; iterations: number; partial: boolean; tokens: { input: number; output: number; total: number } };
   findings: ServiceFinding[];
   missingInfo: { dimension: ServiceFinding['dimension']; description: string }[];
+  /** Seis entradas. Sin índice global: lo calcula el navegador (AG-031). Opcional por tolerancia con respuestas antiguas. */
+  maturity?: { dimension: ServiceFinding['dimension']; level: number | null; insufficient: boolean; justification: string; derivesFrom: string[] }[];
   trace: ServiceTraceStep[];
   warnings: { code: string; message: string }[];
 }

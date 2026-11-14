@@ -23,7 +23,7 @@ export type ReportContent =
       available: true;
       scope: ReportScope;
       issuedAt?: string;
-      /** null en modo IA real: ese índice es ilustrativo de la plantilla y no se calcula de hallazgos reales. */
+      /** null en modo IA real cuando ningún nivel tiene respaldo vigente («—»); en Simulado, el valor ilustrativo sembrado. */
       maturityIndex: number | null;
       findings: ReportFinding[];
       /** Hallazgos rechazados: se cuentan, no se muestran (FR-046). */
