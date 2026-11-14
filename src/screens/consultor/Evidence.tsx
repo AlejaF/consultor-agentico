@@ -3,6 +3,9 @@ import { CompanyData } from '../../components/CompanyData';
 import { CaptureProgress } from '../../components/CaptureProgress';
 import { EvidenceList } from '../../components/EvidenceList';
 import { FileDropzone } from '../../components/FileDropzone';
+import { ModeSelector } from '../../components/ModeSelector';
+import { RealEvidence } from '../../components/RealEvidence';
+import { modeOf } from '../../providers';
 import { Notice } from '../../components/Notice';
 import { QuestionForm } from '../../components/QuestionForm';
 import { COMPANIES } from '../../data/companies';
@@ -26,7 +29,8 @@ export function Evidence({ projectId }: { projectId: string }) {
     ps.answers,
     items.map((i) => i.kind),
   );
-  const allowed = canGenerate(items.length);
+  const real = modeOf(ps) === 'real';
+  const allowed = canGenerate(real ? (ps.serverFiles ?? []).length : items.length);
   const status = ps.diagnosis.status;
   const diagnosisHref = `#/consultor/proyectos/${projectId}/diagnostico`;
 
@@ -44,6 +48,8 @@ export function Evidence({ projectId }: { projectId: string }) {
         <Notice>El diagnóstico ya está emitido: la nueva evidencia no se refleja en el diagnóstico emitido.</Notice>
       )}
 
+      <ModeSelector projectId={projectId} />
+
       <div className="evidence-layout">
         <div className="evidence-main">
           <CompanyData company={company} />
@@ -52,16 +58,22 @@ export function Evidence({ projectId }: { projectId: string }) {
             answers={ps.answers}
             onChange={(questionId, value) => dispatch({ type: 'setAnswer', projectId, questionId, value })}
           />
-          <FileDropzone
-            buttonRef={uploadRef}
-            existingNames={ps.localFiles.map((f) => f.name)}
-            onAccepted={(files) => {
-              const metas = files.map((f) => ({ ...f, id: newFileId(), addedAt: new Date().toISOString() }));
-              metas.forEach((m) => addedThisSession.add(m.id));
-              dispatch({ type: 'addFiles', projectId, files: metas });
-            }}
-          />
-          <EvidenceList items={items} onRemove={(fileId) => dispatch({ type: 'removeFile', projectId, fileId })} />
+          {real ? (
+            <RealEvidence projectId={projectId} />
+          ) : (
+            <>
+              <FileDropzone
+                buttonRef={uploadRef}
+                existingNames={ps.localFiles.map((f) => f.name)}
+                onAccepted={(files) => {
+                  const metas = files.map((f) => ({ ...f, id: newFileId(), addedAt: new Date().toISOString() }));
+                  metas.forEach((m) => addedThisSession.add(m.id));
+                  dispatch({ type: 'addFiles', projectId, files: metas });
+                }}
+              />
+              <EvidenceList items={items} onRemove={(fileId) => dispatch({ type: 'removeFile', projectId, fileId })} />
+            </>
+          )}
         </div>
 
         <aside className="evidence-side">
@@ -78,10 +90,15 @@ export function Evidence({ projectId }: { projectId: string }) {
                   Generar diagnóstico
                 </button>
                 <p id="generar-motivo">
-                  Este proyecto no tiene evidencia. Agrega al menos un archivo para poder generar el diagnóstico.{' '}
-                  <button type="button" className="link-button" onClick={() => uploadRef.current?.focus()}>
-                    Ir a agregar archivos
-                  </button>
+                  Este proyecto no tiene evidencia. Agrega al menos un archivo para poder generar el diagnóstico.
+                  {!real && (
+                    <>
+                      {' '}
+                      <button type="button" className="link-button" onClick={() => uploadRef.current?.focus()}>
+                        Ir a agregar archivos
+                      </button>
+                    </>
+                  )}
                 </p>
               </>
             )}

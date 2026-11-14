@@ -85,3 +85,37 @@ nada. Si se acaba el dinero o el saldo, **se detiene al instante, sin reintentar
 
 **Tareas tuyas del lote C**: T049 (decidir modelos en `server/.env`; la decisión ya está en `docs/decisiones.md`, faltan los IDs en el `.env` y el nivel de razonamiento), T064 (prueba de humo real, con costo: `npm run dev:server` y en otra terminal `node scripts/smoke-real.mjs`), T065 (revisar la traza), T066 (pasar las cifras a `docs/tiempos-002.md`), T068 (revisión a fondo), T069, T070 (commit), T071 y T072 (punto de control). **No abras ni pegues `server/.env`.**
 
+
+## Lote D — lista de revisión corta (máx. 15 minutos de comprobación)
+
+**Qué se hizo, en palabras simples**: la demo ahora tiene un **interruptor «Simulado / IA real»** en cada proyecto. En «Simulado» todo funciona como
+siempre. En «IA real» subes tus archivos a un programa que corre **en tu propio equipo**, este los lee, le pide a la IA que busque y anote hallazgos con
+frases literales, y comprueba **sin IA** que cada frase exista de verdad en el documento. Los hallazgos reales entran al **mismo recorrido de siempre**
+(revisar, emitir, calificar, informe), con el rótulo «Generado por IA (modelo …) · requiere revisión humana» y el aviso «Extracto de tu archivo» en las
+citas. Una vez que un proyecto tiene diagnóstico, **su modo queda fijado** (se puede cambiar solo limpiando un diagnóstico aún no emitido). Todo se probó con
+una IA «de mentira» guionada: **no se gastó nada ni se usó ninguna clave**. La estrategia con IA real **todavía no existe** (es el lote E).
+
+**Lo que corrió el agente** (resultado en `docs/decisiones.md`, «Estado de la sesión»): `typecheck:all`, `test:all`, `build`, `check` y **una sola vez** la suite
+e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modificar ni una prueba**, más la nueva del modo IA real).
+
+1. **Correr** (3 min): `npm run typecheck:all && npm run test:all && npm run build && npm run check`.
+   **Comprobar**: sin errores; `check` imprime tres «OK».
+2. **Correr** (1 min): `git diff --stat -- tests/unit tests/e2e`.
+   **Comprobar**: **no sale ninguna línea** (ninguna prueba de la 001 se tocó; solo hay archivos nuevos: `git status --short tests`).
+3. **Modo Simulado igual que antes** (2 min): `npm run dev`, entra como Consultor y abre un proyecto. **Comprobar**: sale una tarjeta nueva «Modo de análisis»
+   con «Simulado» activo y «IA real» apagado, con el mensaje «IA real no disponible aquí (requiere ejecutar el backend en tu equipo)»; lo demás es como lo conocías
+   (generar diagnóstico, revisar, emitir, informe).
+4. **Recorrido de IA real sin gastar** (6 min): `npm run dev:all` **con** `MODEL_PROVIDER=fake` y `OPENAI_MODEL_DIAGNOSTICO=cualquier-nombre` en el entorno
+   (el servicio no gasta nada en modo falso; sin guion, la IA falsa no registra hallazgos, así que para ver hallazgos usa la prueba automática del paso 5).
+   **Comprobar**: «IA real» se activa; sale el aviso azul que nombra a **OpenAI** y dice «no lo guarda en disco»; al subir un archivo aparece «Texto extraído» o el
+   motivo concreto de por qué no se pudo leer (escaneado, con contraseña, dañado).
+5. **Ver el recorrido completo** (2 min): `npm run test:e2e:real` (arranca solo el servicio en modo falso). **Comprobar**: todas verdes; cubre cargar los 6 formatos,
+   hallazgos con «Extracto de tu archivo», la «Traza del agente», revisar → emitir → informe, error de saldo sin reintento, recargar la página.
+6. **Abrir** (1 min): `src/providers/index.ts` (`getDiagnosis`). **Comprobar**: en modo Simulado devuelve la plantilla de la 001 sin cambios; en modo real, solo los
+   hallazgos reales (nunca se mezclan).
+7. **Revisión humana a fondo (T093, la tuya)**: recorrido en celular, tableta y computador, solo con teclado, y lectura del refactor de T082 (`git diff` de
+   `src/components/PillarGroups.tsx`, `DerivedFrom.tsx`, `UnverifiedCount.tsx`, `SideNav.tsx`, `src/domain/report.ts`, `maturity.ts`, `src/state/reducer.ts`).
+
+**Lo que NO se probó con IA real**: nada de este lote se probó con el modelo real (eso fue el lote C). Tampoco se probó el sitio publicado.
+
+**Tareas tuyas del lote D**: T093 (revisión), T094 (`npm run build && npm run check` con tu lista de nombres), T095 (commit) y T096 (push y comprobar el sitio publicado).

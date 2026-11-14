@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { COMPANIES } from '../data/companies';
-import { FINDING_IDS } from '../data/diagnosis';
+import { getDiagnosis, modeOf } from '../providers';
 import { PROJECTS } from '../data/projects';
 import { deliveriesFor } from '../domain/deliveries';
 import { buildEvidenceItems } from '../domain/evidence';
@@ -54,10 +54,10 @@ export function SideNav({ role, route }: Props) {
   if (project && company) {
     const ps = state.projects[project.id];
     steps = flowSteps({
-      evidenceCount: buildEvidenceItems(project, company.name, ps.localFiles).length,
+      evidenceCount: modeOf(ps) === 'real' ? (ps.serverFiles ?? []).length : buildEvidenceItems(project, company.name, ps.localFiles).length,
       hasAnswers: Object.values(ps.answers).some((v) => v.trim() !== ''),
       diagnosis: ps.diagnosis.status,
-      reviewed: reviewProgress(FINDING_IDS, ps.diagnosis.decisions).reviewed,
+      reviewed: reviewProgress(getDiagnosis(ps).ids, ps.diagnosis.decisions).reviewed,
       strategy: ps.strategy.status,
     });
   }

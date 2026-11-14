@@ -42,6 +42,8 @@ export interface ResolvedCitation {
   locator: string;
   text: string;
   label: string;
+  /** Solo citas reales (002): se rotulan «Extracto de tu archivo» y nunca «Evidencia de ejemplo (ficticia)» (AG-024). */
+  real?: { verified: boolean };
 }
 
 /** Resuelve una cita a su elemento de evidencia y extracto; funciona en cualquier proyecto (FR-017). */

@@ -1,10 +1,10 @@
 import type { Role } from '../app/router';
-import { FINDING_IDS } from '../data/diagnosis';
 import { CRITERION_IDS } from '../data/rubric';
 import { SURVEY_QUESTIONS } from '../data/survey';
 import { canIssue, isValidEdit } from '../domain/review';
+import { getDiagnosis, modeOf } from '../providers';
 import { average, isGradingComplete } from '../domain/rubric';
-import type { Decision, DiagnosisState, LocalFileMeta, PersistedState, ProjectState } from './types';
+import type { Decision, DiagnosisState, LocalFileMeta, Mode, PersistedState, ProjectState, RealState, ServerFileMeta } from './types';
 
 export type Action =
   | { type: 'setRole'; role: Role | null }
@@ -13,6 +13,12 @@ export type Action =
   | { type: 'removeFile'; projectId: string; fileId: string }
   | { type: 'setAnswer'; projectId: string; questionId: string; value: string }
   | { type: 'generate'; projectId: string; at: string }
+  | { type: 'setMode'; projectId: string; mode: Mode }
+  | { type: 'generateReal'; projectId: string; at: string; real: RealState }
+  | { type: 'clearDiagnosis'; projectId: string }
+  | { type: 'addServerFiles'; projectId: string; files: ServerFileMeta[] }
+  | { type: 'removeServerFile'; projectId: string; fileId: string }
+  | { type: 'setServerFiles'; projectId: string; files: ServerFileMeta[] }
   | { type: 'decide'; projectId: string; findingId: string; decision: 'accepted' | 'rejected' | 'pending' }
   | { type: 'edit'; projectId: string; findingId: string; text: string }
   | { type: 'issue'; projectId: string; at: string }
@@ -36,10 +42,10 @@ function updateProject(state: PersistedState, projectId: string, fn: (p: Project
 }
 
 /** Aplica un cambio al diagnóstico solo mientras está «generado»; emitido es de solo lectura. */
-function updateOpenDiagnosis(state: PersistedState, projectId: string, fn: (d: DiagnosisState) => DiagnosisState | null): PersistedState {
+function updateOpenDiagnosis(state: PersistedState, projectId: string, fn: (d: DiagnosisState, ids: readonly string[]) => DiagnosisState | null): PersistedState {
   const p = state.projects[projectId];
   if (!p || p.diagnosis.status !== 'generated') return state;
-  const next = fn(p.diagnosis);
+  const next = fn(p.diagnosis, getDiagnosis(p).ids);
   if (next === null) return state;
   return updateProject(state, projectId, (pp) => ({ ...pp, diagnosis: next }));
 }
@@ -73,27 +79,61 @@ export function reducer(state: PersistedState, action: Action): PersistedState {
     case 'generate': {
       const p = state.projects[action.projectId];
       if (!p || p.diagnosis.status !== 'none') return state; // idempotente
-      const decisions: Record<string, Decision> = Object.fromEntries(FINDING_IDS.map((id) => [id, { state: 'pending' } as Decision]));
+      if (modeOf(p) === 'real') return state; // en modo real el diagnóstico sale de `generateReal`, nunca de la plantilla (AG-029)
+      const decisions: Record<string, Decision> = Object.fromEntries(getDiagnosis(p).ids.map((id) => [id, { state: 'pending' } as Decision]));
       return updateProject(state, action.projectId, (pp) => ({
         ...pp,
         diagnosis: { status: 'generated', generatedAt: action.at, decisions },
       }));
     }
+    case 'setMode': {
+      // El modo queda fijado cuando hay diagnóstico (AG-029); solo «Limpiar diagnóstico» lo libera.
+      const p = state.projects[action.projectId];
+      if (!p || p.diagnosis.status !== 'none' || modeOf(p) === action.mode) return state;
+      return updateProject(state, action.projectId, (pp) => ({ ...pp, mode: action.mode }));
+    }
+    case 'generateReal': {
+      const p = state.projects[action.projectId];
+      if (!p || p.diagnosis.status !== 'none' || modeOf(p) !== 'real') return state; // idempotente
+      const decisions: Record<string, Decision> = Object.fromEntries(action.real.findings.map((f) => [f.id, { state: 'pending' } as Decision]));
+      return updateProject(state, action.projectId, (pp) => ({
+        ...pp,
+        mode: 'real',
+        real: action.real,
+        diagnosis: { status: 'generated', generatedAt: action.at, decisions },
+      }));
+    }
+    case 'clearDiagnosis': {
+      // Solo un diagnóstico «generado» y sin estrategia: lo emitido es de solo lectura y puede tener entrega o calificación (FR-021, FR-031).
+      const p = state.projects[action.projectId];
+      if (!p || p.diagnosis.status !== 'generated' || p.strategy.status !== 'none') return state;
+      const { real: _real, ...rest } = p;
+      return updateProject(state, action.projectId, () => ({ ...rest, diagnosis: { status: 'none', decisions: {} } }));
+    }
+    case 'addServerFiles':
+      return updateProject(state, action.projectId, (p) => {
+        const known = new Set((p.serverFiles ?? []).map((f) => f.id));
+        return { ...p, serverFiles: [...(p.serverFiles ?? []), ...action.files.filter((f) => !known.has(f.id))] };
+      });
+    case 'removeServerFile':
+      return updateProject(state, action.projectId, (p) => ({ ...p, serverFiles: (p.serverFiles ?? []).filter((f) => f.id !== action.fileId) }));
+    case 'setServerFiles':
+      return updateProject(state, action.projectId, (p) => ({ ...p, serverFiles: action.files }));
     case 'decide':
-      return updateOpenDiagnosis(state, action.projectId, (d) =>
-        FINDING_IDS.includes(action.findingId)
+      return updateOpenDiagnosis(state, action.projectId, (d, ids) =>
+        ids.includes(action.findingId)
           ? { ...d, decisions: { ...d.decisions, [action.findingId]: { state: action.decision } } }
           : null,
       );
     case 'edit':
-      return updateOpenDiagnosis(state, action.projectId, (d) =>
-        FINDING_IDS.includes(action.findingId) && isValidEdit(action.text)
+      return updateOpenDiagnosis(state, action.projectId, (d, ids) =>
+        ids.includes(action.findingId) && isValidEdit(action.text)
           ? { ...d, decisions: { ...d.decisions, [action.findingId]: { state: 'edited', text: action.text.trim() } } }
           : null,
       );
     case 'issue':
-      return updateOpenDiagnosis(state, action.projectId, (d) =>
-        canIssue(FINDING_IDS, d.decisions) ? { ...d, status: 'issued', issuedAt: action.at } : null,
+      return updateOpenDiagnosis(state, action.projectId, (d, ids) =>
+        canIssue(ids, d.decisions) ? { ...d, status: 'issued', issuedAt: action.at } : null,
       );
     case 'generateStrategy': {
       const p = state.projects[action.projectId];

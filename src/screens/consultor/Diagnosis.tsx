@@ -1,9 +1,14 @@
-import { DIAGNOSIS } from '../../data/diagnosis';
 import { FindingCard } from '../../components/FindingCard';
 import { GenerateButton } from '../../components/GenerateButton';
 import { IssuedNotice } from '../../components/IssuedNotice';
 import { PillarGroups } from '../../components/PillarGroups';
+import { AiBadge } from '../../components/AiBadge';
+import { MissingInfo } from '../../components/MissingInfo';
+import { ModeSelector } from '../../components/ModeSelector';
+import { RealGenerate } from '../../components/RealGenerate';
+import { TraceView } from '../../components/TraceView';
 import { SimBadge } from '../../components/badges';
+import { getDiagnosis } from '../../providers';
 import { buildEvidenceItems, resolveCitation } from '../../domain/evidence';
 import { maturityOf } from '../../domain/maturity';
 import { formatDateTime, formatDecimal } from '../../domain/format';
@@ -16,10 +21,15 @@ export function Diagnosis({ projectId }: { projectId: string }) {
   const { project, company } = projectInfo(projectId);
   const ps = state.projects[projectId];
   const d = ps.diagnosis;
-  const evidenceCount = buildEvidenceItems(project, company.name, ps.localFiles).length;
+  const view = getDiagnosis(ps);
+  const real = view.mode === 'real';
+  const aiModel = real ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
+  const evidenceCount = real ? (ps.serverFiles ?? []).length : buildEvidenceItems(project, company.name, ps.localFiles).length;
   const issued = d.status === 'issued';
 
-  const cited = DIAGNOSIS.findings.filter((f) => f.citations.some((c) => resolveCitation(c, company.name) !== null)).length;
+  const cited = real
+    ? view.findings.filter((f) => (f.realCitations?.length ?? 0) > 0).length
+    : view.findings.filter((f) => f.citations.some((c) => resolveCitation(c, company.name) !== null)).length;
 
   return (
     <>
@@ -33,7 +43,11 @@ export function Diagnosis({ projectId }: { projectId: string }) {
         {company.name} · Proyecto {projectId}
       </p>
 
-      {d.status === 'none' && (
+      <ModeSelector projectId={projectId} />
+
+      {d.status === 'none' && real && <RealGenerate projectId={projectId} companyName={company.name} />}
+
+      {d.status === 'none' && !real && (
         <section className="card" aria-labelledby="gen-titulo">
           <h2 id="gen-titulo">Generar diagnóstico</h2>
           <p>El diagnóstico se genera a partir de la evidencia del proyecto. En esta demo el contenido es preparado y está rotulado como simulado.</p>
@@ -59,15 +73,24 @@ export function Diagnosis({ projectId }: { projectId: string }) {
           <section className="card report-head" aria-label="Resumen del diagnóstico">
             <p>
               <span className={issued ? 'badge badge-ok' : 'badge badge-warn'}>{issued ? 'Emitido' : 'Generado — pendiente de revisión'}</span>{' '}
-              <SimBadge />
+              {real ? <AiBadge model={aiModel!} /> : <SimBadge />}
             </p>
+            {real && ps.real?.diagnosisRun?.partial && (
+              <p className="subtitle no-support" data-testid="partial-notice">
+                Resultado parcial: el agente alcanzó un tope antes de terminar. Revisa los avisos de la traza.
+              </p>
+            )}
             {issued && d.issuedAt && <p className="subtitle">Emitido el {formatDateTime(d.issuedAt)}</p>}
             {issued && <IssuedNotice projectId={projectId} />}
-            <p>
-              <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
-            </p>
+            {real ? (
+              <p className="subtitle">Sin índice de madurez: en el modo IA real no se calcula.</p>
+            ) : (
+              <p>
+                <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
+              </p>
+            )}
             <p data-testid="cited-count">
-              {cited} de {DIAGNOSIS.findings.length} hallazgos con evidencia citada
+              {cited} de {view.findings.length} hallazgos con evidencia citada
             </p>
             <p>
               <a className="btn primary" href={`#/consultor/proyectos/${projectId}/revision`}>
@@ -83,10 +106,12 @@ export function Diagnosis({ projectId }: { projectId: string }) {
 
           <PillarGroups
             idPrefix="dim"
+            findings={view.findings}
             render={(f) => (
               <FindingCard
                 key={f.id}
                 finding={f}
+                {...(aiModel ? { aiModel } : {})}
                 companyName={company.name}
                 decision={issued ? d.decisions[f.id] : undefined}
                 mode={issued ? 'readonly' : 'report'}
@@ -94,6 +119,8 @@ export function Diagnosis({ projectId }: { projectId: string }) {
               />
             )}
           />
+          {real && <MissingInfo items={ps.real?.missingInfo ?? []} model={aiModel!} />}
+          {real && ps.real?.diagnosisRun && <TraceView run={ps.real.diagnosisRun} />}
         </>
       )}
     </>

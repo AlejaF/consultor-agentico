@@ -2,9 +2,11 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { Finding } from '../data/diagnosis';
 import { resolveName } from '../data/evidence';
 import { resolveCitation, type ResolvedCitation } from '../domain/evidence';
+import { resolveRealCitation } from '../domain/realCitation';
 import { isValidEdit } from '../domain/review';
 import { useDirtyFlag } from '../state/unsaved';
 import type { Decision } from '../state/types';
+import { AiBadge } from './AiBadge';
 import { UnverifiedBadge } from './badges';
 import { CitationButton } from './CitationButton';
 import { EvidencePanel } from './EvidencePanel';
@@ -17,6 +19,8 @@ interface Props {
   mode: 'report' | 'review' | 'readonly';
   issued?: boolean;
   showHeadingLevel?: 2 | 3;
+  /** Modelo que produjo el hallazgo (modo IA real): añade el rótulo de IA (AG-023). */
+  aiModel?: string;
   onDecide?: (d: 'accepted' | 'rejected') => void;
   onEdit?: (text: string) => void;
 }
@@ -34,12 +38,14 @@ function DecisionBadge({ decision, issued }: { decision: Decision; issued: boole
   }
 }
 
-export function FindingCard({ finding, companyName, decision, mode, issued = false, onDecide, onEdit }: Props) {
+export function FindingCard({ finding, companyName, decision, mode, issued = false, aiModel, onDecide, onEdit }: Props) {
   const uid = useId();
   const baseText = resolveName(finding.text, companyName);
   const currentText = decision?.state === 'edited' ? decision.text : baseText;
 
-  const citations = finding.citations.map((c) => resolveCitation(c, companyName)).filter((c): c is ResolvedCitation => c !== null);
+  const citations: ResolvedCitation[] = finding.realCitations
+    ? finding.realCitations.map((c, i) => resolveRealCitation(c, i))
+    : finding.citations.map((c) => resolveCitation(c, companyName)).filter((c): c is ResolvedCitation => c !== null);
   const [open, setOpen] = useState<string[]>([]);
   const toggle = (id: string) => setOpen((o) => (o.includes(id) ? o.filter((x) => x !== id) : [...o, id]));
   const openCitations = citations.filter((c) => open.includes(c.excerptId));
@@ -77,6 +83,7 @@ export function FindingCard({ finding, companyName, decision, mode, issued = fal
         <p className="finding-badges">
           {decision && mode !== 'report' && <DecisionBadge decision={decision} issued={issued} />}
           {!finding.verified && <UnverifiedBadge />}
+          {aiModel && <AiBadge model={aiModel} />}
         </p>
         {!finding.verified && <p className="subtitle">{finding.unverifiedReason}</p>}
         {noSupport && <p className="subtitle no-support">No se usará como respaldo de la estrategia</p>}

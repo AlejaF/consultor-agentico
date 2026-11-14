@@ -1,3 +1,4 @@
+import type { RealCitation } from '../state/types';
 import type { Slot } from './evidence';
 
 export type Dimension = 'estrategia' | 'infraestructura' | 'datos' | 'gobernanza' | 'talento' | 'cultura';
@@ -25,6 +26,8 @@ export interface Finding {
   citations: Citation[];
   verified: boolean;
   unverifiedReason?: string;
+  /** Solo hallazgos reales (002): citas con archivo, ubicación y fragmento; `citations` queda vacío. */
+  realCitations?: RealCitation[];
 }
 
 export interface DiagnosisTemplate {

@@ -6,7 +6,8 @@ import { RubricForm } from '../../components/RubricForm';
 import { StrategyView } from '../../components/StrategyView';
 import { SimBadge } from '../../components/badges';
 import { UnverifiedCount } from '../../components/UnverifiedCount';
-import { DIAGNOSIS, FINDING_IDS } from '../../data/diagnosis';
+import { AiBadge } from '../../components/AiBadge';
+import { getDiagnosis } from '../../providers';
 import { STRATEGY } from '../../data/strategy';
 import { maturityOf } from '../../domain/maturity';
 import { countOf, formatDecimal } from '../../domain/format';
@@ -23,7 +24,9 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
   const grading = state.gradings[deliveryId];
   const [announcement, setAnnouncement] = useState('');
   const decisions = ps.diagnosis.decisions;
-  const excluded = FINDING_IDS.filter((id) => decisions[id]?.state === 'rejected').length;
+  const view = getDiagnosis(ps);
+  const aiModel = view.mode === 'real' ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
+  const excluded = view.ids.filter((id) => decisions[id]?.state === 'rejected').length;
 
   return (
     <>
@@ -49,25 +52,26 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
       {tipo === 'dx' ? (
         <section aria-labelledby="entrega-dx">
           <h2 id="entrega-dx">Diagnóstico emitido</h2>
-          <p>
-            <SimBadge />
-          </p>
-          <p>
-            <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
-          </p>
+          <p>{aiModel ? <AiBadge model={aiModel} /> : <SimBadge />}</p>
+          {!aiModel && (
+            <p>
+              <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
+            </p>
+          )}
           {excluded > 0 && <p className="subtitle">{countOf(excluded, 'hallazgo excluido', 'hallazgos excluidos')} por el Consultor (no se muestran).</p>}
           <PillarGroups
             idPrefix="ent"
+            findings={view.findings}
             filter={(f) => decisions[f.id]?.state !== 'rejected'}
             render={(f) => (
-              <FindingCard key={f.id} finding={f} companyName={company.name} decision={decisions[f.id]} mode="readonly" issued />
+              <FindingCard key={f.id} finding={f} companyName={company.name} decision={decisions[f.id]} mode="readonly" issued {...(aiModel ? { aiModel } : {})} />
             )}
           />
         </section>
       ) : (
         <section aria-labelledby="entrega-st">
           <h2 id="entrega-st">Estrategia enviada</h2>
-          <StrategyView derived={deriveStrategy(STRATEGY, DIAGNOSIS.findings, decisions)} />
+          <StrategyView derived={deriveStrategy(STRATEGY, view.findings, decisions)} />
         </section>
       )}
 

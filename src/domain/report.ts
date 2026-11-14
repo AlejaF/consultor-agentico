@@ -23,7 +23,8 @@ export type ReportContent =
       available: true;
       scope: ReportScope;
       issuedAt?: string;
-      maturityIndex: number;
+      /** null en modo IA real: ese índice es ilustrativo de la plantilla y no se calcula de hallazgos reales. */
+      maturityIndex: number | null;
       findings: ReportFinding[];
       /** Hallazgos rechazados: se cuentan, no se muestran (FR-046). */
       excluded: number;
@@ -35,7 +36,13 @@ export type ReportContent =
  * Contenido del informe imprimible (FR-044 a FR-046). No recibe calificaciones ni comentarios del Líder, así que no puede incluirlos.
  * Una entrega nunca incluye una estrategia generada pero no enviada.
  */
-export function reportContent(diagnosis: DiagnosisState, strategy: StrategyState, scope: ReportScope, maturityIndex: number = DIAGNOSIS.maturityIndex): ReportContent {
+export function reportContent(
+  diagnosis: DiagnosisState,
+  strategy: StrategyState,
+  scope: ReportScope,
+  maturityIndex: number | null = DIAGNOSIS.maturityIndex,
+  findingList: readonly Finding[] = DIAGNOSIS.findings,
+): ReportContent {
   if (diagnosis.status !== 'issued') {
     return { available: false, reason: 'El informe se genera a partir de un diagnóstico emitido. Emite primero el diagnóstico de este proyecto.' };
   }
@@ -43,17 +50,17 @@ export function reportContent(diagnosis: DiagnosisState, strategy: StrategyState
     return { available: false, reason: 'Esta entrega no tiene una estrategia enviada, así que no hay informe de estrategia.' };
   }
   const state = (id: string) => diagnosis.decisions[id];
-  const findings: ReportFinding[] = DIAGNOSIS.findings
+  const findings: ReportFinding[] = findingList
     .filter((f) => ['accepted', 'edited'].includes(state(f.id)?.state ?? 'pending'))
     .map((f) => {
       const d = state(f.id);
       return d?.state === 'edited' ? { finding: f, editedText: d.text } : { finding: f };
     });
-  const excluded = DIAGNOSIS.findings.filter((f) => state(f.id)?.state === 'rejected').length;
+  const excluded = findingList.filter((f) => state(f.id)?.state === 'rejected').length;
 
   let strat: ReportStrategy;
   if (scope === 'dx') strat = { kind: 'omitted' };
-  else if (scope === 'st' || strategy.status !== 'none') strat = { kind: 'derived', derived: deriveStrategy(STRATEGY, DIAGNOSIS.findings, diagnosis.decisions) };
+  else if (scope === 'st' || strategy.status !== 'none') strat = { kind: 'derived', derived: deriveStrategy(STRATEGY, findingList, diagnosis.decisions) };
   else strat = { kind: 'unavailable', note: 'Estrategia aún no disponible' };
 
   return {

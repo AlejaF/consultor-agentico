@@ -16,5 +16,6 @@ Se leen del entorno o de `server/.env` (ignorado por git; el ejemplo `server/.en
 | `PORT` | No | `8787` | Puerto en `127.0.0.1`. |
 | `ALLOWED_ORIGINS` | No | `http://localhost:5173,http://127.0.0.1:5173` | CORS. |
 | `MODEL_PROVIDER` | No | `openai` | `fake` solo para pruebas; se anuncia en `/api/health`. |
+| `FAKE_SCRIPT` | No | — | Solo con `MODEL_PROVIDER=fake`: el TEXTO JSON `{ porDefecto, porEmpresa }` con el guion del cliente falso para las pruebas e2e (la configuración de Playwright lo lee de `tests/e2e/fixtures/guion-servicio.json`). Es texto y no una ruta porque el servicio nunca lee archivos (AG-026). Con el proveedor real se ignora. |
 
 **Regla IX**: no hay modelo por defecto aprobado. Si falta el de una etapa, la corrida se rechaza con `no_model_configured` y un mensaje que dice qué variable falta. Cambiar un valor sugerido de `docs/decisiones.md` requiere decisión registrada de la persona responsable.

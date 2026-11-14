@@ -4,6 +4,8 @@ const PORT = 4173;
 
 export default defineConfig({
   testDir: 'tests/e2e',
+  // Las pruebas del modo IA real (servicio local en modo falso) corren con playwright.real.config.ts, sin tocar esta configuración (SC-A5).
+  testIgnore: /ia-real.*\.spec\.ts/,
   fullyParallel: true,
   reporter: 'list',
   use: { baseURL: `http://localhost:${PORT}` },

@@ -1,0 +1,324 @@
+{
+ "porDefecto": [
+  {
+   "toolCalls": [
+    {
+     "name": "buscar_en_evidencia",
+     "arguments": {
+      "consulta": "indicadores responsable"
+     }
+    },
+    {
+     "name": "buscar_en_evidencia",
+     "arguments": {
+      "consulta": "sistemas integración presupuesto"
+     }
+    }
+   ]
+  },
+  {
+   "toolCalls": [
+    {
+     "name": "registrar_hallazgo",
+     "arguments": {
+      "pilar": "datos",
+      "titulo": "Indicadores fragmentados por área",
+      "texto": "Cada área mantiene sus cifras y no hay un responsable único de los indicadores.",
+      "citas": [
+       {
+        "archivo": "notas-reunion.txt",
+        "ubicacion": "línea 4",
+        "fragmento": "Cada área lleva sus propias cifras y no hay un responsable único de los indicadores."
+       }
+      ]
+     }
+    },
+    {
+     "name": "registrar_hallazgo",
+     "arguments": {
+      "pilar": "infraestructura",
+      "titulo": "Integración de sistemas pendiente",
+      "texto": "Se acordó pedir presupuesto para integrar los sistemas; aún no está ejecutado.",
+      "citas": [
+       {
+        "archivo": "notas-reunion.txt",
+        "ubicacion": "línea 8",
+        "fragmento": "Se acordó comprar un sistema nuevo para toda la empresa de inmediato."
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "toolCalls": [
+    {
+     "name": "registrar_hallazgo",
+     "arguments": {
+      "pilar": "infraestructura",
+      "titulo": "Integración de sistemas pendiente",
+      "texto": "Se acordó pedir presupuesto para integrar los sistemas; aún no está ejecutado.",
+      "citas": [
+       {
+        "archivo": "notas-reunion.txt",
+        "ubicacion": "línea 8",
+        "fragmento": "Se acordó pedir un presupuesto para integrar los sistemas de facturación, inventario y atención al cliente."
+       }
+      ]
+     }
+    },
+    {
+     "name": "registrar_hallazgo",
+     "arguments": {
+      "pilar": "gobernanza",
+      "titulo": "Sin responsable de la calidad de los datos",
+      "texto": "No existe un responsable único de la calidad de los datos.",
+      "citas": [
+       {
+        "archivo": "politica-datos.pdf",
+        "ubicacion": "pág. 2",
+        "fragmento": "No existe un responsable único de la calidad de los datos."
+       }
+      ]
+     }
+    },
+    {
+     "name": "registrar_hallazgo",
+     "arguments": {
+      "pilar": "talento",
+      "titulo": "Competencias de analítica sin evidencia",
+      "texto": "No hay respaldo documental sobre las competencias de analítica.",
+      "citas": [
+       {
+        "archivo": "notas-reunion.txt",
+        "ubicacion": "línea 2",
+        "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "toolCalls": [
+    {
+     "name": "registrar_hallazgo",
+     "arguments": {
+      "pilar": "talento",
+      "titulo": "Competencias de analítica sin evidencia",
+      "texto": "No hay respaldo documental sobre las competencias de analítica.",
+      "citas": [
+       {
+        "archivo": "notas-reunion.txt",
+        "ubicacion": "línea 2",
+        "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "toolCalls": [
+    {
+     "name": "registrar_hallazgo",
+     "arguments": {
+      "pilar": "talento",
+      "titulo": "Competencias de analítica sin evidencia",
+      "texto": "No hay respaldo documental sobre las competencias de analítica.",
+      "citas": [
+       {
+        "archivo": "notas-reunion.txt",
+        "ubicacion": "línea 2",
+        "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+       }
+      ]
+     }
+    },
+    {
+     "name": "declarar_informacion_faltante",
+     "arguments": {
+      "pilar": "talento",
+      "descripcion": "Falta una evaluación verificable de competencias digitales del equipo."
+     }
+    },
+    {
+     "name": "declarar_informacion_faltante",
+     "arguments": {
+      "pilar": "cultura",
+      "descripcion": "Faltan encuestas que midan la adopción de herramientas digitales."
+     }
+    }
+   ]
+  },
+  {
+   "text": "Resumen final de la corrida de prueba."
+  }
+ ],
+ "porEmpresa": {
+  "Empresa Ficticia Alfa": [
+   {
+    "toolCalls": [
+     {
+      "name": "buscar_en_evidencia",
+      "arguments": {
+       "consulta": "indicadores responsable"
+      }
+     },
+     {
+      "name": "buscar_en_evidencia",
+      "arguments": {
+       "consulta": "sistemas integración presupuesto"
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "datos",
+       "titulo": "Indicadores fragmentados por área",
+       "texto": "Cada área mantiene sus cifras y no hay un responsable único de los indicadores.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 4",
+         "fragmento": "Cada área lleva sus propias cifras y no hay un responsable único de los indicadores."
+        }
+       ]
+      }
+     },
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "infraestructura",
+       "titulo": "Integración de sistemas pendiente",
+       "texto": "Se acordó pedir presupuesto para integrar los sistemas; aún no está ejecutado.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 8",
+         "fragmento": "Se acordó comprar un sistema nuevo para toda la empresa de inmediato."
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "infraestructura",
+       "titulo": "Integración de sistemas pendiente",
+       "texto": "Se acordó pedir presupuesto para integrar los sistemas; aún no está ejecutado.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 8",
+         "fragmento": "Se acordó pedir un presupuesto para integrar los sistemas de facturación, inventario y atención al cliente."
+        }
+       ]
+      }
+     },
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "gobernanza",
+       "titulo": "Sin responsable de la calidad de los datos",
+       "texto": "No existe un responsable único de la calidad de los datos.",
+       "citas": [
+        {
+         "archivo": "politica-datos.pdf",
+         "ubicacion": "pág. 2",
+         "fragmento": "No existe un responsable único de la calidad de los datos."
+        }
+       ]
+      }
+     },
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "talento",
+       "titulo": "Competencias de analítica sin evidencia",
+       "texto": "No hay respaldo documental sobre las competencias de analítica.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 2",
+         "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "talento",
+       "titulo": "Competencias de analítica sin evidencia",
+       "texto": "No hay respaldo documental sobre las competencias de analítica.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 2",
+         "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "talento",
+       "titulo": "Competencias de analítica sin evidencia",
+       "texto": "No hay respaldo documental sobre las competencias de analítica.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 2",
+         "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+        }
+       ]
+      }
+     },
+     {
+      "name": "declarar_informacion_faltante",
+      "arguments": {
+       "pilar": "talento",
+       "descripcion": "Falta una evaluación verificable de competencias digitales del equipo."
+      }
+     },
+     {
+      "name": "declarar_informacion_faltante",
+      "arguments": {
+       "pilar": "cultura",
+       "descripcion": "Faltan encuestas que midan la adopción de herramientas digitales."
+      }
+     }
+    ]
+   },
+   {
+    "text": "Resumen final de la corrida de prueba."
+   }
+  ],
+  "Empresa Ficticia Delta": [
+   {
+    "throw": {
+     "category": "balance",
+     "message": "Se agotó el saldo prepago de tu cuenta de OpenAI. Agrega crédito."
+    }
+   }
+  ]
+ }
+}

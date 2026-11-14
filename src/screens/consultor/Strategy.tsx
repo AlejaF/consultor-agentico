@@ -1,7 +1,7 @@
 import { DeliveryStatus } from '../../components/DeliveryStatus';
 import { GenerateButton } from '../../components/GenerateButton';
 import { StrategyView } from '../../components/StrategyView';
-import { DIAGNOSIS } from '../../data/diagnosis';
+import { getDiagnosis, modeOf } from '../../providers';
 import { STRATEGY } from '../../data/strategy';
 import { blockedStrategyLink } from '../../domain/flow';
 import { formatDateTime } from '../../domain/format';
@@ -14,6 +14,7 @@ export function Strategy({ projectId }: { projectId: string }) {
   const { company } = projectInfo(projectId);
   const ps = state.projects[projectId];
   const issued = ps.diagnosis.status === 'issued';
+  const real = modeOf(ps) === 'real';
   const status = ps.strategy.status;
   const link = blockedStrategyLink(ps.diagnosis.status === 'issued' ? 'generated' : ps.diagnosis.status);
 
@@ -36,7 +37,22 @@ export function Strategy({ projectId }: { projectId: string }) {
         </section>
       )}
 
-      {issued && status === 'none' && (
+      {issued && real && (
+        <section className="card" aria-labelledby="estrategia-real" data-testid="strategy-real-pending">
+          <h2 id="estrategia-real">Estrategia con IA real: aún no disponible</h2>
+          <p>
+            La estrategia con IA real todavía no está construida en esta versión (llega en un lote posterior). Este proyecto está en modo IA real, así que
+            no se le mezcla la estrategia de ejemplo del modo Simulado. Puedes ver el informe del diagnóstico.
+          </p>
+          <p>
+            <a className="btn" href={`#/consultor/proyectos/${projectId}/informe`}>
+              Ver informe imprimible
+            </a>
+          </p>
+        </section>
+      )}
+
+      {issued && !real && status === 'none' && (
         <section className="card" aria-labelledby="estrategia-generar">
           <h2 id="estrategia-generar">Generar estrategia</h2>
           <p>
@@ -51,7 +67,7 @@ export function Strategy({ projectId }: { projectId: string }) {
         </section>
       )}
 
-      {issued && status !== 'none' && (
+      {issued && !real && status !== 'none' && (
         <>
           <section className="card" aria-label="Estado de la estrategia">
             <p>
@@ -72,7 +88,7 @@ export function Strategy({ projectId }: { projectId: string }) {
               </>
             )}
           </section>
-          <StrategyView derived={deriveStrategy(STRATEGY, DIAGNOSIS.findings, ps.diagnosis.decisions)} />
+          <StrategyView derived={deriveStrategy(STRATEGY, getDiagnosis(ps).findings, ps.diagnosis.decisions)} />
           {status === 'sent' && <DeliveryStatus deliveryId={`st/${projectId}`} label="la estrategia" />}
         </>
       )}

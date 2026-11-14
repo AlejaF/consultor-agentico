@@ -10,7 +10,9 @@ export function maturityOf(projectId: string): number {
 
 /** Índice de madurez de un proyecto: el de su diagnóstico emitido, o null si no está emitido (FR-057). */
 export function projectMaturity(state: PersistedState, projectId: string): number | null {
-  return state.projects[projectId]?.diagnosis.status === 'issued' ? maturityOf(projectId) : null;
+  const ps = state.projects[projectId];
+  // En modo IA real no hay índice: el de la plantilla es ilustrativo y no se calcula de hallazgos reales (se excluye de los promedios).
+  return ps?.diagnosis.status === 'issued' && ps.mode !== 'real' ? maturityOf(projectId) : null;
 }
 
 function mean(values: (number | null)[]): number | null {

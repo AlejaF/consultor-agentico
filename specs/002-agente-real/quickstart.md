@@ -41,7 +41,7 @@ Cubren: bucle y topes, argumentos mal formados, reintentos del verificador (máx
 ## 5. Recorrido de IA real con servicio en modo falso (e2e)
 
 ```bash
-npm run test:e2e -- tests/e2e/ia-real.spec.ts
+npm run test:e2e:real -- tests/e2e/ia-real.spec.ts
 ```
 Valida: selector Simulado / IA real; «IA real» no disponible si no hay servicio; aviso previo con OpenAI y memoria; carga de los 6 formatos con estado de extracción; ejecutar → hallazgos con «Extracto de tu archivo» y rótulo de IA; `TraceView` con modelo y tokens (SC-A3); revisión → emisión → calificación → informe; recarga con servicio vivo y volver a ejecutar sin recargar archivos (SC-A7); servicio reiniciado → aviso de qué archivos volver a cargar.
 

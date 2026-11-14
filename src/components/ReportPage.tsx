@@ -2,6 +2,7 @@ import { PrintReport } from './PrintReport';
 import { projectInfo } from '../domain/lookup';
 import { maturityOf } from '../domain/maturity';
 import { reportContent, type ReportScope } from '../domain/report';
+import { getDiagnosis } from '../providers';
 import { useAppState } from '../state/context';
 
 /** Pantalla del informe: bloqueo explicado, o el informe con el botón de impresión del navegador (FR-044, FR-045, FR-048). */
@@ -9,7 +10,9 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
   const { state } = useAppState();
   const { company } = projectInfo(projectId);
   const ps = state.projects[projectId];
-  const content = reportContent(ps.diagnosis, ps.strategy, scope, maturityOf(projectId));
+  const view = getDiagnosis(ps);
+  const aiModel = view.mode === 'real' ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
+  const content = reportContent(ps.diagnosis, ps.strategy, scope, aiModel ? null : maturityOf(projectId), view.findings);
   const what = scope === 'dx' ? 'Diagnóstico' : scope === 'st' ? 'Estrategia con su diagnóstico' : 'Diagnóstico y estrategia';
   return (
     <>
@@ -38,7 +41,7 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
               Imprimir o guardar como PDF
             </button>
           </p>
-          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} />
+          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} {...(aiModel ? { aiModel } : {})} />
         </>
       )}
     </>

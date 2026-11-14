@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { FINDING_IDS } from '../../data/diagnosis';
+import { getDiagnosis } from '../../providers';
+import { AiBadge } from '../../components/AiBadge';
 import { FindingCard } from '../../components/FindingCard';
 import { DeliveryStatus } from '../../components/DeliveryStatus';
 import { IssuedNotice } from '../../components/IssuedNotice';
@@ -14,7 +15,11 @@ import { useAppState } from '../../state/context';
 export function Review({ projectId }: { projectId: string }) {
   const { state, dispatch } = useAppState();
   const { company } = projectInfo(projectId);
-  const d = state.projects[projectId].diagnosis;
+  const ps = state.projects[projectId];
+  const d = ps.diagnosis;
+  const view = getDiagnosis(ps);
+  const aiModel = view.mode === 'real' ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
+  const FINDING_IDS = view.ids;
   const [announcement, setAnnouncement] = useState('');
   const issued = d.status === 'issued';
 
@@ -69,7 +74,7 @@ export function Review({ projectId }: { projectId: string }) {
           </h2>
           <p>
             Emitido el {d.issuedAt ? formatDateTime(d.issuedAt) : ''}. Es de solo lectura.{' '}
-            <SimBadge />
+            {aiModel ? <AiBadge model={aiModel} /> : <SimBadge />}
           </p>
           <p>
             {countOf(counts.accepted + counts.edited, 'incluido', 'incluidos')} ({countOf(counts.accepted, 'aceptado', 'aceptados')},{' '}
@@ -89,10 +94,12 @@ export function Review({ projectId }: { projectId: string }) {
       {d.status !== 'none' && (
         <PillarGroups
           idPrefix="rev"
+          findings={view.findings}
           render={(f) => (
             <FindingCard
               key={f.id}
               finding={f}
+              {...(aiModel ? { aiModel } : {})}
               companyName={company.name}
               decision={d.decisions[f.id]}
               mode={issued ? 'readonly' : 'review'}

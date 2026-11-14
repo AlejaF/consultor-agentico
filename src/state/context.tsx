@@ -9,6 +9,7 @@ export const NOTICE_TEXT = {
   corrupt: 'Los datos guardados estaban dañados. Se restableció la demo.',
   memory: 'No se puede guardar el progreso en este navegador. Puedes seguir, pero se perderá al recargar.',
   reset: 'Se restableció la demo. Volvió al estado inicial, que incluye datos de ejemplo.',
+  dropped: 'Algunos datos de IA real guardados estaban dañados y se descartaron. El resto se conservó.',
 } as const;
 
 interface Ctx {

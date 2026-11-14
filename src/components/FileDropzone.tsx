@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { countOf, plural } from '../domain/format';
 import { ALLOWED_LABEL, validateFiles, type FileInfo, type Rejection } from '../domain/fileValidation';
 
@@ -10,9 +10,13 @@ interface Props {
   onAccepted: (files: FileInfo[]) => void;
   /** Referencia al botón de selección, para llevar el foco desde otros controles. */
   buttonRef?: React.RefObject<HTMLButtonElement | null>;
+  /** Modo IA real: aviso propio en lugar del del modo Simulado (AG-005). */
+  notice?: ReactNode;
+  /** Modo IA real: recibe los archivos aceptados para subirlos al servicio local. */
+  onFilesAccepted?: (files: File[]) => void;
 }
 
-export function FileDropzone({ existingNames, onAccepted, buttonRef }: Props) {
+export function FileDropzone({ existingNames, onAccepted, buttonRef, notice, onFilesAccepted }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
   const [rejected, setRejected] = useState<Rejection[]>([]);
@@ -28,16 +32,24 @@ export function FileDropzone({ existingNames, onAccepted, buttonRef }: Props) {
     );
     setRejected(result.rejected);
     setAddedCount(result.accepted.length);
-    if (result.accepted.length > 0) onAccepted(result.accepted);
+    if (result.accepted.length > 0) {
+      onAccepted(result.accepted);
+      if (onFilesAccepted) {
+        const names = new Set(result.accepted.map((a) => a.name));
+        onFilesAccepted(Array.from(files).filter((f) => names.has(f.name)));
+      }
+    }
     if (inputRef.current) inputRef.current.value = '';
   }
 
   return (
     <section aria-labelledby="carga-titulo" className="card">
       <h2 id="carga-titulo">Agregar archivos</h2>
-      <p className="privacy" data-testid="privacy-notice">
-        {PRIVACY_NOTICE}
-      </p>
+      {notice ?? (
+        <p className="privacy" data-testid="privacy-notice">
+          {PRIVACY_NOTICE}
+        </p>
+      )}
       <div
         className={over ? 'dropzone over' : 'dropzone'}
         onDragOver={(e) => {
