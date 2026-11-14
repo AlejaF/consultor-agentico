@@ -6,7 +6,7 @@ import { AiBadge } from '../../components/AiBadge';
 import { MissingInfo } from '../../components/MissingInfo';
 import { ModeSelector } from '../../components/ModeSelector';
 import { RealGenerate } from '../../components/RealGenerate';
-import { TraceView } from '../../components/TraceView';
+import { RunNotices, TraceView } from '../../components/TraceView';
 import { SimBadge } from '../../components/badges';
 import { getDiagnosis } from '../../providers';
 import { buildEvidenceItems, resolveCitation } from '../../domain/evidence';
@@ -24,7 +24,6 @@ export function Diagnosis({ projectId }: { projectId: string }) {
   const d = ps.diagnosis;
   const view = getDiagnosis(ps);
   const real = view.mode === 'real';
-  const aiModel = real ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
   const evidenceCount = real ? (ps.serverFiles ?? []).length : buildEvidenceItems(project, company.name, ps.localFiles).length;
   const issued = d.status === 'issued';
 
@@ -74,13 +73,9 @@ export function Diagnosis({ projectId }: { projectId: string }) {
           <section className="card report-head" aria-label="Resumen del diagnóstico">
             <p>
               <span className={issued ? 'badge badge-ok' : 'badge badge-warn'}>{issued ? 'Emitido' : 'Generado — pendiente de revisión'}</span>{' '}
-              {real ? <AiBadge model={aiModel!} /> : <SimBadge />}
+              {real ? <AiBadge /> : <SimBadge />}
             </p>
-            {real && ps.real?.diagnosisRun?.partial && (
-              <p className="subtitle no-support" data-testid="partial-notice">
-                Resultado parcial: el agente alcanzó un tope antes de terminar. Revisa los avisos de la traza.
-              </p>
-            )}
+            {real && ps.real?.diagnosisRun && <RunNotices run={ps.real.diagnosisRun} />}
             {issued && d.issuedAt && <p className="subtitle">Emitido el {formatDateTime(d.issuedAt)}</p>}
             {issued && <IssuedNotice projectId={projectId} />}
             {!real && (
@@ -103,7 +98,7 @@ export function Diagnosis({ projectId }: { projectId: string }) {
             </p>
           </section>
 
-          {real && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} model={aiModel!} />}
+          {real && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} />}
 
           <PillarGroups
             idPrefix="dim"
@@ -112,7 +107,7 @@ export function Diagnosis({ projectId }: { projectId: string }) {
               <FindingCard
                 key={f.id}
                 finding={f}
-                {...(aiModel ? { aiModel } : {})}
+                {...(real ? { ai: true } : {})}
                 companyName={company.name}
                 decision={issued ? d.decisions[f.id] : undefined}
                 mode={issued ? 'readonly' : 'report'}
@@ -120,7 +115,7 @@ export function Diagnosis({ projectId }: { projectId: string }) {
               />
             )}
           />
-          {real && <MissingInfo items={ps.real?.missingInfo ?? []} model={aiModel!} />}
+          {real && <MissingInfo items={ps.real?.missingInfo ?? []} />}
           {real && ps.real?.diagnosisRun && <TraceView run={ps.real.diagnosisRun} />}
         </>
       )}

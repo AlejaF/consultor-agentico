@@ -1,4 +1,8 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import { MissingInfo } from '../../src/components/MissingInfo';
+import { getDiagnosis } from '../../src/providers';
 import { toRealState } from '../../src/providers/real';
 import type { DiagnosisResponse } from '../../src/providers/types';
 import { CATALOGS as catalogs, createInitialState } from '../../src/state/initial';
@@ -53,5 +57,25 @@ describe('información faltante (AG-021)', () => {
     expect(r.notice).toBe('dropped');
     expect(r.state.projects['P-A']!.real!.missingInfo).toEqual([{ dimension: 'cultura', description: 'ok' }]);
     expect(r.state.projects['P-A']!.real!.findings).toHaveLength(1);
+  });
+});
+
+describe('«Evidencia sugerida para fortalecer el diagnóstico» (AG-021, lote D3)', () => {
+  const items = [{ dimension: 'talento' as const, description: 'Falta una evaluación de competencias.' }];
+  it('lleva el título nuevo, la frase de sugerencias de la IA y el rótulo sin modelo', () => {
+    const html = renderToStaticMarkup(createElement(MissingInfo as never, { items, model: 'modelo-secreto' } as never));
+    expect(html).toContain('Evidencia sugerida para fortalecer el diagnóstico');
+    expect(html).toContain('Son sugerencias de la IA, no hallazgos ni contenido verificado.');
+    expect(html).toContain('Generado por IA · requiere revisión humana');
+    expect(html).not.toContain('modelo-secreto');
+    expect(html).not.toContain('Información que habría hecho falta');
+  });
+  it('una sugerencia no es un hallazgo: no aparece entre los hallazgos del diagnóstico ni puede respaldar nada', () => {
+    const real = toRealState(resp([{ dimension: 'talento', description: 'Falta una evaluación.' }]), 'a', 'b');
+    let s = reducer(createInitialState(), { type: 'setMode', projectId: 'P-A', mode: 'real' });
+    s = reducer(s, { type: 'generateReal', projectId: 'P-A', at: 'x', real });
+    const view = getDiagnosis(s.projects['P-A']!);
+    expect(view.findings.map((f) => f.id)).toEqual(['R1']);
+    expect(view.findings.some((f) => f.text.includes('Falta una evaluación'))).toBe(false);
   });
 });

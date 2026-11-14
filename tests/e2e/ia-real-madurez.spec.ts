@@ -5,8 +5,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { expectNoAxeViolations, expectNoHorizontalScroll } from './helpers/axe';
 import { abrir, entrarConsultor, generarDiagnosticoReal, vaciarServicio } from './helpers/real';
 
-const MODELO = 'modelo-falso-e2e';
-const ROTULO = `Generado por IA (modelo ${MODELO}) · requiere revisión humana`; // D3 cambia el rótulo; aquí se prueba el vigente en D2
+const ROTULO = 'Generado por IA · requiere revisión humana'; // D3: sin el nombre del modelo
 const ETIQUETA = 'Calculado por código a partir de niveles propuestos por IA';
 const card = (page: Page, id: string) => page.getByTestId(`finding-${id}`);
 const nivel = (page: Page, dim: string) => page.getByTestId(`maturity-level-${dim}`);

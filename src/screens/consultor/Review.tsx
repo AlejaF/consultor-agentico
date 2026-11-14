@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getDiagnosis } from '../../providers';
 import { AiBadge } from '../../components/AiBadge';
+import { RunNotices } from '../../components/TraceView';
 import { MaturityPanel } from '../../components/MaturityPanel';
 import { evaluateMaturity } from '../../domain/maturity';
 import { FindingCard } from '../../components/FindingCard';
@@ -20,7 +21,7 @@ export function Review({ projectId }: { projectId: string }) {
   const ps = state.projects[projectId];
   const d = ps.diagnosis;
   const view = getDiagnosis(ps);
-  const aiModel = view.mode === 'real' ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
+  const ai = view.mode === 'real';
   const FINDING_IDS = view.ids;
   const [announcement, setAnnouncement] = useState('');
   const issued = d.status === 'issued';
@@ -76,7 +77,7 @@ export function Review({ projectId }: { projectId: string }) {
           </h2>
           <p>
             Emitido el {d.issuedAt ? formatDateTime(d.issuedAt) : ''}. Es de solo lectura.{' '}
-            {aiModel ? <AiBadge model={aiModel} /> : <SimBadge />}
+            {ai ? <AiBadge /> : <SimBadge />}
           </p>
           <p>
             {countOf(counts.accepted + counts.edited, 'incluido', 'incluidos')} ({countOf(counts.accepted, 'aceptado', 'aceptados')},{' '}
@@ -93,7 +94,8 @@ export function Review({ projectId }: { projectId: string }) {
         {announcement}
       </div>
 
-      {aiModel && d.status !== 'none' && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} model={aiModel} />}
+      {ai && d.status !== 'none' && ps.real?.diagnosisRun && <RunNotices run={ps.real.diagnosisRun} />}
+      {ai && d.status !== 'none' && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} />}
 
       {d.status !== 'none' && (
         <PillarGroups
@@ -103,7 +105,7 @@ export function Review({ projectId }: { projectId: string }) {
             <FindingCard
               key={f.id}
               finding={f}
-              {...(aiModel ? { aiModel } : {})}
+              {...(ai ? { ai } : {})}
               companyName={company.name}
               decision={d.decisions[f.id]}
               mode={issued ? 'readonly' : 'review'}

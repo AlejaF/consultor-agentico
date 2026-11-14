@@ -2,6 +2,8 @@ import { PrintReport } from './PrintReport';
 import { projectInfo } from '../domain/lookup';
 import { evaluateMaturity, maturityOf } from '../domain/maturity';
 import { reportContent, type ReportScope } from '../domain/report';
+import { buildTechSheet } from '../domain/techSheet';
+import { canSeeTechSheet } from '../domain/visibility';
 import { getDiagnosis } from '../providers';
 import { useAppState } from '../state/context';
 
@@ -11,9 +13,11 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
   const { company } = projectInfo(projectId);
   const ps = state.projects[projectId];
   const view = getDiagnosis(ps);
-  const aiModel = view.mode === 'real' ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
+  const ai = view.mode === 'real';
+  // Ficha técnica (modelo, fecha, tokens): solo para roles internos; la Empresa no la recibe ni en el DOM (AG-023).
+  const techSheet = ai && canSeeTechSheet(state.session.role) ? buildTechSheet(ps.real) : null;
   // IA real: el índice sale de los niveles con respaldo vigente (calculado por código); Simulado: el valor ilustrativo sembrado.
-  const maturity = aiModel ? evaluateMaturity(ps.real?.maturity, view.findings, ps.diagnosis.decisions) : undefined;
+  const maturity = ai ? evaluateMaturity(ps.real?.maturity, view.findings, ps.diagnosis.decisions) : undefined;
   const content = reportContent(ps.diagnosis, ps.strategy, scope, maturity ? maturity.index : maturityOf(projectId), view.findings);
   const what = scope === 'dx' ? 'Diagnóstico' : scope === 'st' ? 'Estrategia con su diagnóstico' : 'Diagnóstico y estrategia';
   return (
@@ -43,7 +47,7 @@ export function ReportPage({ projectId, scope, back }: { projectId: string; scop
               Imprimir o guardar como PDF
             </button>
           </p>
-          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} {...(aiModel ? { aiModel } : {})} {...(maturity ? { maturity } : {})} />
+          <PrintReport content={content} companyName={company.name} projectLabel={`Proyecto ${projectId}`} {...(ai ? { ai } : {})} {...(maturity ? { maturity } : {})} {...(techSheet ? { techSheet } : {})} />
         </>
       )}
     </>

@@ -135,3 +135,16 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 7. **Tablero del Líder** (1 min): con los datos de ejemplo **no** debe verse la nota de mezcla; solo aparece tras emitir un diagnóstico real.
 
 **Pendiente tuyo**: aprobar la enmienda ya está hecho; T156 (esta revisión), T157 (`build && check` con tu lista de nombres) y T158 (commit). **Hasta D3**, el rótulo de IA todavía muestra el nombre del modelo (desviación transitoria).
+
+
+## Lote D3 — presentación y roles (lista corta, máx. 10 min)
+
+**Para quien no es técnico**: ahora el cartel «Generado por IA · requiere revisión humana» ya **no dice qué modelo de IA se usó**. Esos datos técnicos (modelo, fecha, tokens y los pasos del agente) quedan solo en dos sitios y **solo para el Consultor y el Líder**: el desplegable «Ver cómo trabajó el agente» (cerrado al entrar) y la «Ficha técnica» al final del informe. **La Empresa no ve nada de eso**, ni siquiera escondido. Si la IA se quedó a medias o hubo un error, el aviso se ve **sin abrir** el desplegable. La lista «Información que habría hecho falta» ahora se llama «Evidencia sugerida para fortalecer el diagnóstico» y dice que son sugerencias de la IA.
+
+1. **Consultor** (3 min): `npm run dev:all`, elige «IA real», genera un diagnóstico (con `MODEL_PROVIDER=fake`). **Comprobar**: los carteles de IA no nombran modelo; «Ver cómo trabajó el agente» aparece cerrado, se abre con Enter y muestra modelo, fecha y tokens; «Evidencia sugerida…» trae la frase de sugerencias.
+2. **Líder** (2 min): cambia a «Líder» y abre la entrega del proyecto, luego su informe. **Comprobar**: ve el desplegable cerrado y, en el informe, la «Ficha técnica» al final.
+3. **Empresa** (2 min): cambia a «Empresa» y abre su informe. **Comprobar**: no hay ficha técnica, ni desplegable, ni modelo, ni fecha de corrida, ni avisos técnicos. Pruébalo también al imprimir (vista previa).
+4. **Anchos** (2 min): repite 1 a 3 reduciendo la ventana a 320 px y a 768 px. **Comprobar**: no hay barra de desplazamiento horizontal.
+5. **Abrir** (1 min): `docs/evidencia/mutacion-d3.md`. **Comprobar**: cada mutación hizo fallar al menos una prueba; lee la nota honesta sobre M1.
+
+**Pendiente tuyo**: T175 (esta revisión), T176 (`build && check` con tu lista de nombres) y T177 (commit).

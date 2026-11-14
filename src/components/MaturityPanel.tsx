@@ -18,7 +18,7 @@ export function MaturityIndexReal({ index }: { index: number | null }) {
 
 const label = (dim: string) => DIMENSIONS.find((d) => d.id === dim)?.label ?? dim;
 
-function LevelBody({ l, model }: { l: LevelView; model: string }) {
+function LevelBody({ l }: { l: LevelView }) {
   if (l.status === 'insufficient') {
     return (
       <>
@@ -39,7 +39,7 @@ function LevelBody({ l, model }: { l: LevelView; model: string }) {
   }
   return (
     <>
-      <strong>{label(l.dimension)}</strong>: Nivel {l.level} de 5 · {basedOnText(l.basedOn)} <AiBadge model={model} />
+      <strong>{label(l.dimension)}</strong>: Nivel {l.level} de 5 · {basedOnText(l.basedOn)} <AiBadge />
       <br />
       <span>{l.justification}</span>
       <br />
@@ -52,7 +52,7 @@ function LevelBody({ l, model }: { l: LevelView; model: string }) {
  * Madurez por dimensión de un diagnóstico real (AG-031). Solo lectura: los niveles NO se aceptan ni se rechazan; cuentan según
  * las decisiones sobre los hallazgos de los que derivan, y el índice se recalcula por código.
  */
-export function MaturityPanel({ evaluation, model }: { evaluation: MaturityEvaluation; model: string }) {
+export function MaturityPanel({ evaluation }: { evaluation: MaturityEvaluation }) {
   return (
     <section className="card maturity-panel" aria-labelledby="madurez-titulo" data-testid="maturity-panel">
       <h2 id="madurez-titulo">Madurez por dimensión</h2>
@@ -60,7 +60,7 @@ export function MaturityPanel({ evaluation, model }: { evaluation: MaturityEvalu
       <ul className="list-plain stack">
         {evaluation.levels.map((l) => (
           <li key={l.dimension} data-testid={`maturity-level-${l.dimension}`}>
-            <LevelBody l={l} model={model} />
+            <LevelBody l={l} />
           </li>
         ))}
       </ul>

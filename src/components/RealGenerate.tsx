@@ -75,7 +75,7 @@ export function RealGenerate({ projectId, companyName }: { projectId: string; co
         {blocked && <p data-testid="real-blocked">{blocked}</p>}
         {running && (
           <p>
-            Ejecutando el agente; puede tardar un minuto… {availability.state === 'available' && health?.models.diagnosis && <AiBadge model={health.models.diagnosis} />}
+            Ejecutando el agente; puede tardar un minuto… <AiBadge />
           </p>
         )}
       </div>

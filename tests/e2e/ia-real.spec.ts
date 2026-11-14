@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { abrir, elegirIAReal, entrarConsultor, generarDiagnosticoReal, HOSTILES, ruta, SEIS_FORMATOS, subir, vaciarServicio } from './helpers/real';
 
 const MODELO = 'modelo-falso-e2e';
-const ROTULO = `Generado por IA (modelo ${MODELO}) · requiere revisión humana`;
+const ROTULO = 'Generado por IA · requiere revisión humana';
 const card = (page: Page, id: string) => page.getByTestId(`finding-${id}`);
 
 test.beforeEach(async ({ request }) => {
@@ -83,9 +83,9 @@ test.describe('diagnóstico real', () => {
     await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: —');
   });
 
-  test('la «Traza del agente» muestra herramientas, consultas, verificaciones fallidas y su resolución, modelo y tokens', async ({ page }) => {
+  test('la traza «Ver cómo trabajó el agente» muestra herramientas, consultas, verificaciones fallidas y su resolución, modelo y tokens', async ({ page }) => {
     await generarDiagnosticoReal(page);
-    await page.getByText('Traza del agente', { exact: true }).click();
+    await page.getByText('Ver cómo trabajó el agente', { exact: true }).click();
     const trace = page.getByTestId('trace-view');
     await expect(page.getByTestId('trace-model')).toHaveText(MODELO);
     await expect(page.getByTestId('trace-tokens')).toContainText('entrada 600 · salida 120 · total 720');
@@ -135,7 +135,7 @@ test.describe('diagnóstico real', () => {
     await page.reload();
     await expect(page.getByTestId('finding-R1')).toBeVisible();
     await expect(page.getByTestId('active-mode')).toHaveText('IA real');
-    await page.getByText('Traza del agente', { exact: true }).click();
+    await page.getByText('Ver cómo trabajó el agente', { exact: true }).click();
     await expect(page.getByTestId('trace-model')).toHaveText(MODELO);
   });
 

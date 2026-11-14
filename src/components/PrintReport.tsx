@@ -11,6 +11,8 @@ import { MaturityIndexReal, MaturityPanel } from './MaturityPanel';
 import { SimBadge, UnverifiedBadge } from './badges';
 import { pillarLabel } from './PillarGroups';
 import { StrategyView } from './StrategyView';
+import { TechSheet } from './TechSheet';
+import type { TechSheetRow } from '../domain/techSheet';
 
 const REVIEWER = ACCOUNTS.find((a) => a.role === 'consultor')!.displayName;
 
@@ -20,7 +22,7 @@ type Available = Extract<ReportContent, { available: true }>;
  * Cuerpo del informe imprimible (FR-044 a FR-048). La cabecera «DEMO · datos ficticios» va en el `thead` de una tabla de maquetación:
  * el navegador repite el `thead` en cada página impresa y le reserva su espacio (print.css). En pantalla no se ve (ya está el aviso de la app).
  */
-export function PrintReport({ content, companyName, projectLabel, aiModel, maturity }: { content: Available; companyName: string; projectLabel: string; aiModel?: string; maturity?: MaturityEvaluation }) {
+export function PrintReport({ content, companyName, projectLabel, ai = false, maturity, techSheet }: { content: Available; companyName: string; projectLabel: string; ai?: boolean; maturity?: MaturityEvaluation; techSheet?: readonly TechSheetRow[] }) {
   const includedLine = `${countOf(content.findings.length, 'hallazgo incluido', 'hallazgos incluidos')}`;
   return (
     <div className="print-report" data-testid="print-report">
@@ -42,12 +44,12 @@ export function PrintReport({ content, companyName, projectLabel, aiModel, matur
                   {companyName} · {projectLabel}
                 </p>
                 <p>
-                  {aiModel ? <AiBadge model={aiModel} /> : <SimBadge />} {content.issuedAt && <span>Diagnóstico emitido el {formatDateTime(content.issuedAt)} · </span>}
+                  {ai ? <AiBadge /> : <SimBadge />} {content.issuedAt && <span>Diagnóstico emitido el {formatDateTime(content.issuedAt)} · </span>}
                   <span>Revisado por: {REVIEWER}</span>
                 </p>
-                {aiModel ? (
+                {ai ? (
                   // IA real (AG-031): el índice sale de los niveles con respaldo vigente y se calcula por código.
-                  maturity ? <MaturityPanel evaluation={maturity} model={aiModel} /> : <MaturityIndexReal index={content.maturityIndex} />
+                  maturity ? <MaturityPanel evaluation={maturity} /> : <MaturityIndexReal index={content.maturityIndex} />
                 ) : (
                   <p>
                     {content.maturityIndex !== null && (
@@ -124,6 +126,7 @@ export function PrintReport({ content, companyName, projectLabel, aiModel, matur
                   <StrategyView derived={content.strategy.derived} />
                 </section>
               )}
+              {techSheet && techSheet.length > 0 && <TechSheet rows={techSheet} />}
             </td>
           </tr>
         </tbody>

@@ -60,7 +60,7 @@ test('sin servicio: el estado «no disponible» se anuncia en una región aria-l
 
 test('diagnóstico real con la traza del agente abierta con el teclado', async ({ page }) => {
   await generarDiagnosticoReal(page, ['notas-reunion.txt', 'politica-datos.pdf']);
-  const resumen = page.getByText('Traza del agente', { exact: true });
+  const resumen = page.getByText('Ver cómo trabajó el agente', { exact: true });
   await resumen.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('trace-model')).toBeVisible();

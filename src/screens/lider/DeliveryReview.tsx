@@ -7,6 +7,7 @@ import { StrategyView } from '../../components/StrategyView';
 import { SimBadge } from '../../components/badges';
 import { UnverifiedCount } from '../../components/UnverifiedCount';
 import { AiBadge } from '../../components/AiBadge';
+import { RunNotices, TraceView } from '../../components/TraceView';
 import { getDiagnosis } from '../../providers';
 import { STRATEGY } from '../../data/strategy';
 import { evaluateMaturity, maturityOf } from '../../domain/maturity';
@@ -26,7 +27,7 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
   const [announcement, setAnnouncement] = useState('');
   const decisions = ps.diagnosis.decisions;
   const view = getDiagnosis(ps);
-  const aiModel = view.mode === 'real' ? (ps.real?.diagnosisRun?.model ?? 'desconocido') : undefined;
+  const ai = view.mode === 'real';
   const excluded = view.ids.filter((id) => decisions[id]?.state === 'rejected').length;
 
   return (
@@ -53,22 +54,24 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
       {tipo === 'dx' ? (
         <section aria-labelledby="entrega-dx">
           <h2 id="entrega-dx">Diagnóstico emitido</h2>
-          <p>{aiModel ? <AiBadge model={aiModel} /> : <SimBadge />}</p>
-          {!aiModel && (
+          <p>{ai ? <AiBadge /> : <SimBadge />}</p>
+          {ai && ps.real?.diagnosisRun && <RunNotices run={ps.real.diagnosisRun} />}
+          {!ai && (
             <p>
               <strong>Índice de madurez: {formatDecimal(maturityOf(projectId))} de 5</strong> (ilustrativo, ficticio)
             </p>
           )}
-          {aiModel && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, decisions)} model={aiModel} />}
+          {ai && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, decisions)} />}
           {excluded > 0 && <p className="subtitle">{countOf(excluded, 'hallazgo excluido', 'hallazgos excluidos')} por el Consultor (no se muestran).</p>}
           <PillarGroups
             idPrefix="ent"
             findings={view.findings}
             filter={(f) => decisions[f.id]?.state !== 'rejected'}
             render={(f) => (
-              <FindingCard key={f.id} finding={f} companyName={company.name} decision={decisions[f.id]} mode="readonly" issued {...(aiModel ? { aiModel } : {})} />
+              <FindingCard key={f.id} finding={f} companyName={company.name} decision={decisions[f.id]} mode="readonly" issued {...(ai ? { ai } : {})} />
             )}
           />
+          {ai && ps.real?.diagnosisRun && <TraceView run={ps.real.diagnosisRun} />}
         </section>
       ) : (
         <section aria-labelledby="entrega-st">

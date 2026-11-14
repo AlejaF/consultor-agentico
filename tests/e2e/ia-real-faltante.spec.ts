@@ -11,12 +11,13 @@ test.describe('información faltante (modo IA real)', () => {
     await generarDiagnosticoReal(page, ['notas-reunion.txt', 'politica-datos.pdf']);
     const falta = page.getByTestId('missing-info');
     await expect(falta).toBeVisible();
-    await expect(falta.getByRole('heading', { level: 2, name: 'Información que habría hecho falta' })).toBeVisible();
+    await expect(falta.getByRole('heading', { level: 2, name: 'Evidencia sugerida para fortalecer el diagnóstico' })).toBeVisible();
+    await expect(falta).toContainText('Son sugerencias de la IA, no hallazgos ni contenido verificado.');
     await expect(falta.getByText('Pilar: Talento')).toBeVisible();
     await expect(falta).toContainText('Falta una evaluación verificable de competencias digitales del equipo.');
     await expect(falta.getByText('Pilar: Cultura')).toBeVisible();
     await expect(falta).toContainText('Faltan encuestas que midan la adopción de herramientas digitales.');
-    await expect(falta.getByTestId('ai-badge')).toHaveText('Generado por IA (modelo modelo-falso-e2e) · requiere revisión humana');
+    await expect(falta.getByTestId('ai-badge')).toHaveText('Generado por IA · requiere revisión humana');
     await expect(falta.getByRole('button')).toHaveCount(0); // sin flujos nuevos
     await expect(falta.getByRole('link')).toHaveCount(0);
   });
@@ -36,6 +37,6 @@ test.describe('información faltante (modo IA real)', () => {
     await page.getByRole('button', { name: 'Generar diagnóstico' }).click();
     await expect(page.getByTestId('finding-H1')).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('missing-info')).toHaveCount(0);
-    await expect(page.getByText('Información que habría hecho falta')).toHaveCount(0);
+    await expect(page.getByText('Evidencia sugerida para fortalecer el diagnóstico')).toHaveCount(0);
   });
 });

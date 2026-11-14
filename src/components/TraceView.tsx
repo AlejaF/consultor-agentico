@@ -1,4 +1,7 @@
 import { useId } from 'react';
+import { canSeeTrace } from '../domain/visibility';
+import { formatDateTime } from '../domain/format';
+import { useAppState } from '../state/context';
 import type { TraceStepSummary, TraceSummary } from '../state/types';
 
 type Run = Pick<TraceSummary, 'steps'> & Partial<Omit<TraceSummary, 'steps'>>;
@@ -37,16 +40,49 @@ function stepLine(s: TraceStepSummary): { key: string; text: string } | null {
   }
 }
 
-/** «Traza del agente» (AG-009, SC-A3): herramientas con su consulta, verificaciones fallidas y su resolución, modelo, tokens y errores. */
+/** Rol activo de la sesión. */
+function useRole() {
+  return useAppState().state.session.role;
+}
+
+/**
+ * Avisos de la corrida que afectan a la revisión (resultado parcial y errores): SIEMPRE visibles, fuera de la traza plegada, y solo
+ * para roles internos (AG-009). La Empresa no los tiene en el DOM.
+ */
+export function RunNotices({ run }: { run: Run }) {
+  const role = useRole();
+  if (!canSeeTrace(role)) return null;
+  const errors = run.errors ?? run.steps.flatMap((s) => (s.type === 'model_error' ? [{ category: s.category, message: s.message }] : []));
+  if (!run.partial && errors.length === 0) return null;
+  return (
+    <div role="status" aria-live="polite">
+      {run.partial && (
+        <p className="subtitle no-support" data-testid="partial-notice">
+          Resultado parcial: el agente alcanzó un tope antes de terminar. Revisa los avisos de la traza.
+        </p>
+      )}
+      {errors.length > 0 && (
+        <p className="subtitle no-support" data-testid="review-warning">
+          Avisos de la corrida: {errors.map((e) => `${e.category}: ${e.message}`).join(' · ')}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** «Ver cómo trabajó el agente» (AG-009, SC-A3): plegado por defecto y solo para roles internos; herramientas, verificaciones, modelo, fecha, tokens y errores. */
 export function TraceView({ run }: { run: Run }) {
   const uid = useId();
+  const role = useRole();
+  if (!canSeeTrace(role)) return null;
   const lines = run.steps.map((s, i) => ({ i, line: stepLine(s) })).filter((x): x is { i: number; line: { key: string; text: string } } => x.line !== null);
   const errors = run.errors ?? run.steps.flatMap((s) => (s.type === 'model_error' ? [{ category: s.category, message: s.message }] : []));
   return (
     <details className="card trace-view" data-testid="trace-view">
-      <summary>Traza del agente</summary>
+      <summary>Ver cómo trabajó el agente</summary>
       <dl className="trace-facts" aria-label="Datos de la corrida">
         <div><dt>Modelo</dt><dd data-testid="trace-model">{run.model ?? 'no disponible'}</dd></div>
+        {run.finishedAt && <div><dt>Fecha</dt><dd data-testid="trace-date">{formatDateTime(run.finishedAt)}</dd></div>}
         {run.iterations !== undefined && <div><dt>Iteraciones</dt><dd>{run.iterations}{run.partial ? ' (resultado parcial)' : ''}</dd></div>}
         {run.tokens && <div><dt>Tokens</dt><dd data-testid="trace-tokens">entrada {run.tokens.input} · salida {run.tokens.output} · total {run.tokens.total}</dd></div>}
         {run.toolCounts && <div><dt>Herramientas usadas</dt><dd>{Object.entries(run.toolCounts).map(([k, v]) => `${k} ×${v}`).join(', ') || 'ninguna'}</dd></div>}

@@ -20,7 +20,8 @@ interface Props {
   issued?: boolean;
   showHeadingLevel?: 2 | 3;
   /** Modelo que produjo el hallazgo (modo IA real): añade el rótulo de IA (AG-023). */
-  aiModel?: string;
+  /** Verdadero si el hallazgo lo produjo el modelo (modo IA real): muestra el rótulo, sin nombrar el modelo (AG-023). */
+  ai?: boolean;
   onDecide?: (d: 'accepted' | 'rejected') => void;
   onEdit?: (text: string) => void;
 }
@@ -38,7 +39,7 @@ function DecisionBadge({ decision, issued }: { decision: Decision; issued: boole
   }
 }
 
-export function FindingCard({ finding, companyName, decision, mode, issued = false, aiModel, onDecide, onEdit }: Props) {
+export function FindingCard({ finding, companyName, decision, mode, issued = false, ai = false, onDecide, onEdit }: Props) {
   const uid = useId();
   const baseText = resolveName(finding.text, companyName);
   const currentText = decision?.state === 'edited' ? decision.text : baseText;
@@ -83,7 +84,7 @@ export function FindingCard({ finding, companyName, decision, mode, issued = fal
         <p className="finding-badges">
           {decision && mode !== 'report' && <DecisionBadge decision={decision} issued={issued} />}
           {!finding.verified && <UnverifiedBadge />}
-          {aiModel && <AiBadge model={aiModel} />}
+          {ai && <AiBadge />}
         </p>
         {!finding.verified && <p className="subtitle">{finding.unverifiedReason}</p>}
         {noSupport && <p className="subtitle no-support">No se usará como respaldo de la estrategia</p>}
