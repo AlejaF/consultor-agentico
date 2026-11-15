@@ -30,16 +30,23 @@ export function Summary() {
         {company.name} · Proyecto {COMPANY_PROJECT_ID}
       </p>
 
-      {issued && ps.mode === 'real' && <MaturityIndexReal index={projectMaturity(state, COMPANY_PROJECT_ID)} />}
+      <div className="empresa-grid">
+      {issued && ps.mode === 'real' && (
+        <div className="empresa-indice">
+          <MaturityIndexReal index={projectMaturity(state, COMPANY_PROJECT_ID)} />
+        </div>
+      )}
       {issued && ps.mode !== 'real' && (
-        <p data-testid="madurez-empresa">
-          <strong>Índice de madurez: {formatDecimal(maturityOf(COMPANY_PROJECT_ID))} de 5</strong> (ilustrativo, ficticio)
-        </p>
+        <div className="empresa-indice">
+          <p data-testid="madurez-empresa">
+            <strong>Índice de madurez: {formatDecimal(maturityOf(COMPANY_PROJECT_ID))} de 5</strong> (ilustrativo, ficticio)
+          </p>
+        </div>
       )}
 
-      <section className="card" aria-labelledby="ruta-adopcion">
+      <section className="card area-ruta" aria-labelledby="ruta-adopcion">
         <h2 id="ruta-adopcion">Ruta de adopción</h2>
-        <ol className="list-plain stack">
+        <ol className="list-plain stack ruta-lineal">
           {steps.map((s, i) => (
             <li key={s.id} data-testid={`paso-${s.id}`}>
               <strong>
@@ -54,7 +61,7 @@ export function Summary() {
         </p>
       </section>
 
-      <section className="card" aria-labelledby="informe-empresa">
+      <section className="card area-informe" aria-labelledby="informe-empresa">
         <h2 id="informe-empresa">Informe de diagnóstico</h2>
         {issued ? (
           <p>
@@ -72,7 +79,7 @@ export function Summary() {
         </p>
       </section>
 
-      <section className="card" aria-labelledby="actividad-reciente">
+      <section className="card area-actividad" aria-labelledby="actividad-reciente">
         <h2 id="actividad-reciente">Actividad reciente</h2>
         <p>
           <span className="badge badge-pending">Actividad de ejemplo (ficticia)</span>
@@ -85,6 +92,7 @@ export function Summary() {
           ))}
         </ul>
       </section>
+      </div>
     </>
   );
 }

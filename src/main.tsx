@@ -8,6 +8,7 @@ import './styles/visual.css';
 import './styles/redesign.css';
 import './styles/h3.css';
 import './styles/h4.css';
+import './styles/h5.css';
 import './styles/print.css';
 
 createRoot(document.getElementById('root')!).render(

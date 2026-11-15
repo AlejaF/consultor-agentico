@@ -44,3 +44,132 @@ h2[id^='dim-'], #madurez-titulo, #cobertura-titulo, #falta-titulo { scroll-margi
   .resumen .stat { padding: var(--space-1); }
   .resumen .stats-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.6fr); }
 }
+
+/* ── H4b: Resumen de Estrategia y del Tablero, y pulidos del Resumen de Diagnóstico. Solo tokens. ── */
+.resumen-ancho { grid-column: 1 / -1; }
+.resumen-estado { margin: 0; }
+.resumen-estrategia .resumen-riesgos-col, .resumen-estrategia .resumen-side { min-width: 0; }
+@media (min-width: 1024px) {
+  .resumen-estrategia .resumen-riesgos-col { grid-column: 1; }
+  .resumen-estrategia .resumen-side { grid-column: 2; }
+  .resumen-estrategia .resumen-ancho { grid-column: 1 / -1; }
+}
+.resumen .stats-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.resumen-estrategia .resumen-acciones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.resumen-riesgos { display: grid; gap: 0; margin-top: var(--space-2); }
+.resumen-riesgos li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-3); }
+.resumen-estrategia .resumen-pilar-link { font-weight: var(--weight-regular); }
+.resumen-ruta { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); align-items: start; margin: 0; }
+@media (min-width: 1024px) {
+  .resumen-ruta { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); }
+  .resumen-ruta > li[style*='--col'] { grid-column: var(--col); }
+}
+.resumen-ruta > li { display: grid; gap: var(--space-1); min-width: 0; padding: var(--space-3); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); background: var(--color-surface); align-content: start; }
+.resumen-ruta .chip-horizon { justify-self: start; white-space: normal; }
+.resumen-fase-link { font-weight: var(--weight-bold); }
+.resumen-linea { margin: 0; font-size: var(--font-size-sm); color: var(--color-text-muted); display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.resumen-tablero .kpi-grid { margin: 0; }
+.resumen-tablero .kpi .subtitle { font-size: var(--font-size-xs); line-height: var(--line-height-tight, 1.3); }
+.resumen-tablero .dash-split { margin: 0; }
+.resumen-tablero .team-sub { display: block; font-size: var(--font-size-xs); font-weight: var(--weight-regular); }
+.ranked-legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); margin: var(--space-2) 0 0; }
+.ranked-sw-real { background: var(--color-primary); }
+.ranked-sw-sim { background: var(--color-placeholder); }
+.resumen-modo { display: inline-block; }
+.resumen-leyenda { margin: var(--space-2) 0 0; }
+/* (d) sin la marca oscura en 2: la fila ya dice el valor y «bajo» en texto */
+.resumen .scale-mark { display: none; }
+/* (c) a 480 px o menos cada fila de pilar apila nombre, barra y chips */
+@media (max-width: 480px) {
+  .resumen .maturity-row { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-1); padding-block: var(--space-1); }
+  .resumen .maturity-panel .row-state { grid-column: 1; grid-row: auto; }
+  .resumen .maturity-panel .scale-bar { grid-column: 1; }
+}
+
+/* Resumen del Tablero: dos columnas (tabla y gráfico a la izquierda; cola y botón a la derecha) para que quepa en una pantalla */
+.resumen-tablero .kpi-grid > .kpi { padding: var(--space-3); gap: var(--space-1); }
+.resumen-tablero .kpi-value { font-size: 1.75rem; }
+.resumen-tablero .kpi-label { font-size: var(--font-size-xs); }
+@media (min-width: 1024px) {
+  .resumen-tablero { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .resumen-tablero .dash-split { display: contents; }
+}
+.resumen-tablero .ranked { gap: 0; }
+.resumen-tablero .chart { padding-block: var(--space-3); }
+.resumen-side .resumen-acciones { grid-column: auto; grid-row: auto; }
+.resumen-estrategia .resumen-pilar-link, .resumen-estrategia .resumen-fase-link { display: block; min-height: var(--target-min); padding-block: var(--space-2); }
+.resumen-estrategia .resumen-riesgos .resumen-pilar-link { display: inline-block; }
+.resumen-boton { margin: 0; align-self: start; }
+.resumen-tablero .rtable th, .resumen-tablero .rtable td { padding-block: var(--space-1); }
+.vista-control { margin-bottom: var(--space-3); }
+
+/* Título y control «Resumen | Detalle» en la misma fila (ahorra una fila en el Tablero) */
+.titulo-fila { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); margin-bottom: var(--space-2); }
+.titulo-fila h1 { margin: 0; }
+.titulo-fila .vista-control { margin: 0; }
+.resumen-tablero .kpi-value { font-size: 1.5rem; }
+.resumen-tablero .queue-item { padding: var(--space-1) var(--space-2); }
+.resumen-boton { margin: var(--space-3) 0 0; }
+
+.visually-hidden.ranked-note { position: absolute; display: inline; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.resumen-tablero { gap: var(--space-3) var(--space-5); }
+.resumen-tablero section > h2 { margin: 0 0 var(--space-2); }
+.resumen-tablero .chart-summary { margin: 0 0 var(--space-2); }
+.resumen-tablero .chart .chart-title { margin-bottom: var(--space-1); }
+.resumen-tablero .queue-item { gap: var(--space-1); }
+.resumen-tablero [data-testid='queue-see-all'] { display: inline-flex; align-items: center; min-height: var(--target-min); }
+
+/* ── H5 · punto 4: destino distinguible (Estrategia) ── */
+[data-destino] { outline: 2px solid var(--color-primary); outline-offset: 2px; scroll-margin-top: var(--space-4); }
+.resumen-estrategia .resumen-estado { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); }
+.resumen-estrategia .resumen-estado [data-testid='unverified-unused'] { flex-basis: 100%; margin: 0; }
+.resumen-estrategia .resumen-acciones > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* ── H5 · punto 6: avisos de honestidad en el Resumen ── */
+.resumen-avisos { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-3); padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); background: var(--color-surface); }
+.resumen-avisos > div { display: grid; gap: var(--space-1); min-width: 0; flex: 1 1 18rem; }
+.resumen-avisos p { margin: 0; }
+.resumen-avisos-link { display: inline-flex; align-items: center; min-height: var(--target-min); font-weight: var(--weight-bold); }
+/* Estrategia: el resumen del gráfico de riesgos ya lo dice la leyenda; sigue disponible para lectores de pantalla (deja sitio al aviso de honestidad) */
+.resumen-estrategia .chart-summary { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.resumen-estrategia .resumen-ruta > li { padding: var(--space-2) var(--space-3); }
+.resumen-estrategia { gap: var(--space-3) var(--space-5); }
+.resumen-avisos { margin: 0 0 var(--space-3); }
+.resumen-avisos { padding: var(--space-1) var(--space-3); } .resumen-avisos p { font-size: var(--font-size-sm); }
+
+/* ── H5 · punto 3: Resumen del Tablero en dos tercios (equipos) y un tercio (madurez); sin cola ── */
+@media (min-width: 1024px) {
+  .resumen-tablero { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+  .resumen-tablero .ranked { grid-template-columns: minmax(0, 1fr); }
+  .resumen-tablero .dash-split > :first-child { grid-column: 1; }
+  .resumen-tablero .dash-split > :last-child { grid-column: 2; }
+}
+.resumen-enlace, .kpi-link { display: inline-flex; align-items: center; min-height: var(--target-min); font-weight: var(--weight-bold); }
+.kpi-link { color: inherit; }
+.resumen-tablero .resumen-boton { margin: 0; }
+.resumen-tablero .ranked-legend { font-size: var(--font-size-xs); gap: var(--space-1); margin-top: var(--space-1); }
+.resumen-tablero .kpi-grid > .kpi { padding: var(--space-2) var(--space-3); }
+.resumen-tablero .chart { padding-block: var(--space-2); }
+.resumen-tablero .chart .chart-table summary { min-height: var(--target-min); display: flex; align-items: center; }
+.resumen-tablero .ranked-row { grid-template-columns: minmax(0, 9rem) minmax(0, 1fr) 2.5rem; font-size: var(--font-size-xs); }
+
+/* ── H5 · punto 2: los hallazgos de un pilar se ven como un grupo (contenedor enmarcado sutil con su encabezado) ── */
+.pillar-flow > section { padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-surface-muted); box-shadow: var(--frame-subtle); }
+.pillar-flow > section > h2 { margin: 0 0 var(--space-2); font-size: var(--font-size-base); }
+.pillar-flow .finding { padding: var(--space-2) var(--space-3); }
+/* ── H5 · punto 1: marco sutil (box-shadow de 1 px) en las tarjetas de primer nivel ── */
+.kpi, .chart, .queue-item { box-shadow: var(--frame-subtle), var(--shadow-sm); }
+.dash-split .rtable, .resumen-tablero .rtable { box-shadow: var(--frame-subtle); border-radius: var(--radius-sm); }
+.pillar-flow .card { box-shadow: var(--shadow-sm); }
+/* Compensación de altura de los grupos de pilar (Revisión a 1280 ≤ 1877 px) */
+.pillar-flow > section { padding: var(--space-2); }
+.pillar-flow > section > h2 { margin: 0 0 var(--space-1); }
+.pillar-flow .findings-grid { row-gap: var(--space-2); }
+.pillar-flow { gap: var(--space-3); }
+.pillar-flow > section { padding: var(--space-1) var(--space-2) var(--space-2); }
+.pillar-flow { gap: var(--space-2); }
+.split-main .chart { padding-block: var(--space-2); }
+.split-main .chart .chart-summary { margin-block: var(--space-1); }
+.split-main .chart .chart-table summary { padding-block: 0; }
+.pillar-flow .finding .citation-box, .pillar-flow .finding details { margin-block: var(--space-1); }
+.pillar-flow > section { padding: var(--space-1); } .pillar-flow > section > h2 { padding-inline: var(--space-1); }

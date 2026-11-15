@@ -12,7 +12,7 @@ export default defineConfig({
   webServer: {
     command: `npm run build && npm run preview -- --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false, // H4b: nunca reutilizar un servidor ya abierto (podría traer un paquete viejo)
     timeout: 120_000,
     // AG-036: las pruebas de la 001 verifican la vista Detalle (la pantalla original); en producción la vista inicial es «resumen».
     env: { ...(process.env as Record<string, string>), VITE_VISTA_INICIAL: 'detalle' },

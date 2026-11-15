@@ -10,14 +10,23 @@ export interface TableData {
 }
 
 /** Marco común: pregunta, valor en texto, gráfico y tabla equivalente plegada (abierta al imprimir). */
-export function ChartFrame({ title, summary, table, children, testId, className = '', headingId }: { title: string; summary: ReactNode; table: TableData; children: ReactNode; testId: string; className?: string; headingId?: string }) {
+export function ChartFrame({ title, summary, table, children, testId, className = '', headingId, badge }: { title: string; summary: ReactNode; table: TableData; children: ReactNode; testId: string; className?: string; headingId?: string; badge?: ReactNode }) {
   const uid = useId();
   const hid = headingId ?? `${uid}-t`;
   return (
     <section className={`card chart ${className}`.trim()} aria-labelledby={hid} data-testid={testId}>
-      <h2 id={hid} className="chart-title">
-        {title}
-      </h2>
+      {badge ? (
+        <div className="block-head">
+          <h2 id={hid} className="chart-title">
+            {title}
+          </h2>
+          {badge}
+        </div>
+      ) : (
+        <h2 id={hid} className="chart-title">
+          {title}
+        </h2>
+      )}
       <p className="chart-summary">{summary}</p>
       {children}
       <details className="chart-table">
@@ -74,14 +83,17 @@ export function SegmentedBar({ parts, total, name, tones, note }: { parts: Part[
 }
 
 /** Barras ordenadas con énfasis: reales en el acento, simulados en gris con rótulo «ilustrativo». Escala fija 1 a 5. */
-export function RankedBars({ bars, name }: { bars: MaturityBar[]; name: string }) {
+export function RankedBars({ bars, name, compact = false }: { bars: MaturityBar[]; name: string; compact?: boolean }) {
+  // `compact` (Resumen del Tablero, AG-036): una sola leyenda en vez de un chip por fila; el texto «ilustrativo» sigue en cada fila para lectores de pantalla.
+  const note = () => (compact ? <span className="visually-hidden ranked-note">, ilustrativo</span> : <span className="badge badge-sim ranked-note">ilustrativo</span>);
   return (
+    <>
     <ul className="ranked list-plain" aria-label={name}>
       {bars.map((b) => (
         <li key={b.id} className={b.illustrative ? 'ranked-row illustrative' : 'ranked-row'}>
           <span className="ranked-name">
             {b.name}
-            {b.illustrative && <span className="badge badge-sim ranked-note">ilustrativo</span>}
+            {b.illustrative && note()}
           </span>
           <span className="ranked-track" data-tip={`${b.name}: ${String(b.value.toFixed(1)).replace('.', ',')} de 5${b.illustrative ? ' (ilustrativo)' : ' (estimado por IA)'}`} tabIndex={0} role="img" aria-label={`${b.name}: ${String(b.value.toFixed(1)).replace('.', ',')} de 5${b.illustrative ? ', ilustrativo' : ', estimado por IA'}`}>
             <span className="ranked-fill" style={{ width: `${b.percent}%` }} />
@@ -92,6 +104,12 @@ export function RankedBars({ bars, name }: { bars: MaturityBar[]; name: string }
         </li>
       ))}
     </ul>
+    {compact && (
+      <p className="ranked-legend subtitle" data-testid="ranked-legend">
+        <span className="swatch ranked-sw-real" aria-hidden="true" /> color = estimado por IA · <span className="swatch ranked-sw-sim" aria-hidden="true" /> gris = simulado, ilustrativo
+      </p>
+    )}
+    </>
   );
 }
 

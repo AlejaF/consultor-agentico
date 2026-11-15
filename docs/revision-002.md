@@ -236,3 +236,20 @@ Para ver el Resumen con datos: `npm run dev:all`, elige «IA real», sube archiv
 4. Recarga la página en el Resumen y en el Detalle: se queda en la misma vista (la vista está en la dirección). Con el teclado: Tab llega al control y a los 4 botones; Enter los activa.
 5. Cambia a **Empresa**: no puede abrir el Diagnóstico y no hay nada técnico (traza, modelo, tokens) en pantalla. Mira también a 320 px (una columna, sin barra horizontal).
 6. Para volver a publicar: `npm run build` **sin** la variable. Los e2e dejan `dist/` con la vista Detalle; no publiques ese `dist/`.
+
+## H4b — revisión manual (máx. 10 min)
+
+1. **Estrategia (Consultor, P-C)**: abre el Resumen; ve 2 cifras, «Riesgos por nivel», la ruta en columnas y los botones; todo cabe en una pantalla a 1280.
+2. **Enlaces**: un riesgo, una fase, «Ver riesgos y ruta en detalle» y «Ver trazabilidad» abren el Detalle con el encabezado arriba y el foco ahí.
+3. **Tablero (Líder)**: 4 cifras con contexto, tabla de 4 columnas, cola de 3 con «Ver las 4 entregas…», un solo gráfico con una leyenda; «Ver detalle del tablero» muestra todo lo anterior (buscador, última actividad, etapas).
+4. **Diagnóstico**: etiqueta «IA real»/«Simulado», tarjeta «Estado de los hallazgos» con su leyenda, «›» en los pilares, sin marca oscura; en P-B el mensaje de que no hay niveles por pilar.
+5. **320 px y recarga**: sin barra horizontal; las vistas se conservan al recargar; la Empresa no tiene acceso a Estrategia.
+
+## H5 — revisión manual (máx. 8 min)
+
+1. **Estrategia (P-C), Resumen**: pulsa «Ver trazabilidad», «Ver riesgos y ruta en detalle», un riesgo y una fase: cada uno deja su tarjeta arriba con un contorno de color y el foco en el título; «← Volver al Resumen» regresa.
+2. **Tablero (Líder), Resumen**: 4 cifras, tabla a la izquierda, madurez a la derecha, sin cola; la cifra de entregas dice «Ver entregas →». El Detalle sí trae la cola.
+3. **Diagnóstico (Detalle) y Revisión**: los hallazgos de cada pilar están dentro de un recuadro con su encabezado.
+4. **Entregas por revisar, Proyectos y Captura de evidencia**: filas compactas, barra y botón alineados, rótulos cerca de su valor.
+5. **Empresa**: índice destacado, ruta de 3 pasos en línea, dos columnas; **Encuesta**: columna centrada, «Pregunta N de 3», contador, ✓ en la opción elegida, aviso de simulación destacado.
+6. **Avisos**: en un proyecto con resultado parcial se ve la línea del aviso en cada Resumen (solo Consultor y Líder).

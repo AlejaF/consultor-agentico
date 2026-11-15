@@ -33,7 +33,7 @@ function Screen({ route }: { route: RouteMatch }) {
     case 'consultor.review':
       return <Review projectId={route.params.projectId} />;
     case 'consultor.strategy':
-      return <Strategy projectId={route.params.projectId} />;
+      return <Strategy projectId={route.params.projectId} {...(route.params.vista ? { vista: route.params.vista } : {})} {...(route.params.seccion ? { seccion: route.params.seccion } : {})} />;
     case 'consultor.report':
       return <Report projectId={route.params.projectId} />;
     case 'lider.deliveryReport':
@@ -43,7 +43,7 @@ function Screen({ route }: { route: RouteMatch }) {
     case 'lider.delivery':
       return <DeliveryReview tipo={route.params.tipo as 'dx' | 'st'} projectId={route.params.projectId} />;
     case 'lider.dashboard':
-      return <Dashboard />;
+      return <Dashboard {...(route.params.vista ? { vista: route.params.vista } : {})} />;
     case 'contacto.report':
       return <CompanyReport />;
     case 'contacto.survey':

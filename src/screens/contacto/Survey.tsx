@@ -50,13 +50,19 @@ export function Survey() {
       ) : (
         <section className="card" aria-labelledby="encuesta-form">
           <h2 id="encuesta-form">Encuesta corta</h2>
-          <p className="subtitle">Tres preguntas obligatorias, de 1 (muy bajo) a 5 (muy alto). Es una simulación: no se envía a nadie.</p>
+          <p className="subtitle survey-note">Tres preguntas obligatorias, de 1 (muy bajo) a 5 (muy alto). Es una simulación: no se envía a nadie.</p>
+          <p className="survey-contador" aria-live="polite" data-testid="encuesta-contador">
+            {Object.keys(answers).length} de {SURVEY_QUESTIONS.length} respondidas
+          </p>
           <div className="stack">
-            {SURVEY_QUESTIONS.map((q) => (
-              <div key={q.id} className="criterion">
+            {SURVEY_QUESTIONS.map((q, qi) => (
+              <div key={q.id} className="criterion survey-q">
+                <span className="survey-num">Pregunta {qi + 1} de {SURVEY_QUESTIONS.length}</span>
                 <p id={`enc-${q.id}`}>
                   <strong>{q.text}</strong>
                 </p>
+                <div className="scale-row">
+                <span className="scale-end" aria-hidden="true">Muy bajo</span>
                 <div role="radiogroup" aria-labelledby={`enc-${q.id}`} className="levels">
                   {LEVELS.map((n) => (
                     <label key={n} className="level">
@@ -64,6 +70,8 @@ export function Survey() {
                       <span>{n}</span>
                     </label>
                   ))}
+                </div>
+                <span className="scale-end" aria-hidden="true">Muy alto</span>
                 </div>
               </div>
             ))}

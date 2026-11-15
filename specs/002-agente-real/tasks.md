@@ -404,9 +404,23 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 - [X] T244 [H4a] Capturas `docs/evidencia/h4a-*.png` y autoverificación; suites existentes con el Detalle por defecto sin editar pruebas (`typecheck:all`, `test:all`, `build && check`, suites completas de la 001 y la 002, `matrix.spec.ts` ×10 y `playwright.h4.config.ts`; ver el informe del lote)
 - [ ] T245 [PERSONA] Revisión humana de H4a (lista en `docs/revision-002.md`)
 
-**H4b (pendiente):**
+**H4b (hecho por el agente; pendiente la revisión humana):**
 
-- [ ] T246 [H4b] Resumen de Estrategia y Resumen del Tablero con la misma mecánica
+- [X] T246 [H4b] Rutas `estrategia/(resumen|detalle[/sección])` y `#/lider/(resumen|detalle)`; `StrategyResumen`, `DashboardResumen`, `TeamsTable variant`, `RankedBars compact`, `ChartFrame badge` (AG-036 H4b)
+- [X] T247 [H4b] Pulidos del Resumen de Diagnóstico (a–f): modo visible, mensaje Simulado, apilado a 480 px, sin marca oscura, «›», tarjeta «Estado de los hallazgos»
+- [X] T248 [H4b] Pruebas nuevas (`tests/e2e/ia-real-h4-estrategia-tablero.spec.ts`, `tests/unit/vista-h4b.test.ts`) vistas fallar antes (`docs/evidencia/h4b-rojo.md`); mutaciones en `docs/evidencia/mutacion-h4b.md`; capturas `h4b-*.png`
+- [X] T249 [H4b] Pruebas de H4a actualizadas (son de H4a): `ia-real-h4-resumen.spec.ts` (las 3 cifras pasan a la línea de estado)
+- [ ] T250 [PERSONA] Revisión humana de H4b (lista en `docs/revision-002.md`) y commit
+
+**Lote H5 — ajustes finales de interfaz (la parte visual queda congelada):**
+
+- [X] T251 [H5] Punto 4: destinos distinguibles en Estrategia (resalte persistente, «← Volver al Resumen», aviso naranja y botones); causa diagnosticada en `docs/evidencia/mutacion-h5.md` y en el informe del lote
+- [X] T252 [H5] Punto 6: avisos de honestidad en los Resúmenes de Diagnóstico y Estrategia (`RunNoticesResumen`)
+- [X] T253 [H5] Punto 3: Resumen del Tablero a dos tercios y un tercio, sin cola (altura ≤ 800 px)
+- [X] T254 [H5] Puntos 2 y 1: grupos de pilar enmarcados (Revisión a 1280 en 1876 px, límite 1877) y token `--frame-subtle`
+- [X] T255 [H5] Puntos 7 a 11 y 5: Entregas, Proyectos, Datos de la empresa, Empresa (Resumen y Encuesta) y propósito de pantalla
+- [X] T256 [H5] Pruebas nuevas `ia-real-h4-h5.spec.ts`; pruebas de H4b actualizadas (solo del Tablero Resumen); mutaciones en `docs/evidencia/mutacion-h5.md`; capturas `h5-*.png`
+- [ ] T257 [PERSONA] Revisión humana de H5 (lista en `docs/revision-002.md`) y commit. Las suites completas se corren en el lote F.
 
 ---
 

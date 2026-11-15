@@ -13,7 +13,7 @@ import { ResponsiveTable } from './ResponsiveTable';
 const ORDER: Stage[] = ['Evidencia', 'Diagnóstico', 'Estrategia'];
 
 /** Etapas visibles solo Evidencia, Diagnóstico y Estrategia (FR-028). */
-export function TeamsTable({ state, query = '' }: { state: PersistedState; query?: string }) {
+export function TeamsTable({ state, query = '', variant = 'completa' }: { state: PersistedState; query?: string; variant?: 'completa' | 'resumen' }) {
   const deliveries = deliveriesFor(state);
   const projectsAll = allProjects(state.createdProjects);
   const visibles = TEAMS.filter((t) =>
@@ -47,7 +47,7 @@ export function TeamsTable({ state, query = '' }: { state: PersistedState; query
     return {
       id: t.id,
       cells: {
-        team: t.name,
+        team: variant === 'resumen' ? (<>{t.name}<span className="subtitle team-sub">{countOf(projects.length, 'proyecto', 'proyectos')}</span></>) : t.name,
         projects: countOf(projects.length, 'proyecto', 'proyectos'),
         stage: <span className="badge chip-pillar">{stage}</span>,
         progress: (
@@ -65,15 +65,24 @@ export function TeamsTable({ state, query = '' }: { state: PersistedState; query
     <ResponsiveTable
       testId="teams-table"
       caption="Equipos del programa"
-      columns={[
-        { key: 'team', label: 'Equipo' },
-        { key: 'projects', label: 'Proyectos' },
-        { key: 'stage', label: 'Etapa' },
-        { key: 'progress', label: 'Avance' },
-        { key: 'maturity', label: 'Madurez' },
-        { key: 'activity', label: 'Última actividad' },
-        { key: 'pending', label: 'Entregas por revisar' },
-      ]}
+      columns={
+        variant === 'resumen'
+          ? [
+              { key: 'team', label: 'Equipo' },
+              { key: 'stage', label: 'Etapa' },
+              { key: 'progress', label: 'Avance' },
+              { key: 'maturity', label: 'Madurez' },
+            ]
+          : [
+              { key: 'team', label: 'Equipo' },
+              { key: 'projects', label: 'Proyectos' },
+              { key: 'stage', label: 'Etapa' },
+              { key: 'progress', label: 'Avance' },
+              { key: 'maturity', label: 'Madurez' },
+              { key: 'activity', label: 'Última actividad' },
+              { key: 'pending', label: 'Entregas por revisar' },
+            ]
+      }
       rows={rows}
     />
   );

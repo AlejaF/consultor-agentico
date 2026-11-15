@@ -71,7 +71,18 @@ export function Diagnosis({ projectId, vista: vistaRuta, seccion }: { projectId:
       <Kicker>PASO 2 · DIAGNÓSTICO</Kicker>
       <h1>Diagnóstico</h1>
       <p>
-        {company.name} · Proyecto {projectId}
+        {company.name} · Proyecto {projectId} ·{' '}
+        <span className="proposito" data-testid="proposito">
+          Lo que encontró el agente (solo lectura)
+        </span>
+        {vista === 'resumen' && d.status !== 'none' && (
+          <>
+            {' '}
+            <span className="badge badge-pending" data-testid="resumen-modo">
+              {real ? 'IA real' : 'Simulado'}
+            </span>
+          </>
+        )}
       </p>
 
       {d.status !== 'none' && <VistaControl projectId={projectId} vista={vista} />}

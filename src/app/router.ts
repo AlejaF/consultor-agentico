@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { DIAGNOSIS_VIEW } from './vista';
+import { VIEW_ROUTES } from './vista';
 
 export type Role = 'consultor' | 'lider' | 'contacto';
 
@@ -72,8 +72,8 @@ function normalizeHash(hash: string): string {
 
 export function matchRoute(hash: string): RouteMatch | null {
   const norm = normalizeHash(hash);
-  // Subruta de vista de Diagnóstico (AG-036): misma pantalla y mismo id de ruta; la vista y la sección van como parámetros.
-  const vista = DIAGNOSIS_VIEW.exec(norm);
+  // Subruta de vista de Diagnóstico, Estrategia y Tablero (AG-036): misma pantalla y mismo id de ruta; la vista y la sección van como parámetros.
+  const vista = VIEW_ROUTES.map((re) => re.exec(norm)).find((m) => m !== null) ?? null;
   if (vista) {
     const base = matchRoute(vista[1]!);
     if (!base) return null;

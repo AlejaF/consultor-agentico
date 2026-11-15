@@ -71,6 +71,25 @@ export function RunNotices({ run }: { run: Run }) {
   );
 }
 
+/**
+ * Avisos de honestidad en el Resumen (AG-036, H5): los mismos avisos de la corrida (resultado parcial y errores), en una línea visible por
+ * encima de los gráficos y con enlace al Detalle. Reutiliza RunNotices (mismas reglas de rol: la Empresa no los tiene en el DOM).
+ */
+export function RunNoticesResumen({ run, href }: { run: Run; href: string }) {
+  const role = useRole();
+  if (!canSeeTrace(role)) return null;
+  const errors = run.errors ?? run.steps.flatMap((s) => (s.type === 'model_error' ? [{ category: s.category, message: s.message }] : []));
+  if (!run.partial && errors.length === 0) return null;
+  return (
+    <div className="resumen-avisos resumen-ancho" data-testid="resumen-avisos">
+      <RunNotices run={run} />
+      <a className="resumen-avisos-link" href={href}>
+        Ver en el detalle ›
+      </a>
+    </div>
+  );
+}
+
 /** «Ver cómo trabajó el agente» (AG-009, SC-A3): plegado por defecto y solo para roles internos; herramientas, verificaciones, modelo, fecha, tokens y errores. */
 export function TraceView({ run }: { run: Run }) {
   const uid = useId();

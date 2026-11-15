@@ -1,4 +1,5 @@
 // Paneles de gráfico por pantalla (AG-035, lote H3): unen una función pura de `domain/charts` con un componente de presentación.
+import type { ReactNode } from 'react';
 import { DIAGNOSIS } from '../../data/diagnosis';
 import type { Dimension } from '../../data/diagnosis';
 import { evidenceCoverage, maturityByProject, provenanceMatrix, reviewSegments, riskLevelSegments, stageSegments, traceSummary, type Provenance } from '../../domain/charts';
@@ -41,13 +42,14 @@ export function CoveragePanel({ findings, decisions }: { findings: readonly F[];
 const REVIEW_TONES = { accepted: 'ok', edited: 'acc', rejected: 'low', pending: 'mute' };
 
 /** P1 · «¿Cómo va la revisión?» Barra segmentada con leyenda; NO VERIFICADO se cuenta aparte. */
-export function ReviewStatePanel({ findings, decisions }: { findings: readonly { id: string; verified: boolean }[]; decisions: Record<string, Decision> }) {
+export function ReviewStatePanel({ findings, decisions, title, summary, badge, footer }: { findings: readonly { id: string; verified: boolean }[]; decisions: Record<string, Decision>; title?: string; summary?: ReactNode; badge?: ReactNode; footer?: ReactNode }) {
   const s = reviewSegments(reviewStats(findings, decisions));
   return (
     <ChartFrame
       testId="chart-review-state"
-      title="Estado de la revisión: ¿cuántos hallazgos faltan por decidir?"
-      summary={`${s.total} hallazgos · ${s.unverified} NO VERIFICADO (se cuenta aparte)`}
+      title={title ?? 'Estado de la revisión: ¿cuántos hallazgos faltan por decidir?'}
+      summary={summary ?? `${s.total} hallazgos · ${s.unverified} NO VERIFICADO (se cuenta aparte)`}
+      {...(badge ? { badge } : {})}
       table={{ caption: 'Estado de la revisión', head: ['Estado', 'Hallazgos', 'Porcentaje'], rows: [...s.parts.map((p) => [p.label, p.n, `${p.percent} %`]), ['NO VERIFICADO (aparte)', s.unverified, '—']] }}
     >
       <SegmentedBar
@@ -62,6 +64,7 @@ export function ReviewStatePanel({ findings, decisions }: { findings: readonly {
           </li>
         }
       />
+      {footer}
     </ChartFrame>
   );
 }
@@ -72,6 +75,7 @@ export function ProvenancePanel({ data }: { data: Provenance }) {
   return (
     <ChartFrame
       testId="chart-provenance"
+      headingId="trazabilidad-titulo"
       title="¿De dónde sale cada recomendación?"
       summary={`${countOf(data.rows.length, 'elemento', 'elementos')} derivan de ${countOf(data.cols.length, 'hallazgo aceptado', 'hallazgos aceptados')}.${data.unused.length > 0 ? ` Sin uso en la estrategia: ${data.unused.join(', ')}.` : ' Todos los hallazgos aceptados se usan.'}`}
       table={{ caption: 'Hallazgos de los que deriva cada elemento', head: ['Elemento', ...data.cols.map((c) => c.id)], rows: data.rows.map((r) => [`${r.kind === 'riesgo' ? 'Riesgo' : 'Fase'}: ${r.label}`, ...r.marks.map((m) => (m ? 'deriva' : '—'))]) }}
@@ -98,30 +102,36 @@ export function titleOf(id: string, findings?: readonly { id: string; title: str
 const RISK_TONES = { alto: 'low', medio: 'warn', bajo: 'ok' };
 
 /** P2 · «¿Qué tan graves son los riesgos?» */
-export function RiskLevelPanel({ risks }: { risks: readonly { level?: 'alto' | 'medio' | 'bajo' | undefined }[] }) {
+export function RiskLevelPanel({ risks, title, badge, children }: { risks: readonly { level?: 'alto' | 'medio' | 'bajo' | undefined }[]; title?: string; badge?: ReactNode; children?: ReactNode }) {
   const s = riskLevelSegments(risks);
   if (s.total === 0) return null;
   return (
     <ChartFrame
       testId="chart-risk-levels"
-      title="Nivel de gravedad: ¿cuáles pesan más?"
+      title={title ?? 'Nivel de gravedad: ¿cuáles pesan más?'}
+      {...(badge ? { badge } : {})}
       summary={`${countOf(s.total, 'riesgo', 'riesgos')}: ${s.parts.map((p) => `${p.n} ${p.label.toLowerCase()}`).join(', ')}${s.noLevel > 0 ? `; ${s.noLevel} sin nivel` : ''}.`}
       table={{ caption: 'Riesgos por nivel', head: ['Nivel', 'Riesgos'], rows: [...s.parts.map((p) => [p.label, p.n]), ...(s.noLevel > 0 ? [['Sin nivel', s.noLevel]] : [])] }}
     >
       <SegmentedBar parts={s.parts} total={s.total} name="Riesgos por nivel" tones={RISK_TONES} />
+      {children}
     </ChartFrame>
   );
 }
 
 /** P3 · Líder: «¿En qué etapa están los proyectos?» */
-export function StagePanel({ state }: { state: PersistedState }) {
-  const stages = allProjects(state.createdProjects).map((p) => {
+/** Etapa de cada proyecto (la misma cuenta del gráfico «Proyectos por etapa» y del contexto de «Equipos activos» en el Resumen). */
+export function projectStages(state: PersistedState) {
+  return allProjects(state.createdProjects).map((p) => {
     const company = companyFor(p, state.createdProjects);
     const ps = state.projects[p.id]!;
     const count = ps.mode === 'real' ? (ps.serverFiles ?? []).length : buildEvidenceItems(p, company.name, ps.localFiles).length;
     return projectProgress({ evidenceCount: count, diagnosis: ps.diagnosis.status, strategy: ps.strategy.status }).stage;
   });
-  const s = stageSegments(stages);
+}
+
+export function StagePanel({ state }: { state: PersistedState }) {
+  const s = stageSegments(projectStages(state));
   return (
     <ChartFrame
       testId="chart-stages"
@@ -135,7 +145,7 @@ export function StagePanel({ state }: { state: PersistedState }) {
 }
 
 /** P3 · Líder: «¿Qué proyectos están más maduros?» Reales en acento; simulados en gris «ilustrativo». */
-export function MaturityProjectsPanel({ state }: { state: PersistedState }) {
+export function MaturityProjectsPanel({ state, compact = false }: { state: PersistedState; compact?: boolean }) {
   const rows = allProjects(state.createdProjects).map((p) => ({ id: p.id, name: companyFor(p, state.createdProjects).name, mode: state.projects[p.id]?.mode === 'real' ? ('real' as const) : ('simulated' as const), index: projectMaturity(state, p.id) }));
   const m = maturityByProject(rows);
   return (
@@ -145,7 +155,7 @@ export function MaturityProjectsPanel({ state }: { state: PersistedState }) {
       summary={m.bars.length === 0 ? 'Ningún proyecto tiene diagnóstico emitido con nivel.' : `${countOf(m.bars.length, 'proyecto', 'proyectos')} con nivel (de 5). Los simulados son ilustrativos.${m.withoutLevel.length > 0 ? ` Sin nivel: ${m.withoutLevel.length}.` : ''}`}
       table={{ caption: 'Madurez por proyecto', head: ['Proyecto', 'Origen', 'Nivel (de 5)'], rows: [...m.bars.map((b) => [b.name, b.illustrative ? 'ilustrativo' : 'estimado por IA', formatDecimal(b.value)]), ...m.withoutLevel.map((x) => [x.name, '—', 'Sin nivel'])] }}
     >
-      <RankedBars bars={m.bars} name="Madurez por proyecto" />
+      <RankedBars bars={m.bars} name="Madurez por proyecto" compact={compact} />
     </ChartFrame>
   );
 }

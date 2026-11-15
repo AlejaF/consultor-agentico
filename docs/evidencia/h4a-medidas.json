@@ -1,29 +1,29 @@
 {
   "320": {
-    "alto": 2066,
+    "alto": 2125,
     "madurez": 1,
-    "cifras": 3,
+    "cifras": 1,
     "estado": 1,
     "botones": 4
   },
   "768": {
-    "alto": 1479,
+    "alto": 1314,
     "madurez": 1,
-    "cifras": 3,
+    "cifras": 1,
     "estado": 1,
     "botones": 4
   },
   "1280": {
-    "alto": 912,
+    "alto": 911,
     "madurez": 1,
-    "cifras": 3,
+    "cifras": 1,
     "estado": 1,
     "botones": 4
   },
   "1920": {
-    "alto": 912,
+    "alto": 911,
     "madurez": 1,
-    "cifras": 3,
+    "cifras": 1,
     "estado": 1,
     "botones": 4
   }

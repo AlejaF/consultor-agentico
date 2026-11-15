@@ -1,5 +1,5 @@
 {
-  "alturaRevision1280": 1847,
+  "alturaRevision1280": 1876,
   "huecosRevision": [
     {
       "a": "card",
@@ -24,12 +24,12 @@
     {
       "a": "SECTION",
       "b": "SECTION",
-      "hueco": 16
+      "hueco": 12
     },
     {
       "a": "SECTION",
       "b": "SECTION",
-      "hueco": 27
+      "hueco": 43
     }
   ]
 }

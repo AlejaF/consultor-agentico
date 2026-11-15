@@ -1,0 +1,58 @@
+/* Lote H5: ajustes finales de interfaz (solo presentación). Solo tokens. La parte visual queda congelada después de este lote. */
+
+/* ── 7 · Entregas por revisar: filas compactas (ancho máximo ~960 px) ── */
+.entregas-lista { max-width: 60rem; }
+.entrega-item { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1) var(--space-4); align-items: center; padding: var(--space-3) var(--space-4); }
+.entrega-item > * { margin: 0; min-width: 0; }
+@media (min-width: 768px) {
+  .entrega-item { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) auto; grid-template-areas: 'titulo aviso accion' 'equipo aviso accion'; }
+  .entrega-item > p:first-child { grid-area: titulo; }
+  .entrega-item > .subtitle:not([data-testid='unverified-count']) { grid-area: equipo; }
+  .entrega-item > [data-testid='unverified-count'] { grid-area: aviso; }
+  .entrega-item > a { grid-area: accion; justify-self: end; }
+}
+
+/* ── 8 · Proyectos: barra de avance y botón anclados al fondo de la tarjeta ── */
+.project-card .progress { margin-top: auto; }
+.project-card > .progress + p { margin-top: 0; margin-bottom: 0; }
+
+/* ── 9 · Captura de evidencia: cada rótulo cerca de su valor ── */
+section[aria-labelledby='datos-empresa'] .facts { grid-template-columns: max-content minmax(0, 1fr); column-gap: var(--space-4); max-width: 36rem; }
+section[aria-labelledby='datos-empresa'] .facts > div { display: contents; }
+section[aria-labelledby='datos-empresa'] .facts dd { text-align: left; overflow-wrap: anywhere; }
+
+/* ── 10 · Empresa · Resumen ── */
+.empresa-grid { display: grid; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); align-items: start; }
+.empresa-grid > * { margin: 0; min-width: 0; }
+.empresa-indice { padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-primary); color: var(--color-on-primary); box-shadow: var(--shadow-sm); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.empresa-indice p { margin: 0; }
+.empresa-indice strong { display: block; font-size: var(--font-size-h2); }
+.empresa-indice * { color: inherit; }
+.ruta-lineal { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+.ruta-lineal > li { padding: var(--space-3); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); background: var(--color-surface); display: grid; gap: var(--space-1); align-content: start; }
+@media (min-width: 640px) { .ruta-lineal { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); } }
+@media (min-width: 1024px) {
+  .empresa-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .empresa-grid > .area-ruta { grid-column: 1; grid-row: 1; }
+  .empresa-grid > .area-actividad { grid-column: 1; grid-row: 2; }
+  .empresa-grid > .empresa-indice { grid-column: 2; grid-row: 1; }
+  .empresa-grid > .area-informe { grid-column: 2; grid-row: 2; }
+}
+
+/* ── 11 · Encuesta de la Empresa: columna centrada, un bloque por pregunta, escala con extremos fuera de los botones ── */
+section[aria-labelledby='encuesta-form'] { max-width: 44rem; margin-inline: auto; }
+.survey-note { padding: var(--space-3); border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-ink); font-weight: var(--weight-bold); }
+.survey-contador { margin: var(--space-3) 0; font-weight: var(--weight-bold); }
+.survey-q { padding: var(--space-3); border-radius: var(--radius-sm); box-shadow: var(--frame-subtle); background: var(--color-surface); gap: var(--space-2); }
+.survey-num { font-size: var(--font-size-xs); font-weight: var(--weight-bold); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.scale-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.scale-end { font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.level:has(input:checked)::before { content: '✓' / ''; margin-right: var(--space-1); }
+section[aria-labelledby='encuesta-form'] .field-error { padding: var(--space-3); border: 2px solid var(--color-danger-text); border-radius: var(--radius-sm); margin-block: var(--space-3); }
+@media (max-width: 479px) { .scale-row { justify-content: space-between; } .scale-row .levels { order: -1; width: 100%; } }
+.proposito { color: var(--color-text-muted); font-style: italic; }
+
+/* Grupos de pilar: ≥ 12 px entre grupos apilados (criterio de ritmo de H3), compensado en el encabezado del grupo */
+.pillar-flow { gap: var(--space-3); }
+.pillar-flow > section > h2 { margin: 0; }
+.split-main .chart { padding-block: var(--space-1); }

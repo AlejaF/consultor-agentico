@@ -1,6 +1,7 @@
 import type { Finding } from '../data/diagnosis';
 import type { DerivedItem } from '../domain/strategy';
 import { groupByHorizon } from '../domain/charts';
+import { slugId } from '../app/vista';
 import { DerivedFrom } from './DerivedFrom';
 
 /** Ruta sugerida por fases, con su horizonte. */
@@ -13,7 +14,7 @@ export function RouteTimeline({ items, findings }: { items: readonly DerivedItem
     <ol className={`timeline timeline-line list-plain${byHorizon ? ' by-horizon' : ''}`} {...(byHorizon ? { style: { ['--cols' as string]: groups.length } } : {})}>
       {items.map((it, i) => (
         <li key={it.id} className="card" data-testid={`phase-${it.id}`} {...(byHorizon ? { style: { ['--col' as string]: colOf(it) } } : {})}>
-          <h3>
+          <h3 id={`fase-${slugId(it.id)}`}>
             Fase {i + 1}: {it.label}
           </h3>
           {it.horizon && (

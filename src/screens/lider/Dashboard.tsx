@@ -15,11 +15,14 @@ import { MIX_NOTE, averageMaturity, averageMixesModes } from '../../domain/matur
 import { projectProgress } from '../../domain/progress';
 import { averageOfGradings } from '../../domain/rubric';
 import { useAppState } from '../../state/context';
+import { DashboardResumen } from '../../components/DashboardResumen';
+import { VistaControl } from '../../components/VistaControl';
+import { tableroHref, vistaInicial, type Vista } from '../../app/vista';
 
 /** Tarjetas máximas de la cola en el Tablero; el resto se ve en la pantalla de entregas. */
 const QUEUE_LIMIT = 3;
 
-export function Dashboard() {
+export function Dashboard({ vista: vistaRuta }: { vista?: string }) {
   const { state } = useAppState();
   const [query, setQuery] = useState('');
   const pending = deliveriesFor(state).filter((d) => !d.graded);
@@ -34,15 +37,24 @@ export function Dashboard() {
   const avg = averageOfGradings(state.gradings);
   const mean = avg === null ? '—' : `${formatScore(avg)} de 5`;
   const maturity = averageMaturity(state);
+  // AG-036: la ruta base abre la vista inicial (compilación).
+  const vista: Vista = vistaRuta === 'resumen' || vistaRuta === 'detalle' ? vistaRuta : vistaInicial();
 
   return (
     <>
       <Kicker>LÍDER · TABLERO</Kicker>
-      <h1>Tablero</h1>
+      <div className="titulo-fila">
+        <h1>Tablero</h1>
+        <VistaControl vista={vista} href={tableroHref} />
+      </div>
       <p>
         Equipos del programa. Todos los datos son ficticios. Los proyectos, calificaciones y entregas iniciales son ejemplos precargados;
         «Restablecer demo» los recupera.
       </p>
+      {vista === 'resumen' ? (
+        <DashboardResumen state={state} pending={pending} activeTeams={activeTeams} />
+      ) : (
+      <>
       <section aria-label="Indicadores" className="cards kpi-grid">
         <KpiCard testId="kpi-equipos" label="Equipos activos" value={String(activeTeams)} />
         <KpiCard testId="kpi-por-revisar" label="Entregas por revisar" value={String(pending.length)} />
@@ -83,6 +95,8 @@ export function Dashboard() {
         <div className="dash-columns">
           <PillarAverages state={state} />
         </div>
+      )}
+      </>
       )}
     </>
   );

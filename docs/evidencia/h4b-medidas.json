@@ -1,0 +1,54 @@
+{
+  "estrategia": {
+    "320": {
+      "alto": 2230,
+      "principal": 1,
+      "visual": 2,
+      "lista": 1
+    },
+    "768": {
+      "alto": 1532,
+      "principal": 1,
+      "visual": 2,
+      "lista": 1
+    },
+    "1280": {
+      "alto": 951,
+      "principal": 1,
+      "visual": 2,
+      "lista": 1
+    },
+    "1920": {
+      "alto": 909,
+      "principal": 1,
+      "visual": 2,
+      "lista": 1
+    }
+  },
+  "tablero": {
+    "320": {
+      "alto": 2089,
+      "principal": 1,
+      "visual": 2,
+      "lista": 0
+    },
+    "768": {
+      "alto": 1131,
+      "principal": 1,
+      "visual": 2,
+      "lista": 0
+    },
+    "1280": {
+      "alto": 796,
+      "principal": 1,
+      "visual": 2,
+      "lista": 0
+    },
+    "1920": {
+      "alto": 900,
+      "principal": 1,
+      "visual": 2,
+      "lista": 0
+    }
+  }
+}

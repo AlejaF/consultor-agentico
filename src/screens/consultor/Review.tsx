@@ -47,7 +47,10 @@ export function Review({ projectId }: { projectId: string }) {
       <Kicker>PASO 3 · REVISIÓN</Kicker>
       <h1>Revisión y emisión</h1>
       <p>
-        {company.name} · Proyecto {projectId}
+        {company.name} · Proyecto {projectId} ·{' '}
+        <span className="proposito" data-testid="proposito">
+          Lo que tú decides: aceptar, editar o rechazar cada hallazgo
+        </span>
       </p>
 
       {d.status === 'none' && (

@@ -108,3 +108,12 @@ No se recomiendan, por bajo valor frente a su costo en una demo de 4 a 7 proyect
 Las pantallas de referencia del profesorado y de los estudiantes muestran pocas piezas por pantalla (de 4 a 6 bloques): cifras grandes, una o dos tablas o listas y barras horizontales de un solo tono, con el detalle en pantallas aparte. El lote H4 (AG-036) lleva ese criterio a Diagnóstico (H4a) y después a Estrategia y Tablero (H4b): una vista **Resumen** con lo esencial y una vista **Detalle** que es la pantalla anterior intacta. Descripción con palabras propias; no se copia nada.
 
 **Las pruebas existentes de la 001 y de la 002 corren con la vista Detalle por defecto.** Motivo: verifican contenido (tarjetas de hallazgos, «Deriva de», NO VERIFICADO, traza, tabla de equipos) que sigue existiendo íntegro en el Detalle, y la regla del proyecto es no editar pruebas de la 001. Por eso la vista inicial se fija en compilación con `VITE_VISTA_INICIAL` («detalle» en los servidores de `playwright.config.ts` y `playwright.real.config.ts`; «resumen» en producción) y ninguna prueba cambia. Las pruebas del Resumen son archivos nuevos (`ia-real-h4-*.spec.ts`) y corren con `playwright.h4.config.ts`, donde la vista por defecto es la de producción.
+
+## H4b — Resumen de Estrategia y del Tablero (AG-036)
+
+| Referencia del profesor | Cómo se refleja en el Resumen |
+|---|---|
+| Pocos bloques por pantalla, cifras grandes | Estrategia: 2 cifras + 1 gráfico + la ruta. Tablero: 4 cifras con contexto + tabla + cola + 1 gráfico |
+| Tablas simples con una etiqueta por estado | Tabla de equipos de 4 columnas (Equipo, Etapa, Avance, Madurez) |
+| Barras de un solo tono con el valor a la derecha | «Madurez por proyecto»: pistas iguales, una leyenda en lugar de un chip por fila |
+| El detalle vive en otra pantalla | Botones «Ver riesgos y ruta en detalle», «Ver trazabilidad», «Ver detalle del tablero» |

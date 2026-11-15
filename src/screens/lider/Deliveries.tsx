@@ -12,11 +12,11 @@ export function Deliveries() {
     <>
       <h1>Entregas por revisar</h1>
       <p>{countOf(pending.length, 'entrega', 'entregas')} sin calificar. Todos los datos son ficticios.</p>
-      <ul className="list-plain stack">
+      <ul className="list-plain stack entregas-lista">
         {pending.map((d) => {
           const { company, team } = projectInfo(d.projectId, state.createdProjects);
           return (
-            <li key={d.id} className="card">
+            <li key={d.id} className="card entrega-item">
               <p>
                 <strong>{d.tipo === 'dx' ? 'Diagnóstico' : 'Estrategia'}</strong> · {company.name}
               </p>

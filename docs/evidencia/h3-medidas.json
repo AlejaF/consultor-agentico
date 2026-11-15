@@ -3,7 +3,7 @@
   "h3": {
     "320": {
       "ancho": 320,
-      "alturaTotal": 4319,
+      "alturaTotal": 4317,
       "alturaMadurez": 538,
       "tarjetasPorFila": 1,
       "anchoContenido": 288,
@@ -13,7 +13,7 @@
     },
     "768": {
       "ancho": 768,
-      "alturaTotal": 2427,
+      "alturaTotal": 2414,
       "alturaMadurez": 517,
       "tarjetasPorFila": 2,
       "anchoContenido": 736,
@@ -23,7 +23,7 @@
     },
     "1024": {
       "ancho": 1024,
-      "alturaTotal": 2626,
+      "alturaTotal": 2600,
       "alturaMadurez": 517,
       "tarjetasPorFila": 1,
       "anchoContenido": 720,
@@ -33,7 +33,7 @@
     },
     "1280": {
       "ancho": 1280,
-      "alturaTotal": 1847,
+      "alturaTotal": 1876,
       "alturaMadurez": 517,
       "tarjetasPorFila": 2,
       "anchoContenido": 976,
@@ -43,7 +43,7 @@
     },
     "1536": {
       "ancho": 1536,
-      "alturaTotal": 1869,
+      "alturaTotal": 1856,
       "alturaMadurez": 517,
       "tarjetasPorFila": 3,
       "anchoContenido": 1232,
@@ -53,7 +53,7 @@
     },
     "1920": {
       "ancho": 1920,
-      "alturaTotal": 1677,
+      "alturaTotal": 1664,
       "alturaMadurez": 517,
       "tarjetasPorFila": 3,
       "anchoContenido": 1616,

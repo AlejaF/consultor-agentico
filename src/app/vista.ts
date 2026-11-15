@@ -33,3 +33,35 @@ export function sectionTargetId(seccion: string | undefined, pillarsWithFindings
   }
   return null;
 }
+
+// ── Estrategia y Tablero (AG-036, lote H4b): misma mecánica; no son rutas nuevas de la tabla ──
+
+/** Subruta de Estrategia: `<base>/resumen` o `<base>/detalle[/<sección>]`. */
+export const STRATEGY_VIEW = /^(#\/consultor\/proyectos\/[^/]+\/estrategia)\/(?:(resumen)|(detalle)(?:\/([a-z0-9-]+))?)$/;
+/** Subruta del Tablero: `#/lider/resumen` o `#/lider/detalle` (sin secciones). */
+export const DASHBOARD_VIEW = /^(#\/lider)\/(?:(resumen)|(detalle))$/;
+/** Todas las rutas con vista; el grupo 1 es la ruta base, el 2 «resumen», el 3 «detalle» y el 4 la sección. */
+export const VIEW_ROUTES: readonly RegExp[] = [DIAGNOSIS_VIEW, STRATEGY_VIEW, DASHBOARD_VIEW];
+
+/** Identificador seguro para una sección o un id del DOM a partir de el id de un riesgo o de una fase (p. ej. «R1» → «r1»). */
+export function slugId(id: string): string {
+  return id.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+export function estrategiaHref(projectId: string, vista: Vista, seccion?: string): string {
+  const base = `#/consultor/proyectos/${projectId}/estrategia/${vista}`;
+  return vista === 'detalle' && seccion ? `${base}/${seccion}` : base;
+}
+
+export function tableroHref(vista: Vista): string {
+  return `#/lider/${vista}`;
+}
+
+/** Id del encabezado al que lleva una sección del Detalle de Estrategia (`riesgo-<id>` y `fase-<id>` son las tarjetas). */
+export function sectionTargetEstrategia(seccion: string | undefined): string | null {
+  if (!seccion) return null;
+  if (seccion === 'riesgos-ruta') return 'estr-riesgos';
+  if (seccion === 'trazabilidad') return 'trazabilidad-titulo';
+  if (/^(riesgo|fase)-[a-z0-9-]+$/.test(seccion)) return seccion;
+  return null;
+}

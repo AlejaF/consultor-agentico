@@ -49,10 +49,8 @@ test('por defecto (producción) la ruta base abre el Resumen: cifras, estado y b
   await expect(control.getByRole('link', { name: 'Resumen' })).toHaveAttribute('aria-current', 'page');
   await expect(control.getByRole('link', { name: 'Detalle' })).not.toHaveAttribute('aria-current', 'page');
   await expect(page.locator('[role="tablist"]')).toHaveCount(0); // son enlaces, no pestañas
-  // 3 cifras con su valor en texto
-  await expect(page.getByTestId('resumen-cifra-hallazgos')).toContainText('4');
-  await expect(page.getByTestId('resumen-cifra-verificados')).toContainText('3');
-  await expect(page.getByTestId('resumen-cifra-noverificado')).toContainText('1');
+  // H4b: la fila de 3 cifras se unió a «Estado de los hallazgos»: una línea resumen con los mismos valores en texto
+  await expect(page.getByTestId('resumen-estado-linea')).toHaveText('4 hallazgos · 3 verificados · 1 NO VERIFICADO');
   await expect(page.getByTestId('chart-review-state')).toHaveCount(1);
   await expect(page.getByTestId('maturity-card')).toHaveCount(1);
   await expect(page.getByTestId('maturity-card')).toContainText('Índice de madurez');
@@ -173,7 +171,7 @@ test('el Resumen de un proyecto simulado: índice ilustrativo, sin cobertura ni 
   await page.evaluate(() => (window.location.hash = '#/consultor/proyectos/P-B/diagnostico'));
   await expect(page.getByTestId('diagnostico-resumen')).toBeVisible(); // P-B ya trae un diagnóstico simulado emitido
   await expect(page.getByTestId('maturity-card')).toContainText('ilustrativo, ficticio');
-  await expect(page.getByTestId('resumen-cifra-hallazgos')).toBeVisible();
+  await expect(page.getByTestId('resumen-estado-linea')).toContainText('hallazgos');
   const acciones = page.getByTestId('resumen-acciones');
   await expect(acciones.getByRole('link', { name: /^Ver los \d+ hallazgos$/ })).toBeVisible();
   await expect(acciones.getByRole('link', { name: /cobertura/i })).toHaveCount(0);
@@ -199,13 +197,13 @@ test('accesibilidad AA, teclado y sin desplazamiento horizontal a 320, 768, 1280
     const m = await page.evaluate(() => ({
       alto: document.documentElement.scrollHeight,
       madurez: document.querySelectorAll('[data-testid="maturity-card"]').length,
-      cifras: document.querySelectorAll('[data-testid^="resumen-cifra-"]').length,
+      cifras: document.querySelectorAll('[data-testid="resumen-estado-linea"]').length, // H4b: la línea de estado reemplaza a las 3 cifras
       estado: document.querySelectorAll('[data-testid="chart-review-state"]').length,
       botones: document.querySelectorAll('[data-testid="resumen-acciones"] a, [data-testid="resumen-acciones"] button').length,
     }));
     medidas[w] = m;
     expect(m.madurez).toBe(1);
-    expect(m.cifras).toBe(3);
+    expect(m.cifras).toBe(1);
     expect(m.estado).toBe(1);
     expect(m.botones).toBeLessThanOrEqual(4);
     if (w === 1280) expect(m.alto, `altura del Resumen a 1280: ${m.alto}`).toBeLessThanOrEqual(1000);
