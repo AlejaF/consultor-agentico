@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { KpiCard } from '../../components/KpiCard';
 import { ReviewQueue } from '../../components/ReviewQueue';
+import { hasRealIssued } from '../../domain/visual';
+import { PillarAverages } from '../../components/PillarAverages';
 import { TeamsTable } from '../../components/TeamsTable';
 import { TEAMS } from '../../data/teams';
 import { buildEvidenceItems } from '../../domain/evidence';
@@ -46,6 +48,7 @@ export function Dashboard() {
           {MIX_NOTE}
         </p>
       )}
+      {hasRealIssued(state) && <PillarAverages state={state} />}
       <section aria-labelledby="tab-equipos">
         <h2 id="tab-equipos">Equipos</h2>
         <div className="field">

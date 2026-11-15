@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { Finding } from '../data/diagnosis';
+import { DIMENSIONS } from '../data/diagnosis';
 import { resolveName } from '../data/evidence';
 import { resolveCitation, type ResolvedCitation } from '../domain/evidence';
 import { resolveRealCitation } from '../domain/realCitation';
@@ -82,7 +83,9 @@ export function FindingCard({ finding, companyName, decision, mode, issued = fal
       <div className="finding-main">
         <h3>{title}</h3>
         <p className="finding-badges">
+          <span className="badge chip-pillar">{DIMENSIONS.find((d) => d.id === finding.dimension)?.label ?? finding.dimension}</span>
           {decision && mode !== 'report' && <DecisionBadge decision={decision} issued={issued} />}
+          {finding.verified && <span className="badge badge-ok chip-verified">Verificado</span>}
           {!finding.verified && <UnverifiedBadge />}
           {ai && <AiBadge />}
         </p>
@@ -129,7 +132,7 @@ export function FindingCard({ finding, companyName, decision, mode, issued = fal
           <p className={rejected ? 'finding-text excluded' : 'finding-text'}>{currentText}</p>
         )}
 
-        <div className="citations" role="group" aria-label="Citas de evidencia">
+        <div className="citations cite-box" role="group" aria-label="Citas de evidencia">
           {citations.map((c) => (
             <CitationButton
               key={c.excerptId}

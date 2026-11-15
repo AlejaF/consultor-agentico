@@ -12,6 +12,8 @@ import { getDiagnosis } from '../../providers';
 import { buildEvidenceItems, resolveCitation } from '../../domain/evidence';
 import { evaluateMaturity, maturityOf } from '../../domain/maturity';
 import { MaturityPanel } from '../../components/MaturityPanel';
+import { MaturityIndexCard } from '../../components/MaturityIndexCard';
+import { ReviewStats } from '../../components/ReviewStats';
 import { formatDateTime, formatDecimal } from '../../domain/format';
 import { canGenerate } from '../../domain/progress';
 import { projectInfo } from '../../domain/lookup';
@@ -98,6 +100,8 @@ export function Diagnosis({ projectId }: { projectId: string }) {
             </p>
           </section>
 
+          {!real && <MaturityIndexCard index={maturityOf(projectId)} mode="simulated" />}
+          <ReviewStats findings={view.findings} decisions={d.decisions} />
           {real && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} />}
 
           <PillarGroups

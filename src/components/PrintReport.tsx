@@ -3,6 +3,7 @@ import { ACCOUNTS } from '../data/accounts';
 import { resolveName } from '../data/evidence';
 import { resolveCitation } from '../domain/evidence';
 import { countOf, formatDateTime, formatDecimal } from '../domain/format';
+import { MaturityIndexCard } from './MaturityIndexCard';
 import type { MaturityEvaluation } from '../domain/maturity';
 import type { Finding } from '../data/diagnosis';
 import type { ReportContent } from '../domain/report';
@@ -59,6 +60,9 @@ export function PrintReport({ content, companyName, projectLabel, ai = false, ma
                       </>
                     )}
                   </p>
+                )}
+                {!ai && content.maturityIndex !== null && (
+                  <MaturityIndexCard index={content.maturityIndex} mode="simulated" />
                 )}
                 <p>
                   {includedLine}

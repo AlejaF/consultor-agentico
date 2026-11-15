@@ -488,3 +488,13 @@ Aprobada por la persona responsable el 2026-11-14 (T171) y aplicada (T172). Vers
 - **Solo IA real**: el reductor rechaza `setMode: simulated` en ids `N-<n>`; la pantalla lo explica (AG-029).
 - **El nombre es un dato**: en pantalla va siempre como texto; hacia el agente (Diagnóstico y Estrategia) viaja como `<empresa>…</empresa>`, escapado, sin saltos de línea y con tope de 80 caracteres. El cliente de guiones de prueba lee el nombre de esa etiqueta.
 - **Fuera de alcance**: editar o borrar proyectos individuales (hoja de ruta). «Restablecer demo» es la única forma de borrarlos y pide confirmación explícita.
+
+
+## Lote H de la 002 «Capa visual» (2026-11-14)
+
+- **Alcance**: solo presentación (AG-033). Sin cambios de reglas, verificación, persistencia ni roles; sin librerías nuevas; sin cambios en el contenido de la traza.
+- **Aditivo**: componentes nuevos (`ScaleBar`, `MaturityIndexCard`, `ReviewStats`, `PillarAverages`), lógica pura en `src/domain/visual.ts` y estilos en `src/styles/visual.css` (solo tokens). El marcado y los textos anteriores se conservan; los chips reutilizan las clases `badge`.
+- **Sin número cuando no hay evidencia**: una barra «Sin evidencia suficiente» o «Sin respaldo vigente» es vacía y rayada y nunca lleva número ni ancho (la prueba unitaria y una mutación lo vigilan).
+- **Niveles sin nombre**: los datos y la spec no los definen, así que solo se muestra el número.
+- **Promedio por pilar (tablero)**: solo proyectos reales con diagnóstico emitido; los simulados no tienen nivel por pilar (no existen en los datos de la 001).
+- **Estado de revisión**: las cifras usan solo las categorías existentes (aceptado, editado, rechazado, pendiente, NO VERIFICADO); no se tocó `src/domain/review.ts`.

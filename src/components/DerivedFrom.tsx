@@ -11,7 +11,7 @@ export function DerivedFrom({ itemId, ids, findings = DIAGNOSIS.findings }: { it
         const pillar = DIMENSIONS.find((d) => d.id === f.dimension)!.label;
         return (
           <span key={id} className="derived-item">
-            {id} · {f.title} ({pillarLabel(pillar)}){i < ids.length - 1 ? ';' : ''}{' '}
+            <span className="badge chip-id">{id}</span> · {f.title} ({pillarLabel(pillar)}){i < ids.length - 1 ? ';' : ''}{' '}
           </span>
         );
       })}

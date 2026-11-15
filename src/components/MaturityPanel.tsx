@@ -1,7 +1,10 @@
 import { DIMENSIONS } from '../data/diagnosis';
 import { formatDecimal } from '../domain/format';
 import { MATURITY_INDEX_LABEL, basedOnText, type LevelView, type MaturityEvaluation } from '../domain/maturity';
+import { levelBar } from '../domain/visual';
 import { AiBadge } from './AiBadge';
+import { MaturityIndexCard } from './MaturityIndexCard';
+import { ScaleBar } from './ScaleBar';
 import { UnverifiedBadge } from './badges';
 
 /** Índice de madurez de un proyecto en modo IA real (AG-031): calculado por código, nunca «(ilustrativo, ficticio)». */
@@ -56,11 +59,13 @@ export function MaturityPanel({ evaluation }: { evaluation: MaturityEvaluation }
   return (
     <section className="card maturity-panel" aria-labelledby="madurez-titulo" data-testid="maturity-panel">
       <h2 id="madurez-titulo">Madurez por dimensión</h2>
+      <MaturityIndexCard index={evaluation.index} mode="real" />
       <MaturityIndexReal index={evaluation.index} />
       <ul className="list-plain stack">
         {evaluation.levels.map((l) => (
           <li key={l.dimension} data-testid={`maturity-level-${l.dimension}`}>
             <LevelBody l={l} />
+            <ScaleBar view={levelBar(l)} name={label(l.dimension)} />
           </li>
         ))}
       </ul>

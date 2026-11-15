@@ -178,3 +178,16 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 **Para probar con la API real** (tú): crea una empresa con tu nombre real, sube sus documentos y genera. NO VERIFICADO con el modelo real.
 
 **Pendiente tuyo**: T190 (esta revisión, `build && check` con tu lista de nombres y commit).
+
+
+## Lote H — capa visual (lista corta, máx. 10 min)
+
+**Para quien no es técnico**: solo cambia cómo se ve. La madurez sale en barras (con el número y la etiqueta también en texto), el nivel general en una tarjeta, los hallazgos en tarjetas con etiquetas de pilar y estado, y la revisión y el tablero del Líder traen cifras. Las reglas, los textos y la traza no cambiaron.
+
+1. **Madurez** (3 min): `npm run dev:all` con `MODEL_PROVIDER=fake`, genera un diagnóstico real y abre «Revisión». Acepta hallazgos. **Comprobar**: cada dimensión tiene una barra con su número; las dimensiones «Sin evidencia suficiente» o «Sin respaldo vigente» tienen una barra vacía rayada, con la etiqueta y **sin número**; un nivel menor a 2 dice «Bajo (<2)».
+2. **Tarjeta y cifras** (2 min): la tarjeta «Nivel general» dice «estimado por IA» (real) o «ilustrativo, ficticio» (en P-C, simulado); sin índice dice «—». Las cifras y la barra de colores cambian al aceptar o rechazar.
+3. **Estrategia y tablero** (2 min): en la Estrategia cada elemento muestra «Deriva de» con etiquetas R1, R2…; como Líder, el Tablero trae «Madurez por pilar (promedio)» y conserva la nota de mezcla.
+4. **Blanco y negro** (2 min): abre el informe y pulsa imprimir (vista previa en blanco y negro). **Comprobar**: todos los valores se leen sin color.
+5. **Anchos y capturas** (1 min): reduce la ventana a 320 px (sin barra horizontal) y mira `docs/evidencia/h-*.png`.
+
+**Pendiente tuyo**: T203 (esta revisión, `build && check` con tu lista de nombres y commit).

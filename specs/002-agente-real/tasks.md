@@ -323,6 +323,26 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ---
 
+## Lote H — Capa visual (P2 · AG-033) · *se ejecuta ANTES de F*
+
+**Propósito**: presentación aditiva (barras de madurez, tarjeta del nivel general, hallazgos como tarjetas con chips, cifras de revisión, tablero, chips de «Deriva de»). Numerado a continuación de T190; F y G **no se renumeran**.
+
+- [X] T191 [H] Spec-first: AG-033 en `spec.md`; este lote en `tasks.md`; nota de orden en `plan.md`
+- [X] T192 [P] [H] Pruebas de componentes primero (`tests/unit/visualLayer.test.ts`): valor→ancho y etiqueta de la barra; <2 → «Bajo (<2)»; «Sin evidencia suficiente» y «Sin respaldo vigente» sin número; tarjeta del nivel general (con y sin índice, rótulo por modo, 5 segmentos); cifras de revisión; promedios por pilar
+- [X] T193 [P] [H] Prueba e2e nueva `tests/e2e/ia-real-visual.spec.ts` (320, 768, 1280 px): barras, tarjeta, chips, cifras, accesibilidad (axe, `role="img"`), sin desplazamiento horizontal, impresión legible en texto, Empresa sin datos técnicos, proyectos de ejemplo y creados
+- [X] T194 [H] Ver fallar T192 y T193 y anotarlo en `docs/evidencia/h-rojo.md`
+- [X] T195 [H] Esenciales: `src/components/ScaleBar.tsx`, barras en `MaturityPanel`, `MaturityIndexCard` (puntos 1 y 2) y estilos con tokens
+- [X] T196 [H] Hallazgos como tarjetas: chip de pilar, «Verificado», cita en caja gris (punto 3)
+- [X] T197 [H] Cifras y barra segmentada de la revisión en Diagnóstico y Revisión (punto 4)
+- [X] T198 [H] Tablero del Líder: cifras y barras de promedio por pilar con la nota de mezcla (punto 5)
+- [X] T199 [H] Chips «Deriva de» en la Estrategia real (punto 6)
+- [X] T200 [H] Mutación: dibujar un número en una dimensión sin evidencia debe fallar una prueba; restaurar y anotar en `docs/evidencia/mutacion-h.md`
+- [X] T201 [H] Capturas ficticias en 320, 768 y 1280 px en `docs/evidencia/h-*.png`
+- [ ] T202 [H] `typecheck:all`, `test:all`, `build && check:all`, suite e2e completa UNA vez; `docs/decisiones.md`, `docs/revision-002.md` (10 min), `docs/tiempos-002.md`
+- [ ] T203 [PERSONA] Revisión humana del lote H, `build && check` con la lista de nombres y commit
+
+---
+
 ## Lote F — Cierre (P1/P2 · todas las historias construidas)
 
 **Objetivo**: accesibilidad y responsive de lo nuevo, documentación honesta, evidencia, repaso de todos los criterios y una **grabación de respaldo** de la demo por si falla la conexión o el crédito el día de la presentación.
@@ -373,7 +393,7 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ## Dependencias y orden
 
-- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
+- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N → H** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
 - **Las tareas de cuenta y crédito (T001, T002, T003) no bloquean A** y se pueden hacer mientras el agente trabaja; **bloquean la prueba de humo del lote C** (T064). La clave y `server/.env` (T018) también.
 - **A bloquea todo**: T004 primero; T005, T006, T008, T010 y T012 en paralelo; T007 depende de T006; T009 de T008; T011 de T010 y T009; T013 de T011; T014 de T007.
 - **B depende de A**: T023 antes de los extractores; T025 antes de las pruebas que usan los fixtures; las pruebas T026, T027, T028, T029 y T030 antes de su implementación; T037 depende de T033, T034, T035 y T036; T040 de T037, T038 y T039.

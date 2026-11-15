@@ -215,6 +215,10 @@ Como se trabaja un lote a la vez, **la suma es en serie**: ningún tramo se sola
 Orden: A → B → C → D → D2 → D3 → E → **N** → F (G diferido). N no renumera F ni G.
 Diseño mínimo: `createdProjects?: { id, companyName, sector?, createdAt }[]` opcional dentro de v3 (los guardados antiguos no lo tienen y se leen como `[]`; **no hay migración ni subida de versión**). Cada proyecto creado tiene su `ProjectState` en `projects` y pertenece al Equipo 1. `projectInfo(id, created)` los resuelve como los de ejemplo, sin tocar `data/projects.ts`. El nombre es un dato: texto en pantalla y `<empresa>` escapado y con tope hacia el agente.
 
+## Capa visual (AG-033) — lote H, se ejecuta ANTES de F
+
+Orden: A → B → C → D → D2 → D3 → E → N → **H** → F (G diferido). H no renumera F ni G. Es solo presentación y **aditiva**: componentes nuevos (`ScaleBar`, `MaturityIndexCard`, `ReviewStats`, `PillarBars`) y clases CSS con tokens existentes; el marcado, los textos y los `data-testid` actuales no cambian. Sin librerías nuevas. Los niveles no tienen nombre en los datos ni en la spec: solo se muestra el número.
+
 ## Riesgos y decisiones abiertas
 
 1. **Modelos por etapa** — *decisión de la persona (2026-11-11)*: solo como **PROPUESTA pendiente**: `gpt-6-luna` en desarrollo y `gpt-6.1-sol` en la demo (research.md §3). La persona decidirá antes de la prueba de humo del lote C y lo registrará en `docs/decisiones.md`. Las variables de entorno no traen valor por defecto aprobado. NO VERIFICADO el desempeño real de cada modelo con estas tareas.

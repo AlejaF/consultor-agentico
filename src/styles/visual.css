@@ -1,0 +1,48 @@
+/* Capa visual (AG-033, lote H): barras, tarjeta del nivel general, chips y cifras. Solo tokens: sin colores literales. Aditivo. */
+
+/* Barra de la escala 1 a 5 */
+.scale-bar { margin: var(--space-2) 0; max-width: 100%; }
+.scale-track { position: relative; height: 0.875rem; background: var(--color-track); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); overflow: hidden; }
+.scale-fill { height: 100%; background: var(--color-primary); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.scale-fill-low { background: var(--color-bar-low); }
+.scale-mark { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--color-ink); opacity: 0.55; }
+/* Barra vacía rayada: sin relleno ni número */
+.scale-empty { border: 1px dashed var(--color-border); background: repeating-linear-gradient(135deg, var(--color-surface-muted) 0 6px, var(--color-surface) 6px 12px); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.scale-ticks { display: flex; justify-content: space-between; margin: var(--space-1) 0 0; font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.scale-text { margin: var(--space-1) 0 0; font-size: var(--font-size-sm); }
+.scale-based { color: var(--color-text-muted); }
+
+/* Tarjeta del nivel general */
+.index-card { display: inline-block; min-width: 12rem; max-width: 100%; margin: var(--space-2) 0 var(--space-3); padding: var(--space-3) var(--space-4); background: var(--color-primary-soft); border: 1px solid var(--color-border-subtle); border-radius: var(--radius); }
+.index-card p { margin: 0; }
+.index-kicker { font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.index-value { font-size: 2rem; font-weight: var(--weight-bold); color: var(--color-primary-strong); line-height: 1.2; }
+.seg-row { display: flex; gap: var(--space-1); margin: var(--space-2) 0; }
+.segment { position: relative; flex: 1; height: 0.625rem; background: var(--color-track); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); overflow: hidden; }
+.seg-fill { display: block; height: 100%; background: var(--color-primary); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+/* Chips de las tarjetas de hallazgo */
+.chip-pillar { color: var(--color-primary-strong); background: var(--color-primary-soft); }
+.chip-id { color: var(--color-primary-strong); background: var(--color-primary-soft); }
+.cite-box { background: var(--color-surface-muted); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); }
+.finding-badges { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* Cifras de la revisión */
+.review-stats { margin: var(--space-3) 0 var(--space-4); }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: var(--space-3); }
+.stat { display: flex; flex-direction: column; padding: var(--space-3); background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius); min-width: 0; }
+.stat-value { font-size: 1.75rem; font-weight: var(--weight-bold); color: var(--color-primary); line-height: 1.2; }
+.stat-label { font-size: var(--font-size-sm); color: var(--color-text-muted); overflow-wrap: anywhere; }
+.rs-bar { display: flex; height: 0.875rem; margin-top: var(--space-3); background: var(--color-track); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); overflow: hidden; }
+.rs-seg { height: 100%; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.rs-adopted { background: var(--color-chip-green); }
+.rs-rejected { background: var(--color-bar-low); }
+.rs-pending { background: var(--color-border-subtle); }
+
+@media print {
+  .print-report .index-card { background: transparent; border: 1px solid var(--color-ink); break-inside: avoid; }
+  .print-report .index-value, .print-report .scale-based, .print-report .scale-ticks { color: var(--color-ink); }
+  .print-report .scale-track, .print-report .segment { border: 1px solid var(--color-ink); }
+  .print-report .scale-mark { background: var(--color-ink); opacity: 1; }
+  .print-report .scale-bar, .print-report li { break-inside: avoid; }
+}

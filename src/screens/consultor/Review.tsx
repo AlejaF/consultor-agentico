@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getDiagnosis } from '../../providers';
 import { AiBadge } from '../../components/AiBadge';
 import { RunNotices } from '../../components/TraceView';
+import { ReviewStats } from '../../components/ReviewStats';
 import { MaturityPanel } from '../../components/MaturityPanel';
 import { evaluateMaturity } from '../../domain/maturity';
 import { FindingCard } from '../../components/FindingCard';
@@ -94,6 +95,7 @@ export function Review({ projectId }: { projectId: string }) {
         {announcement}
       </div>
 
+      {d.status !== 'none' && <ReviewStats findings={view.findings} decisions={d.decisions} />}
       {ai && d.status !== 'none' && ps.real?.diagnosisRun && <RunNotices run={ps.real.diagnosisRun} />}
       {ai && d.status !== 'none' && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} />}
 
