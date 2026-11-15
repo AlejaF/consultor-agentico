@@ -29,7 +29,7 @@ function Screen({ route }: { route: RouteMatch }) {
     case 'consultor.evidence':
       return <Evidence projectId={route.params.projectId} />;
     case 'consultor.diagnosis':
-      return <Diagnosis projectId={route.params.projectId} />;
+      return <Diagnosis projectId={route.params.projectId} {...(route.params.vista ? { vista: route.params.vista } : {})} {...(route.params.seccion ? { seccion: route.params.seccion } : {})} />;
     case 'consultor.review':
       return <Review projectId={route.params.projectId} />;
     case 'consultor.strategy':

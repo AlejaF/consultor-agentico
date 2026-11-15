@@ -14,6 +14,8 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // AG-036: las pruebas de la 001 verifican la vista Detalle (la pantalla original); en producción la vista inicial es «resumen».
+    env: { ...(process.env as Record<string, string>), VITE_VISTA_INICIAL: 'detalle' },
   },
   projects: [
     { name: '320', use: { browserName: 'chromium', viewport: { width: 320, height: 640 } } },

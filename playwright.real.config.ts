@@ -10,6 +10,8 @@ const SERVICE = 8787;
 export default defineConfig({
   testDir: 'tests/e2e',
   testMatch: /ia-real.*\.spec\.ts/,
+  // El Resumen (AG-036) se prueba con playwright.h4.config.ts, donde la vista por defecto es la de producción.
+  testIgnore: /ia-real-h4-.*\.spec\.ts/,
   workers: 1,
   fullyParallel: false,
   reporter: 'list',
@@ -37,6 +39,8 @@ export default defineConfig({
       url: `http://localhost:${WEB}`,
       reuseExistingServer: false,
       timeout: 60_000,
+      // AG-036: las pruebas de la 002 verifican la vista Detalle (la pantalla original); en producción la vista inicial es «resumen».
+      env: { ...(process.env as Record<string, string>), VITE_VISTA_INICIAL: 'detalle' },
     },
   ],
   projects: [

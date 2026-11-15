@@ -102,3 +102,9 @@ Criterios: aportan al objetivo (diagnóstico y estrategia con revisión humana y
 | 6 | ~~Lista de «documentos sugeridos» en la captura de evidencia.~~ **Construida en L6g y retirada el 2026-11-02**: la demo no lee los archivos y no puede saber qué documento se subió; queda para el sistema real. | Orientaba qué evidencia reunir. | — |
 
 No se recomiendan, por bajo valor frente a su costo en una demo de 4 a 7 proyectos: buscador y filtro por fase (≈ 0,5 h) y asociar transcripciones a roles. Todo lo demás de las referencias es parte del sistema completo.
+
+## Vista Resumen / Detalle (lote H4, 2026-11-15)
+
+Las pantallas de referencia del profesorado y de los estudiantes muestran pocas piezas por pantalla (de 4 a 6 bloques): cifras grandes, una o dos tablas o listas y barras horizontales de un solo tono, con el detalle en pantallas aparte. El lote H4 (AG-036) lleva ese criterio a Diagnóstico (H4a) y después a Estrategia y Tablero (H4b): una vista **Resumen** con lo esencial y una vista **Detalle** que es la pantalla anterior intacta. Descripción con palabras propias; no se copia nada.
+
+**Las pruebas existentes de la 001 y de la 002 corren con la vista Detalle por defecto.** Motivo: verifican contenido (tarjetas de hallazgos, «Deriva de», NO VERIFICADO, traza, tabla de equipos) que sigue existiendo íntegro en el Detalle, y la regla del proyecto es no editar pruebas de la 001. Por eso la vista inicial se fija en compilación con `VITE_VISTA_INICIAL` («detalle» en los servidores de `playwright.config.ts` y `playwright.real.config.ts`; «resumen» en producción) y ninguna prueba cambia. Las pruebas del Resumen son archivos nuevos (`ia-real-h4-*.spec.ts`) y corren con `playwright.h4.config.ts`, donde la vista por defecto es la de producción.

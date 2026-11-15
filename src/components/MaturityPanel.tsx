@@ -19,10 +19,10 @@ export function MaturityIndexReal({ index }: { index: number | null }) {
   );
 }
 
-const label = (dim: string) => DIMENSIONS.find((d) => d.id === dim)?.label ?? dim;
+export const label = (dim: string) => DIMENSIONS.find((d) => d.id === dim)?.label ?? dim;
 
 /** Etiqueta de estado de la fila: se dice UNA vez (AG-034). Las dimensiones con nivel respaldado no la llevan. */
-function RowState({ l }: { l: LevelView }) {
+export function RowState({ l }: { l: LevelView }) {
   if (l.status === 'insufficient') {
     return (
       <>

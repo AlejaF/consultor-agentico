@@ -225,3 +225,14 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 3. Revisión a 1280 y 1920: la columna de la derecha empieza a la altura de las cifras y «Aprobar y emitir» se ve sin bajar.
 4. Diagnóstico: el Resumen de la traza tiene las barras a la izquierda y tres cifras con rótulo a la derecha; los nombres de herramienta no se parten. Los dos chips de arriba a la derecha están separados.
 5. Estrategia: en la matriz «¿De dónde sale cada recomendación?» hay aire entre «Riesgo»/«Fase» y el título.
+
+## Lote H4a — Resumen / Detalle de Diagnóstico (lista corta, máx. 10 min)
+
+Para ver el Resumen con datos: `npm run dev:all`, elige «IA real», sube archivos y genera el diagnóstico. En desarrollo la vista inicial es el **Resumen** (sin la variable `VITE_VISTA_INICIAL`).
+
+1. Diagnóstico a 1280: arriba el control **Resumen | Detalle** (dos enlaces). El Resumen cabe en una pantalla: nivel de madurez con sus 6 barras, 3 cifras (hallazgos, verificados, NO VERIFICADO), la barra «Estado de la revisión» y 4 botones.
+2. Los pilares **sin evidencia** muestran su etiqueta («Sin evidencia suficiente», «NO VERIFICADO») y ningún número ni relleno.
+3. Pulsa un pilar (p. ej. «Infraestructura»): pasa al **Detalle** y el encabezado «Pilar: Infraestructura» queda arriba y con el foco. Repite con «Ver los N hallazgos», «Ver cobertura de evidencia» y «Ver evidencia sugerida (N)».
+4. Recarga la página en el Resumen y en el Detalle: se queda en la misma vista (la vista está en la dirección). Con el teclado: Tab llega al control y a los 4 botones; Enter los activa.
+5. Cambia a **Empresa**: no puede abrir el Diagnóstico y no hay nada técnico (traza, modelo, tokens) en pantalla. Mira también a 320 px (una columna, sin barra horizontal).
+6. Para volver a publicar: `npm run build` **sin** la variable. Los e2e dejan `dist/` con la vista Detalle; no publiques ese `dist/`.

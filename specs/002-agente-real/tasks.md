@@ -391,6 +391,25 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ---
 
+## Lote H4a / H4b — Resumen y Detalle (P2 · AG-036) · *se ejecutan ANTES de F*
+
+**H4a (mecánica y Resumen de Diagnóstico):**
+
+- [X] T238 [H4a] Spike de viabilidad: `VITE_VISTA_INICIAL` fija «detalle» en los servidores de ambas configuraciones de Playwright sin editar pruebas (`docs/evidencia/h4a-spike.md`)
+- [X] T239 [H4a] Spec-first: AG-036 en `spec.md`, este lote, nota en `plan.md` y entrada en `docs/cobertura-referencias.md`
+- [X] T240 [P] [H4a] Pruebas nuevas primero y vistas fallar: unitarias de la ruta y de la vista inicial (`tests/unit/vista.test.ts`) y de pantalla del Resumen (`tests/e2e/ia-real-h4-resumen.spec.ts`, `playwright.h4.config.ts`)
+- [X] T241 [H4a] Mecánica: subrutas por hash, `vistaInicial()`, control «Resumen | Detalle» y foco/ancla hacia el Detalle
+- [X] T242 [H4a] Resumen de Diagnóstico: madurez y barras por pilar, 3 cifras, estado compacto y 4 botones
+- [X] T243 [H4a] Mutaciones (técnico a la Empresa en el Resumen, número en un pilar sin evidencia, enlace que no lleva a su sección), restaurar y anotar en `docs/evidencia/mutacion-h4a.md`
+- [X] T244 [H4a] Capturas `docs/evidencia/h4a-*.png` y autoverificación; suites existentes con el Detalle por defecto sin editar pruebas (`typecheck:all`, `test:all`, `build && check`, suites completas de la 001 y la 002, `matrix.spec.ts` ×10 y `playwright.h4.config.ts`; ver el informe del lote)
+- [ ] T245 [PERSONA] Revisión humana de H4a (lista en `docs/revision-002.md`)
+
+**H4b (pendiente):**
+
+- [ ] T246 [H4b] Resumen de Estrategia y Resumen del Tablero con la misma mecánica
+
+---
+
 ## Lote F — Cierre (P1/P2 · todas las historias construidas)
 
 **Objetivo**: accesibilidad y responsive de lo nuevo, documentación honesta, evidencia, repaso de todos los criterios y una **grabación de respaldo** de la demo por si falla la conexión o el crédito el día de la presentación.
@@ -441,7 +460,7 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ## Dependencias y orden
 
-- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N → H → H2 → H3** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
+- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N → H → H2 → H3 → H4a → H4b** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
 - **Las tareas de cuenta y crédito (T001, T002, T003) no bloquean A** y se pueden hacer mientras el agente trabaja; **bloquean la prueba de humo del lote C** (T064). La clave y `server/.env` (T018) también.
 - **A bloquea todo**: T004 primero; T005, T006, T008, T010 y T012 en paralelo; T007 depende de T006; T009 de T008; T011 de T010 y T009; T013 de T011; T014 de T007.
 - **B depende de A**: T023 antes de los extractores; T025 antes de las pruebas que usan los fixtures; las pruebas T026, T027, T028, T029 y T030 antes de su implementación; T037 depende de T033, T034, T035 y T036; T040 de T037, T038 y T039.

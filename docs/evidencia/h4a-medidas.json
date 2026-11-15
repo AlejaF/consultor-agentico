@@ -1,0 +1,30 @@
+{
+  "320": {
+    "alto": 2066,
+    "madurez": 1,
+    "cifras": 3,
+    "estado": 1,
+    "botones": 4
+  },
+  "768": {
+    "alto": 1479,
+    "madurez": 1,
+    "cifras": 3,
+    "estado": 1,
+    "botones": 4
+  },
+  "1280": {
+    "alto": 912,
+    "madurez": 1,
+    "cifras": 3,
+    "estado": 1,
+    "botones": 4
+  },
+  "1920": {
+    "alto": 912,
+    "madurez": 1,
+    "cifras": 3,
+    "estado": 1,
+    "botones": 4
+  }
+}

@@ -10,11 +10,12 @@ export interface TableData {
 }
 
 /** Marco común: pregunta, valor en texto, gráfico y tabla equivalente plegada (abierta al imprimir). */
-export function ChartFrame({ title, summary, table, children, testId, className = '' }: { title: string; summary: ReactNode; table: TableData; children: ReactNode; testId: string; className?: string }) {
-  const id = useId();
+export function ChartFrame({ title, summary, table, children, testId, className = '', headingId }: { title: string; summary: ReactNode; table: TableData; children: ReactNode; testId: string; className?: string; headingId?: string }) {
+  const uid = useId();
+  const hid = headingId ?? `${uid}-t`;
   return (
-    <section className={`card chart ${className}`.trim()} aria-labelledby={`${id}-t`} data-testid={testId}>
-      <h2 id={`${id}-t`} className="chart-title">
+    <section className={`card chart ${className}`.trim()} aria-labelledby={hid} data-testid={testId}>
+      <h2 id={hid} className="chart-title">
         {title}
       </h2>
       <p className="chart-summary">{summary}</p>

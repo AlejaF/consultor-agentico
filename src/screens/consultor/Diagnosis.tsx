@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Kicker } from '../../components/Kicker';
 import { FindingCard } from '../../components/FindingCard';
 import { GenerateButton } from '../../components/GenerateButton';
@@ -20,8 +21,12 @@ import { formatDateTime, formatDecimal } from '../../domain/format';
 import { canGenerate } from '../../domain/progress';
 import { projectInfo } from '../../domain/lookup';
 import { useAppState } from '../../state/context';
+import { DiagnosisResumen } from '../../components/DiagnosisResumen';
+import { VistaControl } from '../../components/VistaControl';
+import { sectionTargetId, vistaInicial, type Vista } from '../../app/vista';
+import { DIMENSIONS } from '../../data/diagnosis';
 
-export function Diagnosis({ projectId }: { projectId: string }) {
+export function Diagnosis({ projectId, vista: vistaRuta, seccion }: { projectId: string; vista?: string; seccion?: string }) {
   const { state, dispatch } = useAppState();
   const { project, company } = projectInfo(projectId, state.createdProjects);
   const ps = state.projects[projectId];
@@ -30,6 +35,27 @@ export function Diagnosis({ projectId }: { projectId: string }) {
   const real = view.mode === 'real';
   const evidenceCount = real ? (ps.serverFiles ?? []).length : buildEvidenceItems(project, company.name, ps.localFiles).length;
   const issued = d.status === 'issued';
+  // AG-036: la ruta base abre la vista inicial (compilación); sin diagnóstico no hay nada que resumir y se muestra la pantalla de generar.
+  const vista: Vista = d.status === 'none' ? 'detalle' : vistaRuta === 'resumen' || vistaRuta === 'detalle' ? vistaRuta : vistaInicial();
+  const pilaresConHallazgos = DIMENSIONS.filter((dim) => view.findings.some((f) => f.dimension === dim.id)).map((dim) => dim.id as string);
+  const destino = vista === 'detalle' ? sectionTargetId(seccion, pilaresConHallazgos) : null;
+  useEffect(() => {
+    if (!destino) return;
+    // Después del foco automático en el h1 (AppShell): mueve el foco al encabezado de la sección y lo deja a la vista.
+    const alinear = () => {
+      const el = document.getElementById(destino);
+      if (!el) return;
+      el.setAttribute('tabindex', '-1');
+      el.focus({ preventScroll: true });
+      el.scrollIntoView({ block: 'start' });
+    };
+    const t = window.setTimeout(alinear, 0);
+    const t2 = window.setTimeout(() => document.getElementById(destino)?.scrollIntoView({ block: 'start' }), 250); // por si el contenido cambió de alto
+    return () => {
+      window.clearTimeout(t);
+      window.clearTimeout(t2);
+    };
+  }, [destino, projectId, d.status]);
 
   const cited = real
     ? view.findings.filter((f) => (f.realCitations?.length ?? 0) > 0).length
@@ -48,6 +74,12 @@ export function Diagnosis({ projectId }: { projectId: string }) {
         {company.name} · Proyecto {projectId}
       </p>
 
+      {d.status !== 'none' && <VistaControl projectId={projectId} vista={vista} />}
+
+      {vista === 'resumen' && d.status !== 'none' ? (
+        <DiagnosisResumen projectId={projectId} ps={ps} findings={view.findings} real={real} issued={issued} />
+      ) : (
+      <>
       <ModeSelector projectId={projectId} />
 
       {d.status === 'none' && real && <RealGenerate projectId={projectId} companyName={company.name} />}
@@ -130,6 +162,8 @@ export function Diagnosis({ projectId }: { projectId: string }) {
           {real && ps.real?.diagnosisRun && <TraceView run={ps.real.diagnosisRun} />}
           </div>
         </div>
+      )}
+      </>
       )}
     </>
   );

@@ -227,6 +227,10 @@ Orden: … → N → H → **H2** → F (G diferido). H2 no renumera F ni G. Sol
 
 Orden: … → N → H → H2 → **H3** → F (G diferido). H3 no renumera F ni G. Solo presentación. Funciones puras nuevas en `src/domain/charts.ts` (los datos de cada gráfico a partir del estado existente, con pruebas unitarias; `visual.ts` no cambia salvo lo ya existente) y componentes de presentación reutilizables en `src/components/charts/` que solo reciben datos ya calculados (`Meter`, `SegmentedBar`, `RankedBars`, `Heatmap`, `DotMatrix`, `ChartFrame` con «Ver como tabla» y tooltip). SVG y CSS propios en `src/styles/h3.css`, con tokens. La composición usa CSS grid sobre los contenedores existentes y envoltorios aditivos; nada de la 001 se mueve.
 
+## Vista Resumen / Detalle (AG-036) — lotes H4a y H4b, se ejecutan ANTES de F
+
+Orden: … → H2 → H3 → **H4a → H4b** → F (G diferido). H4 no renumera F ni G. Solo presentación e interacción. La vista inicial se fija en compilación con `VITE_VISTA_INICIAL` (producción: «resumen»; los servidores de `playwright.config.ts` y `playwright.real.config.ts` la fijan en «detalle», así ninguna prueba existente cambia). Las subrutas `/resumen` y `/detalle[/<sección>]` se resuelven dentro de `matchRoute` sin añadir identificadores a la tabla de rutas (la prueba de matriz exige que las direcciones de muestra cubran exactamente esa tabla). Las pruebas del Resumen viven en archivos nuevos `ia-real-h4-*.spec.ts` y corren con `playwright.h4.config.ts` (vista por defecto de producción).
+
 ## Riesgos y decisiones abiertas
 
 1. **Modelos por etapa** — *decisión de la persona (2026-11-11)*: solo como **PROPUESTA pendiente**: `gpt-6-luna` en desarrollo y `gpt-6.1-sol` en la demo (research.md §3). La persona decidirá antes de la prueba de humo del lote C y lo registrará en `docs/decisiones.md`. Las variables de entorno no traen valor por defecto aprobado. NO VERIFICADO el desempeño real de cada modelo con estas tareas.

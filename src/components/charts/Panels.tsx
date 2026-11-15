@@ -24,6 +24,7 @@ export function CoveragePanel({ findings, decisions }: { findings: readonly F[];
   return (
     <ChartFrame
       testId="chart-coverage"
+      headingId="cobertura-titulo"
       title="Cobertura de evidencia: ¿qué documentos sostienen cada pilar?"
       summary={none ? 'Sin documentos citados todavía.' : `${countOf(data.total, 'hallazgo vigente', 'hallazgos vigentes')} (aceptados o editados y verificados) en ${countOf(data.docs.length, 'documento', 'documentos')}. Una celda vacía significa «sin evidencia».`}
       table={{
