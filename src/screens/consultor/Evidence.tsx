@@ -1,3 +1,4 @@
+import { Kicker } from '../../components/Kicker';
 import { useRef } from 'react';
 import { CompanyData } from '../../components/CompanyData';
 import { CaptureProgress } from '../../components/CaptureProgress';
@@ -37,6 +38,7 @@ export function Evidence({ projectId }: { projectId: string }) {
       <p>
         <a className="btn" href="#/consultor">← Proyectos</a>
       </p>
+      <Kicker>PASO 1 · EVIDENCIA</Kicker>
       <h1>Captura de evidencia</h1>
       <p>
         {company.name} · Proyecto {project.id}

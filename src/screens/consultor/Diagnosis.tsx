@@ -1,3 +1,4 @@
+import { Kicker } from '../../components/Kicker';
 import { FindingCard } from '../../components/FindingCard';
 import { GenerateButton } from '../../components/GenerateButton';
 import { IssuedNotice } from '../../components/IssuedNotice';
@@ -40,6 +41,7 @@ export function Diagnosis({ projectId }: { projectId: string }) {
           ← Captura de evidencia
         </a>
       </p>
+      <Kicker>PASO 2 · DIAGNÓSTICO</Kicker>
       <h1>Diagnóstico</h1>
       <p>
         {company.name} · Proyecto {projectId}

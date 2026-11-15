@@ -96,7 +96,7 @@ test.describe('Consultor', () => {
       expect(await textoFueraDeLoTecnico(page), `paso ${paso}`).not.toContain(MODELO);
     }
     await abrir(page, 'P-A', 'diagnostico');
-    await expect(page.getByTestId('maturity-level-datos').getByTestId('ai-badge')).toHaveText(ROTULO);
+    await expect(page.getByTestId('maturity-panel').locator('.block-head').getByTestId('ai-badge')).toHaveText(ROTULO); // H2: el rótulo va unido al encabezado del bloque (principio III, AG-023)
     await expect(page.getByTestId('missing-info').getByTestId('ai-badge')).toHaveText(ROTULO);
   });
 

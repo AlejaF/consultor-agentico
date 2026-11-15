@@ -498,3 +498,14 @@ Aprobada por la persona responsable el 2026-11-14 (T171) y aplicada (T172). Vers
 - **Niveles sin nombre**: los datos y la spec no los definen, así que solo se muestra el número.
 - **Promedio por pilar (tablero)**: solo proyectos reales con diagnóstico emitido; los simulados no tienen nivel por pilar (no existen en los datos de la 001).
 - **Estado de revisión**: las cifras usan solo las categorías existentes (aceptado, editado, rechazado, pendiente, NO VERIFICADO); no se tocó `src/domain/review.ts`.
+
+
+## Lote H2 de la 002 «Rediseño visual de composición» (2026-11-14)
+
+- **Alcance**: solo presentación (AG-034). Sin cambios de reglas, índice, verificación, roles ni persistencia; sin librerías; las pantallas simuladas cambian solo por CSS y envoltorios aditivos (clases `kicker`, `kpi-grid`, `findings-grid`, `block-head`, `dash-columns`).
+- **Rótulo de IA (principio III, no II; AG-023)**: uno **por bloque**, visible y unido al encabezado (Madurez por dimensión, Riesgos, Ruta sugerida) y uno por tarjeta de hallazgo. Cada bloque rotulado contiene solo contenido generado o calculado a partir de él (el índice dice «Calculado por código a partir de niveles propuestos por IA»). Aparece también en el informe de la Empresa y en la impresión. **Prueba de la 002 cambiada**: `ia-real-roles.spec.ts` exigía el rótulo dentro de cada fila de madurez; ahora exige el del encabezado del bloque. AG-023 sigue probada: ese test, `visualRedesign.test.ts` (un rótulo por bloque, no seis), las pruebas de hallazgos (rótulo en cada tarjeta) y la prueba de estrategia (rótulo en cada encabezado).
+- **Impresión**: un `<details>` cerrado no se imprime. El informe imprimible los lleva `open`, y el CSS de impresión los muestra abiertos en las demás vistas (probado emulando impresión).
+- **Texto accesible**: los indicadores ✓ y ▾ se añaden con texto alternativo vacío para no alterar el nombre accesible de los botones.
+- **Corrección de redacción**: «Calificación de el diagnóstico» → «Calificación del diagnóstico» (ninguna prueba de la 001 comprobaba esa cadena).
+- **Pendiente (P3)**: chips de estado y barra de avance dentro de las filas de la tabla de equipos.
+- **Prototipo de la profesora**: no se pudo ver como imagen (no hay herramienta para renderizar PDF); se usó su texto extraído y las observaciones de la persona responsable.

@@ -219,6 +219,10 @@ Diseño mínimo: `createdProjects?: { id, companyName, sector?, createdAt }[]` o
 
 Orden: A → B → C → D → D2 → D3 → E → N → **H** → F (G diferido). H no renumera F ni G. Es solo presentación y **aditiva**: componentes nuevos (`ScaleBar`, `MaturityIndexCard`, `ReviewStats`, `PillarBars`) y clases CSS con tokens existentes; el marcado, los textos y los `data-testid` actuales no cambian. Sin librerías nuevas. Los niveles no tienen nombre en los datos ni en la spec: solo se muestra el número.
 
+## Rediseño visual de composición (AG-034) — lote H2, se ejecuta ANTES de F
+
+Orden: … → N → H → **H2** → F (G diferido). H2 no renumera F ni G. Solo presentación: tokens nuevos en `tokens.css`, CSS global (barra lateral, encabezados, tarjetas, chips, cifras, movimiento con `prefers-reduced-motion`) y recomposición del marcado **solo de componentes de la 002** (madurez real, hallazgos reales, estrategia real, tablero ampliado). Las pantallas simuladas cambian solo por CSS y envoltorios aditivos. El rótulo de IA (principio III, AG-023) va unido al encabezado de cada bloque de madurez y de estrategia; cada hallazgo conserva el suyo.
+
 ## Riesgos y decisiones abiertas
 
 1. **Modelos por etapa** — *decisión de la persona (2026-11-11)*: solo como **PROPUESTA pendiente**: `gpt-6-luna` en desarrollo y `gpt-6.1-sol` en la demo (research.md §3). La persona decidirá antes de la prueba de humo del lote C y lo registrará en `docs/decisiones.md`. Las variables de entorno no traen valor por defecto aprobado. NO VERIFICADO el desempeño real de cada modelo con estas tareas.

@@ -51,9 +51,11 @@ function AnalysisSection({ id, title, analysis }: { id: string; title: string; a
 export function StrategyView({ derived, ai = false, findings }: { derived: DerivedStrategy; ai?: boolean; findings?: readonly Finding[] }) {
   return (
     <div>
-      <p>
-        {ai ? <AiBadge /> : <SimBadge />}
-      </p>
+      {!ai && (
+        <p>
+          <SimBadge />
+        </p>
+      )}
       {derived.unverifiedAdopted > 0 && (
         <p className="subtitle no-support" data-testid="unverified-unused">
           {unverifiedLine(derived.unverifiedAdopted)}
@@ -70,15 +72,21 @@ export function StrategyView({ derived, ai = false, findings }: { derived: Deriv
       ) : (
         <div data-testid="strategy-content" className="stack">
           <section aria-labelledby="estr-riesgos">
-            <h2 id="estr-riesgos">Riesgos</h2>
-            <div className="stack">
+            <div className="block-head">
+              <h2 id="estr-riesgos">Riesgos</h2>
+              {ai && <AiBadge />}
+            </div>
+            <div className="stack risk-grid">
               {derived.risks.map((r) => (
                 <RiskCard key={r.id} item={r} {...(findings ? { findings } : {})} />
               ))}
             </div>
           </section>
           <section aria-labelledby="estr-ruta">
-            <h2 id="estr-ruta">Ruta sugerida</h2>
+            <div className="block-head">
+              <h2 id="estr-ruta">Ruta sugerida</h2>
+              {ai && <AiBadge />}
+            </div>
             <RouteTimeline items={derived.route} {...(findings ? { findings } : {})} />
           </section>
           {!ai && <AnalysisSection id="estr-sector" title="Análisis de sector" analysis={derived.sector} />}

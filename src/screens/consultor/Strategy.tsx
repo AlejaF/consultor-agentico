@@ -1,3 +1,4 @@
+import { Kicker } from '../../components/Kicker';
 import { DeliveryStatus } from '../../components/DeliveryStatus';
 import { GenerateButton } from '../../components/GenerateButton';
 import { StrategyView } from '../../components/StrategyView';
@@ -22,6 +23,7 @@ export function Strategy({ projectId }: { projectId: string }) {
 
   return (
     <>
+      <Kicker>PASO 4 · ESTRATEGIA</Kicker>
       <h1>Estrategia</h1>
       <p>
         {company.name} · Proyecto {projectId}
@@ -80,7 +82,7 @@ export function Strategy({ projectId }: { projectId: string }) {
           {real && ps.real?.strategyRun && <RunNotices run={ps.real.strategyRun} />}
           <StrategyView derived={deriveStrategy(getStrategy(ps).template, view.findings, ps.diagnosis.decisions)} ai={real} {...(real ? { findings: view.findings } : {})} />
           {real && ps.real?.strategyRun && <TraceView run={ps.real.strategyRun} />}
-          {status === 'sent' && <DeliveryStatus deliveryId={`st/${projectId}`} label="la estrategia" />}
+          {status === 'sent' && <DeliveryStatus deliveryId={`st/${projectId}`} label="de la estrategia" />}
         </>
       )}
     </>

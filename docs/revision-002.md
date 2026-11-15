@@ -191,3 +191,16 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 5. **Anchos y capturas** (1 min): reduce la ventana a 320 px (sin barra horizontal) y mira `docs/evidencia/h-*.png`.
 
 **Pendiente tuyo**: T203 (esta revisión, `build && check` con tu lista de nombres y commit).
+
+
+## Lote H2 — rediseño visual de composición (lista corta, máx. 10 min)
+
+**Para quien no es técnico**: la aplicación se ve como un tablero: barra lateral de color con el paso activo en píldora blanca, títulos con etiqueta encima, tarjetas con sombra suave, y la madurez en dos columnas (nivel general grande a la izquierda, seis barras a la derecha). Las reglas no cambiaron.
+
+1. **Escritorio** (3 min): `npm run dev:all` con `MODEL_PROVIDER=fake`; entra como Consultor, genera un diagnóstico real y acepta hallazgos en «Revisión». **Comprobar**: tarjeta de nivel general grande en color primario, una sola escala 1–5 encima de las barras, cada dimensión con una línea corta y chips «R1…»; «Sin evidencia suficiente» con barra rayada y sin número; el rótulo «Generado por IA · requiere revisión humana» una vez junto al título del bloque.
+2. **Hallazgos** (2 min): tarjetas en cuadrícula; el botón elegido (Aceptar, Rechazar) se ve relleno con ✓; las citas se leen como fuente subrayada.
+3. **Imprimir** (2 min): abre el informe y la vista previa de impresión (en blanco y negro). **Comprobar**: sin barra lateral; el detalle de cada dimensión sale abierto; el rótulo de IA se ve.
+4. **Tablero del Líder y Proyectos** (2 min): cifras de igual altura, la primera en color; «Cola de revisión» y «Madurez por pilar (promedio)» en dos columnas (la segunda solo si hay un proyecto real emitido); tarjetas de proyecto alineadas.
+5. **Móvil y tablet** (1 min): reduce la ventana a 768 y 320 px: mismos colores (la barra de pestañas también es de color), sin barra de desplazamiento horizontal. Mira `docs/evidencia/h2-*.png`.
+
+**Pendiente tuyo**: T215 (esta revisión, `build && check` con tu lista de nombres y commit). **Pendiente documentado (P3)**: chips y barra de avance dentro de las filas de la tabla de equipos.

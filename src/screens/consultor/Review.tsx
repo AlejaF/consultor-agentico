@@ -1,3 +1,4 @@
+import { Kicker } from '../../components/Kicker';
 import { useState } from 'react';
 import { getDiagnosis } from '../../providers';
 import { AiBadge } from '../../components/AiBadge';
@@ -42,6 +43,7 @@ export function Review({ projectId }: { projectId: string }) {
           ← Diagnóstico
         </a>
       </p>
+      <Kicker>PASO 3 · REVISIÓN</Kicker>
       <h1>Revisión y emisión</h1>
       <p>
         {company.name} · Proyecto {projectId}
@@ -88,7 +90,7 @@ export function Review({ projectId }: { projectId: string }) {
         </section>
       )}
       {issued && (
-        <DeliveryStatus deliveryId={`dx/${projectId}`} label="el diagnóstico" />
+        <DeliveryStatus deliveryId={`dx/${projectId}`} label="del diagnóstico" />
       )}
 
       <div aria-live="polite" role="status" className="visually-hidden" data-testid="decision-announcer">

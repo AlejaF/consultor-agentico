@@ -16,7 +16,7 @@ export function PillarGroups({ idPrefix, render, filter, findings: source = DIAG
         return (
           <section key={dim.id} aria-labelledby={`${idPrefix}-${dim.id}`}>
             <h2 id={`${idPrefix}-${dim.id}`}>{pillarLabel(dim.label)}</h2>
-            <div className="stack">{findings.map((f) => render(f))}</div>
+            <div className="stack findings-grid">{findings.map((f) => render(f))}</div>
           </section>
         );
       })}

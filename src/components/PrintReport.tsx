@@ -51,7 +51,7 @@ export function PrintReport({ content, companyName, projectLabel, ai = false, ma
                 </p>
                 {ai ? (
                   // IA real (AG-031): el índice sale de los niveles con respaldo vigente y se calcula por código.
-                  maturity ? <MaturityPanel evaluation={maturity} /> : <MaturityIndexReal index={content.maturityIndex} />
+                  maturity ? <MaturityPanel evaluation={maturity} openDetails /> : <MaturityIndexReal index={content.maturityIndex} />
                 ) : (
                   <p>
                     {content.maturityIndex !== null && (

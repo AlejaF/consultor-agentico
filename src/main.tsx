@@ -5,6 +5,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/visual.css';
+import './styles/redesign.css';
 import './styles/print.css';
 
 createRoot(document.getElementById('root')!).render(

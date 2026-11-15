@@ -1,3 +1,4 @@
+import { Kicker } from '../../components/Kicker';
 import { useState } from 'react';
 import { KpiCard } from '../../components/KpiCard';
 import { ReviewQueue } from '../../components/ReviewQueue';
@@ -32,12 +33,13 @@ export function Dashboard() {
 
   return (
     <>
+      <Kicker>LÍDER · TABLERO</Kicker>
       <h1>Tablero</h1>
       <p>
         Equipos del programa. Todos los datos son ficticios. Los proyectos, calificaciones y entregas iniciales son ejemplos precargados;
         «Restablecer demo» los recupera.
       </p>
-      <section aria-label="Indicadores" className="cards">
+      <section aria-label="Indicadores" className="cards kpi-grid">
         <KpiCard testId="kpi-equipos" label="Equipos activos" value={String(activeTeams)} />
         <KpiCard testId="kpi-por-revisar" label="Entregas por revisar" value={String(pending.length)} />
         <KpiCard testId="kpi-promedio" label="Promedio de calificaciones" value={mean} />
@@ -48,7 +50,6 @@ export function Dashboard() {
           {MIX_NOTE}
         </p>
       )}
-      {hasRealIssued(state) && <PillarAverages state={state} />}
       <section aria-labelledby="tab-equipos">
         <h2 id="tab-equipos">Equipos</h2>
         <div className="field">
@@ -57,10 +58,13 @@ export function Dashboard() {
         </div>
         <TeamsTable state={state} query={query} />
       </section>
-      <section aria-labelledby="tab-cola">
-        <h2 id="tab-cola">Cola de revisión</h2>
-        <ReviewQueue deliveries={pending} />
-      </section>
+      <div className="dash-columns">
+        <section aria-labelledby="tab-cola">
+          <h2 id="tab-cola">Cola de revisión</h2>
+          <ReviewQueue deliveries={pending} />
+        </section>
+        {hasRealIssued(state) && <PillarAverages state={state} />}
+      </div>
     </>
   );
 }

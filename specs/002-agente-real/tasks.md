@@ -343,6 +343,25 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ---
 
+## Lote H2 — Rediseño visual de composición (P2 · AG-034) · *se ejecuta ANTES de F*
+
+**Propósito**: composición de tablero (barra lateral, encabezados, tarjetas, madurez en dos columnas, hallazgos y estrategia en cuadrícula). Numerado a continuación de T203; F y G **no se renumeran**. Entrega por prioridades: P1, P2 y P3.
+
+- [X] T204 [H2] Spec-first: AG-034 en `spec.md`; este lote en `tasks.md`; nota de orden en `plan.md`
+- [X] T205 [P] [H2] Pruebas estructurales primero (`tests/unit/visualRedesign.test.ts` y `tests/e2e/ia-real-rediseno.spec.ts`, 320/768/1280): tarjeta de nivel y lista de barras sin duplicar el índice; «Sin evidencia» sin número y dicho una vez; hallazgos en cuadrícula; tarjetas de cifras de igual altura; rótulo de IA unido al encabezado del bloque; barra lateral; sin desplazamiento horizontal
+- [X] T206 [H2] Ver fallar T205 y anotarlo en `docs/evidencia/h2-rojo.md`
+- [X] T207 [H2] **P1** Sistema visual: tokens nuevos, barra lateral y superior, encabezados con etiqueta, tarjetas, chips, cifras en cuadrícula, movimiento con `prefers-reduced-motion`
+- [X] T208 [H2] **P1** Proyectos (cuadrícula de igual altura) y Madurez real en dos columnas (tarjeta de nivel + lista compacta de barras), con el rótulo de IA unido al encabezado
+- [X] T209 [H2] **P2** Hallazgos en cuadrícula (citas como fuente, decisión elegida inequívoca) y Estrategia real (tarjetas, chips y línea de tiempo)
+- [~] T210 [H2] **P3** Tablero del Líder: HECHO fila de cifras de igual altura (la primera en primario), dos columnas (Cola de revisión y Madurez por pilar con una sola escala); **PENDIENTE (documentado)**: chips de estado y barra de avance dentro de las filas de la tabla de equipos
+- [X] T211 [H2] Corregir «Calificación de el diagnóstico» → «del» (ninguna prueba de la 001 comprueba esa cadena)
+- [X] T212 [H2] Mutación (volver a dibujar un número en una dimensión sin evidencia), restaurar y anotar en `docs/evidencia/mutacion-h2.md`
+- [X] T213 [H2] Capturas `docs/evidencia/h2-*.png` en 320, 768 y 1280 px
+- [ ] T214 [H2] `typecheck:all`, `test:all`, `build && check:all` y solo las pruebas e2e afectadas; `docs/decisiones.md`, `docs/revision-002.md` (10 min), `docs/tiempos-002.md`
+- [ ] T215 [PERSONA] Revisión humana del lote H2, `build && check` con la lista de nombres y commit
+
+---
+
 ## Lote F — Cierre (P1/P2 · todas las historias construidas)
 
 **Objetivo**: accesibilidad y responsive de lo nuevo, documentación honesta, evidencia, repaso de todos los criterios y una **grabación de respaldo** de la demo por si falla la conexión o el crédito el día de la presentación.
@@ -393,7 +412,7 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ## Dependencias y orden
 
-- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N → H** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
+- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N → H → H2** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
 - **Las tareas de cuenta y crédito (T001, T002, T003) no bloquean A** y se pueden hacer mientras el agente trabaja; **bloquean la prueba de humo del lote C** (T064). La clave y `server/.env` (T018) también.
 - **A bloquea todo**: T004 primero; T005, T006, T008, T010 y T012 en paralelo; T007 depende de T006; T009 de T008; T011 de T010 y T009; T013 de T011; T014 de T007.
 - **B depende de A**: T023 antes de los extractores; T025 antes de las pruebas que usan los fixtures; las pruebas T026, T027, T028, T029 y T030 antes de su implementación; T037 depende de T033, T034, T035 y T036; T040 de T037, T038 y T039.

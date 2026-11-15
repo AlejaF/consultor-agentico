@@ -1,3 +1,4 @@
+import { Kicker } from '../../components/Kicker';
 import { useState } from 'react';
 import { NewProjectForm } from '../../components/NewProjectForm';
 import { ProjectCard } from '../../components/ProjectCard';
@@ -23,6 +24,7 @@ export function Projects() {
   const mine = allProjects(state.createdProjects).filter((p) => p.ownedByDemoConsultor);
   return (
     <>
+      <Kicker>PROYECTOS</Kicker>
       <h1>Proyectos</h1>
       <p>
         Proyectos del Equipo 1. Todos los datos son ficticios. Los proyectos, calificaciones y entregas iniciales son ejemplos precargados;

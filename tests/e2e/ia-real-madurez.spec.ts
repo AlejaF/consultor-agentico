@@ -50,7 +50,7 @@ test.describe('madurez en modo IA real', () => {
     await expect(nivel(page, 'datos')).toContainText('basado en 1 hallazgo');
     await expect(nivel(page, 'datos')).toContainText('Deriva de: R1');
     await expect(nivel(page, 'datos')).toContainText('Las cifras viven en cada área');
-    await expect(nivel(page, 'datos').getByTestId('ai-badge')).toHaveText(ROTULO);
+    await expect(page.getByTestId('maturity-panel').locator('.block-head').getByTestId('ai-badge')).toHaveText(ROTULO); // H2: el rótulo va unido al encabezado del bloque (AG-023)
     await expect(nivel(page, 'infraestructura')).toContainText('Nivel 3 de 5');
     await expect(nivel(page, 'gobernanza')).toContainText('Nivel 4 de 5');
     await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: 3,0 de 5'); // (2 + 3 + 4) / 3

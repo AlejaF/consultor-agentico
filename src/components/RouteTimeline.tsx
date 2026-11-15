@@ -5,7 +5,7 @@ import { DerivedFrom } from './DerivedFrom';
 /** Ruta sugerida por fases, con su horizonte. */
 export function RouteTimeline({ items, findings }: { items: readonly DerivedItem[]; findings?: readonly Finding[] }) {
   return (
-    <ol className="timeline list-plain">
+    <ol className="timeline timeline-line list-plain">
       {items.map((it, i) => (
         <li key={it.id} className="card" data-testid={`phase-${it.id}`}>
           <h3>
@@ -13,7 +13,7 @@ export function RouteTimeline({ items, findings }: { items: readonly DerivedItem
           </h3>
           {it.horizon && (
             <p>
-              <span className="badge badge-pending">Horizonte: {it.horizon}</span>
+              <span className="badge badge-pending chip-horizon">Horizonte: {it.horizon}</span>
             </p>
           )}
           <p>{it.detail}</p>

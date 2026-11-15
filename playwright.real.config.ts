@@ -13,7 +13,7 @@ export default defineConfig({
   workers: 1,
   fullyParallel: false,
   reporter: 'list',
-  use: { baseURL: `http://localhost:${WEB}` },
+  use: { baseURL: `http://localhost:${WEB}`, reducedMotion: 'reduce' },
   webServer: [
     {
       command: 'node --import tsx src/index.ts',
