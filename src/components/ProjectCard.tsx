@@ -14,7 +14,7 @@ interface Props {
 
 export function ProjectCard({ project, company, progress, deliveries = [] }: Props) {
   return (
-    <article className="card project-card">
+    <article className="card project-card" data-testid={`project-${project.id}`}>
       <h2>{company.name}</h2>
       <p className="subtitle">
         Proyecto {project.id} · {company.sector}

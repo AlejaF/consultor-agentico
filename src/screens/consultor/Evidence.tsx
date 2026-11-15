@@ -8,8 +8,7 @@ import { RealEvidence } from '../../components/RealEvidence';
 import { modeOf } from '../../providers';
 import { Notice } from '../../components/Notice';
 import { QuestionForm } from '../../components/QuestionForm';
-import { COMPANIES } from '../../data/companies';
-import { PROJECTS } from '../../data/projects';
+import { projectInfo } from '../../domain/lookup';
 import { CAPTURE_QUESTIONS } from '../../data/questions';
 import { buildEvidenceItems } from '../../domain/evidence';
 import { canGenerate, captureProgress } from '../../domain/progress';
@@ -19,8 +18,7 @@ import { addedThisSession, newFileId } from '../../state/session';
 export function Evidence({ projectId }: { projectId: string }) {
   const { state, dispatch } = useAppState();
   const uploadRef = useRef<HTMLButtonElement>(null);
-  const project = PROJECTS.find((p) => p.id === projectId)!;
-  const company = COMPANIES.find((c) => c.id === project.companyId)!;
+  const { project, company } = projectInfo(projectId, state.createdProjects);
   const ps = state.projects[projectId];
 
   const items = buildEvidenceItems(project, company.name, ps.localFiles);
@@ -52,7 +50,7 @@ export function Evidence({ projectId }: { projectId: string }) {
 
       <div className="evidence-layout">
         <div className="evidence-main">
-          <CompanyData company={company} />
+          <CompanyData company={company} created={project.created === true} />
           <QuestionForm
             questions={CAPTURE_QUESTIONS}
             answers={ps.answers}

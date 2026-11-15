@@ -10,7 +10,7 @@ import { useAppState } from '../state/context';
 /** Pantalla del informe: bloqueo explicado, o el informe con el botón de impresión del navegador (FR-044, FR-045, FR-048). */
 export function ReportPage({ projectId, scope, back }: { projectId: string; scope: ReportScope; back: { href: string; label: string } }) {
   const { state } = useAppState();
-  const { company } = projectInfo(projectId);
+  const { company } = projectInfo(projectId, state.createdProjects);
   const ps = state.projects[projectId];
   const view = getDiagnosis(ps);
   const ai = view.mode === 'real';

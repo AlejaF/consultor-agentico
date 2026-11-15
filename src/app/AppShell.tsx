@@ -7,17 +7,18 @@ import { SideNav } from '../components/SideNav';
 import { COMPANY_PROJECT_ID } from '../data/survey';
 import { projectInfo } from '../domain/lookup';
 import { NOTICE_TEXT, useAppState } from '../state/context';
+import type { CreatedProject } from '../state/types';
 import type { Role, RouteMatch } from './router';
 
 /** Al cambiar de ruta: título, anuncio y foco en el h1 (FR-038, FR-040). */
-function useRouteAnnouncer(route: RouteMatch) {
+function useRouteAnnouncer(route: RouteMatch, created: readonly CreatedProject[] | undefined) {
   const [announcement, setAnnouncement] = useState('');
   const first = useRef(true);
   const key = `${route.id}|${JSON.stringify(route.params)}`;
   useEffect(() => {
     // Los informes llevan el nombre de la empresa en el título del documento: es también el nombre sugerido al guardar como PDF (FR-047)
     const isReport = route.id === 'consultor.report' || route.id === 'lider.deliveryReport' || route.id === 'contacto.report';
-    document.title = isReport ? `${route.title} · ${projectInfo(route.params.projectId ?? COMPANY_PROJECT_ID).company.name} (DEMO)` : `${route.title} · Consultor Agéntico (DEMO)`;
+    document.title = isReport ? `${route.title} · ${projectInfo(route.params.projectId ?? COMPANY_PROJECT_ID, created).company.name} (DEMO)` : `${route.title} · Consultor Agéntico (DEMO)`;
     setAnnouncement(`Pantalla: ${route.title}`);
     if (first.current) {
       first.current = false;
@@ -42,8 +43,8 @@ interface Props {
 }
 
 export function AppShell({ route, role, routeNotice, onDismissRouteNotice, children }: Props) {
-  const { loadNotice, dismissLoadNotice, memoryMode } = useAppState();
-  const announcement = useRouteAnnouncer(route);
+  const { loadNotice, dismissLoadNotice, memoryMode, state: appState } = useAppState();
+  const announcement = useRouteAnnouncer(route, appState.createdProjects);
   const mainRef = useRef<HTMLElement>(null);
 
 

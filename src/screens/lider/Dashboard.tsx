@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { KpiCard } from '../../components/KpiCard';
 import { ReviewQueue } from '../../components/ReviewQueue';
 import { TeamsTable } from '../../components/TeamsTable';
-import { COMPANIES } from '../../data/companies';
-import { PROJECTS } from '../../data/projects';
 import { TEAMS } from '../../data/teams';
 import { buildEvidenceItems } from '../../domain/evidence';
 import { deliveriesFor } from '../../domain/deliveries';
+import { allProjects, companyFor } from '../../domain/lookup';
 import { formatDecimal, formatScore } from '../../domain/format';
 import { MIX_NOTE, averageMaturity, averageMixesModes } from '../../domain/maturity';
 import { projectProgress } from '../../domain/progress';
@@ -18,9 +17,9 @@ export function Dashboard() {
   const [query, setQuery] = useState('');
   const pending = deliveriesFor(state).filter((d) => !d.graded);
   const activeTeams = TEAMS.filter((t) =>
-    PROJECTS.some((p) => {
+    allProjects(state.createdProjects).some((p) => {
       if (p.teamId !== t.id) return false;
-      const company = COMPANIES.find((c) => c.id === p.companyId)!;
+      const company = companyFor(p, state.createdProjects);
       const ps = state.projects[p.id];
       return projectProgress({ evidenceCount: buildEvidenceItems(p, company.name, ps.localFiles).length, diagnosis: ps.diagnosis.status, strategy: ps.strategy.status }).percent > 0;
     }),

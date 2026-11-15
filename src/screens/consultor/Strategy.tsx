@@ -12,7 +12,7 @@ import { useAppState } from '../../state/context';
 
 export function Strategy({ projectId }: { projectId: string }) {
   const { state, dispatch } = useAppState();
-  const { company } = projectInfo(projectId);
+  const { company } = projectInfo(projectId, state.createdProjects);
   const ps = state.projects[projectId];
   const issued = ps.diagnosis.status === 'issued';
   const real = modeOf(ps) === 'real';

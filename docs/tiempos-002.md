@@ -41,3 +41,5 @@ Dos corridas manuales con `node scripts/smoke-real.mjs` (T064), sobre los mismos
 | Contraste con el panel de uso de la plataforma | no medido | no medido |
 
 Notas: el costo es una **estimación** (NO VERIFICADO contra el panel de uso). En ambas corridas el verificador aceptó todas las citas a la primera. Sol propuso más del doble de hallazgos y más citas por hallazgo con ~28 % menos tokens de entrada, a unas 18 veces el costo de Luna; la calidad de fondo no se evaluó de forma sistemática.
+
+| Lote N (Nuevo proyecto) | estimación sin medir: ~1,5 h de generación y pruebas, ~10 min de revisión de la persona (NO VERIFICADO) |

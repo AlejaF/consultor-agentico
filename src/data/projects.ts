@@ -17,6 +17,8 @@ export interface Project {
   sampleSlots: Slot[];
   /** Ranuras de ejemplo con procesamiento pendiente (se muestran «Procesando»). */
   pendingSlots: Slot[];
+  /** Solo los proyectos creados por el Consultor (lote N): solo trabajan en IA real. */
+  created?: true;
 }
 
 export const PROJECTS: readonly Project[] = [

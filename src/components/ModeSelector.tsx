@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { isCreatedId } from '../domain/createdProjects';
 import { modeOf } from '../providers';
 import { UNAVAILABLE_TEXT } from '../providers/availability';
 import { useAvailability } from '../providers/useAvailability';
@@ -19,6 +20,7 @@ export function ModeSelector({ projectId }: { projectId: string }) {
   const locked = ps.diagnosis.status !== 'none';
   const canClear = ps.diagnosis.status === 'generated' && ps.strategy.status === 'none';
   const realAvailable = availability.state === 'available';
+  const onlyReal = isCreatedId(projectId); // proyecto creado por el Consultor: solo IA real (AG-032)
 
   return (
     <section className="card mode-selector" aria-labelledby={`${uid}-t`} data-testid="mode-selector">
@@ -31,8 +33,9 @@ export function ModeSelector({ projectId }: { projectId: string }) {
           type="button"
           className="mode-option"
           aria-pressed={mode === 'simulated'}
-          aria-disabled={locked || undefined}
-          onClick={() => !locked && dispatch({ type: 'setMode', projectId, mode: 'simulated' })}
+          aria-disabled={locked || onlyReal || undefined}
+          aria-describedby={onlyReal ? `${uid}-solo` : undefined}
+          onClick={() => !locked && !onlyReal && dispatch({ type: 'setMode', projectId, mode: 'simulated' })}
         >
           Simulado
         </button>
@@ -47,6 +50,11 @@ export function ModeSelector({ projectId }: { projectId: string }) {
           IA real
         </button>
       </div>
+      {onlyReal && (
+        <p className="subtitle" id={`${uid}-solo`} data-testid="simulated-only-examples">
+          El modo Simulado solo está disponible en los proyectos de ejemplo
+        </p>
+      )}
       <div role="status" aria-live="polite" id={`${uid}-aviso`}>
         {availability.state === 'checking' && <p className="subtitle">Comprobando si hay un servicio local…</p>}
         {availability.state === 'unavailable' && (

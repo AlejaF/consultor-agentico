@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
-import { COMPANIES } from '../data/companies';
 import { getDiagnosis, modeOf } from '../providers';
-import { PROJECTS } from '../data/projects';
+import { allProjects, companyFor } from '../domain/lookup';
 import { deliveriesFor } from '../domain/deliveries';
 import { buildEvidenceItems } from '../domain/evidence';
 import { flowSteps, type StepStatus } from '../domain/flow';
@@ -47,8 +46,8 @@ export function SideNav({ role, route }: Props) {
   const is = (id: RouteId) => route.id === id;
 
   const projectId = role === 'consultor' ? route.params.projectId : undefined;
-  const project = projectId ? PROJECTS.find((p) => p.id === projectId) : undefined;
-  const company = project ? COMPANIES.find((c) => c.id === project.companyId)! : undefined;
+  const project = projectId ? allProjects(state.createdProjects).find((p) => p.id === projectId) : undefined;
+  const company = project ? companyFor(project, state.createdProjects) : undefined;
 
   let steps: ReturnType<typeof flowSteps> = [];
   if (project && company) {

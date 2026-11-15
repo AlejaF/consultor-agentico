@@ -1,4 +1,5 @@
 import type { Role } from '../app/router';
+import { existingNames, isCreatedId, validateCompanyName, validateSector } from '../domain/createdProjects';
 import { clip } from '../providers/real';
 import { SCHEMA_VERSION, type Catalogs, type MissingInfo, type PersistedState, type ProjectState, type RealCitation, type RealFinding, type RealMaturityLevel, type RealState, type RealStrategy, type RealStrategyItem, type TraceSummary } from './types';
 
@@ -210,19 +211,39 @@ function validProject(p: unknown, c: Catalogs): boolean {
   return isObj(s) && ['none', 'generated', 'sent'].includes(s.status as string);
 }
 
+/** Lista de proyectos creados (AG-032): ausente = []. Devuelve sus ids, o null si algo no es válido. */
+function validCreated(raw: unknown): string[] | null {
+  if (raw === undefined) return [];
+  if (!Array.isArray(raw) || raw.length > 50) return null;
+  const ids: string[] = [];
+  const names: string[] = existingNames([]);
+  for (const c of raw) {
+    if (!isObj(c) || !isStr(c.id) || !isCreatedId(c.id) || ids.includes(c.id) || !isStr(c.companyName) || !isStr(c.createdAt)) return null;
+    if (validateCompanyName(c.companyName, names) !== null) return null;
+    if (c.sector !== undefined && (!isStr(c.sector) || validateSector(c.sector) !== null)) return null;
+    ids.push(c.id);
+    names.push(c.companyName);
+  }
+  return ids;
+}
+
 /** Valida la forma de un estado ya decodificado (contracts/persisted-state.md, paso 5). */
 export function isValidShape(raw: unknown, c: Catalogs): raw is PersistedState {
   if (!isObj(raw)) return false;
   if (!isObj(raw.session) || !(raw.session.role === null || ROLES.includes(raw.session.role as string))) return false;
   if (!isObj(raw.projects)) return false;
+  const createdIds = validCreated(raw.createdProjects);
+  if (createdIds === null) return false;
+  const known = [...c.projectIds, ...createdIds];
   for (const id of c.projectIds) if (!(id in raw.projects)) return false;
+  for (const id of createdIds) if (!(id in raw.projects)) return false;
   for (const [id, p] of Object.entries(raw.projects)) {
-    if (!c.projectIds.includes(id) || !validProject(p, c)) return false;
+    if (!known.includes(id) || !validProject(p, c)) return false;
   }
   if (!isObj(raw.gradings)) return false;
   for (const [key, g] of Object.entries(raw.gradings)) {
     const m = key.match(/^(dx|st)\/(.+)$/);
-    if (!m || !c.projectIds.includes(m[2]) || !isObj(g) || !isObj(g.levels)) return false;
+    if (!m || !known.includes(m[2]) || !isObj(g) || !isObj(g.levels)) return false;
     for (const [cid, lv] of Object.entries(g.levels)) {
       if (!c.criterionIds.includes(cid) || !Number.isInteger(lv) || (lv as number) < 1 || (lv as number) > 5) return false;
     }
@@ -230,7 +251,7 @@ export function isValidShape(raw: unknown, c: Catalogs): raw is PersistedState {
   }
   if (!isObj(raw.surveys)) return false;
   for (const [id, s] of Object.entries(raw.surveys)) {
-    if (!c.projectIds.includes(id) || !isObj(s) || !isObj(s.answers)) return false;
+    if (!known.includes(id) || !isObj(s) || !isObj(s.answers)) return false;
   }
   if (!Array.isArray(raw.activity) || raw.activity.length > 50) return false;
   return raw.activity.every((a) => isObj(a) && isStr(a.at) && isStr(a.text));

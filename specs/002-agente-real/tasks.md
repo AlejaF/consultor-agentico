@@ -303,6 +303,26 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ---
 
+## Lote N — Nuevo proyecto (P1 · AG-032) · *se ejecuta ANTES de F*
+
+**Propósito**: que el Consultor cree una empresa nueva y recorra el flujo completo con IA real. Numerado a continuación de T177; F y G **no se renumeran**.
+
+- [X] T178 [N] Spec-first: Historia 14 y AG-032 en `spec.md`; este lote en `tasks.md`; nota de orden en `plan.md`
+- [X] T179 [P] [N] Pruebas unitarias primero (`tests/unit/createdProjects.test.ts`): validación de nombre (vacío, <2, >80, saltos de línea, duplicado sin distinguir mayúsculas, contra ejemplo y creados), id `N-<n>` sin choque, reductor `createProject` (solo con nombre válido; modo real fijado), `projectInfo` resuelve creados, persistencia (ida y vuelta, forma inválida, ids huérfanos), el nombre se escapa y delimita en el mensaje al agente
+- [X] T180 [P] [N] Pruebas de servidor (`tests/server/empresa-dato.test.ts`): nombre con HTML o con una instrucción llega escapado, delimitado y con tope; no cambia ninguna herramienta
+- [X] T181 [P] [N] Prueba e2e nueva `tests/e2e/ia-real-nuevo-proyecto.spec.ts`: botón, formulario y errores, solo el Consultor, botón deshabilitado sin servicio, Simulado deshabilitado, persistencia, confirmación al restablecer, flujo completo hasta la Estrategia y tablero del Líder; 320, 768 y 1280 px con teclado
+- [X] T182 [N] Ver fallar las pruebas T179 a T181 y anotarlo en `docs/evidencia/n-rojo.md`
+- [X] T183 [N] Dominio y estado: `src/domain/createdProjects.ts`, `src/domain/lookup.ts` (resolver creados), `createdProjects?` en `PersistedState` (opcional dentro de v3), acción `createProject`, validación en `persistence.ts`
+- [X] T184 [N] Recorrer los puntos que asumían 4+3 proyectos fijos (`deliveries`, `TeamsTable`, `Dashboard`, `SideNav`, `Evidence`, `App` y control de acceso, `ProjectCard`, `Projects`) para que incluyan los creados
+- [X] T185 [N] Formulario «+ Nuevo proyecto» (`NewProjectForm`), botón solo para el Consultor y deshabilitado sin servicio, rótulo «Creado por ti», modo Simulado deshabilitado en proyectos creados
+- [X] T186 [N] Seguridad: el nombre viaja al agente de Diagnóstico y de Estrategia escapado, delimitado y con tope (`<empresa>…</empresa>`); siempre se muestra como texto
+- [X] T187 [N] «Restablecer demo» con confirmación explícita sobre los proyectos creados
+- [X] T188 [N] Mutaciones (quitar la validación de duplicado y quitar el escape del nombre), restaurar los archivos y anotarlo en `docs/evidencia/mutacion-n.md`
+- [X] T189 [N] `typecheck:all`, `test:all`, `build && check:all`, suite e2e completa UNA vez; `docs/decisiones.md`, `docs/revision-002.md` (lista de 10 min) y `docs/tiempos-002.md`
+- [ ] T190 [PERSONA] Revisión humana del lote N, `build && check` con la lista de nombres, commit del lote N
+
+---
+
 ## Lote F — Cierre (P1/P2 · todas las historias construidas)
 
 **Objetivo**: accesibilidad y responsive de lo nuevo, documentación honesta, evidencia, repaso de todos los criterios y una **grabación de respaldo** de la demo por si falla la conexión o el crédito el día de la presentación.
@@ -353,7 +373,7 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ## Dependencias y orden
 
-- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
+- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
 - **Las tareas de cuenta y crédito (T001, T002, T003) no bloquean A** y se pueden hacer mientras el agente trabaja; **bloquean la prueba de humo del lote C** (T064). La clave y `server/.env` (T018) también.
 - **A bloquea todo**: T004 primero; T005, T006, T008, T010 y T012 en paralelo; T007 depende de T006; T009 de T008; T011 de T010 y T009; T013 de T011; T014 de T007.
 - **B depende de A**: T023 antes de los extractores; T025 antes de las pruebas que usan los fixtures; las pruebas T026, T027, T028, T029 y T030 antes de su implementación; T037 depende de T033, T034, T035 y T036; T040 de T037, T038 y T039.

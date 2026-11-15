@@ -19,7 +19,7 @@ import { useAppState } from '../../state/context';
 /** Revisión de una entrega por el Líder: contenido en solo lectura y rúbrica (FR-029 a FR-031, FR-033). */
 export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; projectId: string }) {
   const { state, dispatch } = useAppState();
-  const { company, team } = projectInfo(projectId);
+  const { company, team } = projectInfo(projectId, state.createdProjects);
   const ps = state.projects[projectId];
   const deliveryId = `${tipo}/${projectId}`;
   const grading = state.gradings[deliveryId];

@@ -17,6 +17,9 @@ const toSteps = (raw: RawStep[]): Step[] => raw.map((s) => ('throw' in s ? { thr
 function companyOf(req: ModelRequest): string {
   const first = req.input.find((i) => i.type === 'message' && i.role === 'user');
   const text = first && first.type === 'message' ? first.content : '';
+  // El nombre llega delimitado y escapado: <empresa>…</empresa> (lote N); antes iba entre «».
+  const tag = /<empresa>([^<]*)<\/empresa>/.exec(text)?.[1];
+  if (tag !== undefined) return tag.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
   return /«([^»]+)»/.exec(text)?.[1] ?? '';
 }
 

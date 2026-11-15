@@ -17,7 +17,7 @@ import { useAppState } from '../../state/context';
 
 export function Review({ projectId }: { projectId: string }) {
   const { state, dispatch } = useAppState();
-  const { company } = projectInfo(projectId);
+  const { company } = projectInfo(projectId, state.createdProjects);
   const ps = state.projects[projectId];
   const d = ps.diagnosis;
   const view = getDiagnosis(ps);

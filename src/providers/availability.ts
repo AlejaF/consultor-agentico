@@ -4,6 +4,8 @@ import type { Availability, ServiceHealth } from './types';
 export const UNAVAILABLE_TEXT = 'IA real no disponible aquí (requiere ejecutar el backend en tu equipo)';
 
 export async function checkAvailability(fetchFn: typeof fetch = fetch, signal?: AbortSignal): Promise<Availability> {
+  // El sitio publicado vive bajo una subruta (p. ej. /mi-repo/) y nunca tiene servicio: no se pregunta (evita un 404 inútil).
+  if (import.meta.env.BASE_URL !== '/') return { state: 'unavailable' };
   try {
     const r = await fetchFn('/api/health', { signal, headers: { accept: 'application/json' } });
     if (!r.ok) return { state: 'unavailable' };

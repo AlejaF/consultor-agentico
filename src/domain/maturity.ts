@@ -105,8 +105,10 @@ function mean(values: (number | null)[]): number | null {
 }
 
 /** Madurez de un equipo: promedio de los diagnósticos emitidos de sus proyectos. */
-export function teamMaturity(state: PersistedState, team: Pick<Team, 'projectIds'>): number | null {
-  return mean(team.projectIds.map((id) => projectMaturity(state, id)));
+export function teamMaturity(state: PersistedState, team: Pick<Team, 'projectIds'> & { id?: string }): number | null {
+  // Los proyectos creados por el Consultor (lote N) pertenecen al Equipo 1 (T-0).
+  const own = team.id === 'T-0' ? (state.createdProjects ?? []).map((c) => c.id) : [];
+  return mean([...team.projectIds, ...own].map((id) => projectMaturity(state, id)));
 }
 
 /** Madurez promedio de todos los diagnósticos emitidos. */

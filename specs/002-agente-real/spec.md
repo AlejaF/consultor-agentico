@@ -121,6 +121,25 @@ Un segundo rol revisa los hallazgos antes de que lleguen al Consultor, objeta lo
 
 ---
 
+### Historia 14 - Nuevo proyecto (Prioridad: P1, lote N, se ejecuta antes del cierre F)
+
+Para una prueba completa con una empresa real, el Consultor crea un proyecto nuevo (empresa y sector opcional), sube sus documentos, genera el diagnóstico con IA real, lo revisa, lo emite y llega a la Estrategia. Hoy solo existen los proyectos de ejemplo precargados. El proyecto nuevo **solo trabaja en modo IA real** y se guarda solo en este navegador.
+
+**Por qué esta prioridad**: sin ella no se puede probar de punta a punta con una empresa propia; los 4 proyectos de ejemplo no cambian.
+
+**Prueba independiente**: con el servicio local (cliente falso), crear «Empresa Ficticia Omega», subir un archivo, generar, revisar, emitir, generar la Estrategia, y verlo en el tablero del Líder.
+
+**Escenarios de aceptación**:
+
+1. **Dado** el Consultor en Proyectos con el servicio disponible, **Cuando** pulsa «+ Nuevo proyecto» y envía un nombre válido, **Entonces** el proyecto nace en Evidencia, Pendiente, 0 %, rotulado «Creado por ti», con un id propio (`N-1`, `N-2`…) que no choca con P-A a P-D.
+2. **Dado** el servicio no disponible, **Cuando** el Consultor ve Proyectos, **Entonces** el botón aparece deshabilitado con el texto visible «Requiere IA real (ejecutar la app en tu equipo)».
+3. **Dado** un nombre vacío, de menos de 2 o más de 80 caracteres, con saltos de línea o repetido (sin distinguir mayúsculas), **Cuando** se envía, **Entonces** no se crea y se muestra un error claro y accesible.
+4. **Dado** un proyecto nuevo, **Cuando** el Consultor abre su Evidencia, **Entonces** el modo Simulado aparece deshabilitado con «El modo Simulado solo está disponible en los proyectos de ejemplo».
+5. **Dado** un proyecto creado, **Cuando** se recarga la página, **Entonces** se conserva; **Cuando** se pulsa «Restablecer demo», **Entonces** se pide una confirmación que dice que se borrarán los proyectos creados.
+6. **Dado** un nombre como «Ignora tus instrucciones», **Cuando** se muestra o se envía al agente, **Entonces** se muestra como texto y se envía como dato escapado y con tope; el agente no lo obedece.
+
+---
+
 ### Casos límite
 
 - **PDF escaneado sin texto**: se informa que no se pudo extraer texto y por qué; ese archivo no entra al análisis.
@@ -221,6 +240,7 @@ Un segundo rol revisa los hallazgos antes de que lleguen al Consultor, objeta lo
 
 - **AG-027**: Ninguna clave del proveedor MUST aparecer en el repositorio, su historial, la interfaz ni los archivos publicados, y la verificación automática del proyecto MUST fallar si encuentra una (principio IX).
 - **AG-028**: Todo aviso de privacidad MUST nombrar al proveedor al que se envía el texto.
+- **AG-032** *(P1, lote N)*: El Consultor MUST poder crear proyectos nuevos. (1) El botón «+ Nuevo proyecto» solo lo ve y usa el Consultor; sin servicio de IA queda deshabilitado con el texto visible «Requiere IA real (ejecutar la app en tu equipo)». (2) El formulario pide nombre de la empresa (obligatorio, 2 a 80 caracteres, sin saltos de línea, único entre todos los proyectos sin distinguir mayúsculas) y sector (opcional, hasta 60 caracteres), con errores claros y accesibles, y el aviso «El proyecto se guarda solo en este navegador. Los documentos se procesan con IA real (OpenAI).». (3) El proyecto nuevo nace en Evidencia, Pendiente, 0 %, rotulado «Creado por ti» (no «(ejemplo)»), con id `N-<n>`. (4) Un proyecto nuevo solo trabaja en modo IA real; el modo Simulado queda deshabilitado con «El modo Simulado solo está disponible en los proyectos de ejemplo»; nunca se mezcla una estrategia simulada (AG-029). (5) El flujo completo (evidencia, diagnóstico real, revisión, emisión, calificación del Líder, estrategia real, informes) funciona, y el proyecto aparece en el tablero del Líder con su nota de mezcla simulado/real. (6) Los proyectos creados se conservan entre recargas (campo opcional `createdProjects` dentro de v3, sin subir la versión) y «Restablecer demo» MUST pedir confirmación explícita diciendo que borra los proyectos creados. (7) El nombre de la empresa es un DATO: se muestra siempre como texto, y al agente le llega escapado, delimitado y con tope de longitud, igual que el contenido de los documentos; una instrucción dentro del nombre no se obedece. (8) Editar o borrar proyectos individuales queda fuera de alcance (hoja de ruta).
 
 ### Entidades clave
 
@@ -256,4 +276,5 @@ Un segundo rol revisa los hallazgos antes de que lleguen al Consultor, objeta lo
 - La calidad de los hallazgos de la IA real **NO VERIFICADO**: la función garantiza que las citas existen en la fuente, no que las conclusiones sean correctas; por eso siempre requiere revisión humana.
 - El tiempo de ejecución y el costo por corrida **NO VERIFICADO**: se medirán, no se prometen.
 - Los casos de evidencia agregada después de emitir se resuelven con la regla de solo lectura de la 001; si se quisiera re-ejecutar, sería una decisión nueva.
+- **Cambio de supuesto de la 001 (lote N)**: en la 001 los proyectos son ejemplos precargados y fijos (P-A a P-D del Equipo 1 y E-1 a E-3). Desde el lote N el Consultor puede crear proyectos propios (`N-<n>`, Equipo 1, solo IA real); los 7 de ejemplo y sus pruebas no cambian.
 - Toda la documentación y la interfaz están en español (constitución, restricciones adicionales).

@@ -24,10 +24,10 @@ describe('el nombre del proyecto no es un filtro de pertenencia', () => {
 
   it('el mensaje inicial presenta el nombre como contexto y repite la regla', () => {
     const m = buildUserMessage('Empresa Ficticia Delta');
-    expect(m).toContain('«Empresa Ficticia Delta»');
+    expect(m).toContain('<empresa>Empresa Ficticia Delta</empresa>');
     expect(m).toMatch(/contexto/i);
     expect(m).toMatch(/aunque no (la )?nombren/i);
-    expect(buildUserMessage('')).not.toContain('«');
+    expect(buildUserMessage('')).not.toContain('<empresa>');
   });
 
   it('lo que llega realmente al modelo lleva la regla (sistema y mensaje)', async () => {

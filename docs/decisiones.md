@@ -478,3 +478,13 @@ Aprobada por la persona responsable el 2026-11-14 (T171) y aplicada (T172). Vers
 - **Por qué**: la Empresa no necesita el nombre técnico del modelo para saber que el contenido es de IA. **Riesgo aceptado**: quien mira un hallazgo suelto ya no ve el modelo; sigue en la traza y la ficha técnica.
 - **Propagada a**: `.specify/memory/constitution.md` (texto, versión, comentario), `README.md`, `spec.md` (AG-023), `plan.md` y `tasks.md`.
 - **Desviación transitoria (por escrito, como exige la gobernanza)**: el código del lote D todavía muestra el modelo en el rótulo (`AiBadge`). El lote D2 reutiliza ese componente tal como está y el lote **D3** (T159 a T177) lo cambia en todos sus usos. Mientras D3 no esté hecho, la interfaz incumple el texto nuevo del principio III; se cierra con D3.
+
+
+## Lote N de la 002 «Nuevo proyecto» (2026-11-14)
+
+- **Por qué**: para una prueba completa con una empresa propia hacía falta poder crear proyectos; solo existían los 7 de ejemplo. Se ejecuta antes del cierre F (F y G no se renumeran).
+- **Migración mínima del esquema**: `createdProjects` es un campo **opcional dentro de v3**. Los guardados anteriores no lo tienen y se leen como lista vacía, así que **no se sube la versión ni se migra nada**. Si el campo existe y tiene forma inválida (id fuera de `N-<n>`, nombre inválido o repetido, proyecto sin estado o estado huérfano), la demo se restablece con el aviso de datos dañados.
+- **Cómo se resuelven**: `projectInfo(id, creados)` y `allProjects(creados)` añaden los creados al Equipo 1 sin tocar `data/projects.ts`; los 7 de ejemplo y sus pruebas no cambian.
+- **Solo IA real**: el reductor rechaza `setMode: simulated` en ids `N-<n>`; la pantalla lo explica (AG-029).
+- **El nombre es un dato**: en pantalla va siempre como texto; hacia el agente (Diagnóstico y Estrategia) viaja como `<empresa>…</empresa>`, escapado, sin saltos de línea y con tope de 80 caracteres. El cliente de guiones de prueba lee el nombre de esa etiqueta.
+- **Fuera de alcance**: editar o borrar proyectos individuales (hoja de ruta). «Restablecer demo» es la única forma de borrarlos y pide confirmación explícita.

@@ -63,11 +63,11 @@ function Routed() {
 
   const ctx = useMemo<AccessContext>(
     () => ({
-      consultorProjectIds: CONSULTOR_PROJECT_IDS,
+      consultorProjectIds: [...CONSULTOR_PROJECT_IDS, ...(state.createdProjects ?? []).map((c) => c.id)],
       deliveryExists: (tipo, id) =>
         tipo === 'dx' ? state.projects[id]?.diagnosis.status === 'issued' : state.projects[id]?.strategy.status === 'sent',
     }),
-    [state.projects],
+    [state.projects, state.createdProjects],
   );
 
   const decision = accessDecision(hash, role, ctx);

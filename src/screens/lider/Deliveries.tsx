@@ -14,7 +14,7 @@ export function Deliveries() {
       <p>{countOf(pending.length, 'entrega', 'entregas')} sin calificar. Todos los datos son ficticios.</p>
       <ul className="list-plain stack">
         {pending.map((d) => {
-          const { company, team } = projectInfo(d.projectId);
+          const { company, team } = projectInfo(d.projectId, state.createdProjects);
           return (
             <li key={d.id} className="card">
               <p>

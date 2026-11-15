@@ -33,6 +33,14 @@ export function ResetDemoButton() {
         }}
       >
         <p>Se borrarán tus cambios en este navegador y la demo volverá a su estado inicial, con los datos de ejemplo.</p>
+        {(state.createdProjects?.length ?? 0) > 0 && (
+          <p data-testid="reset-created-note">
+            <strong>
+              Se borrará {state.createdProjects!.length === 1 ? '1 proyecto que creaste' : `${state.createdProjects!.length} proyectos que creaste`}
+            </strong>{' '}
+            ({state.createdProjects!.map((c) => c.companyName).join(', ')}) con todo su avance. Esta acción no se puede deshacer.
+          </p>
+        )}
         {usesReal(state.projects) && (
           <p data-testid="reset-real-note">
             También se borran los hallazgos de IA real guardados aquí. Los archivos que subiste siguen en la memoria del servicio local hasta que lo cierres.

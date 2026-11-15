@@ -1,6 +1,8 @@
 import type { Role } from '../app/router';
 import { CRITERION_IDS } from '../data/rubric';
 import { SURVEY_QUESTIONS } from '../data/survey';
+import { emptyProjectState } from '../data/projects';
+import { existingNames, isCreatedId, nextProjectId, validateCompanyName, validateSector } from '../domain/createdProjects';
 import { canIssue, isValidEdit } from '../domain/review';
 import { getDiagnosis, modeOf } from '../providers';
 import { average, isGradingComplete } from '../domain/rubric';
@@ -13,6 +15,8 @@ export type Action =
   | { type: 'removeFile'; projectId: string; fileId: string }
   | { type: 'setAnswer'; projectId: string; questionId: string; value: string }
   | { type: 'generate'; projectId: string; at: string }
+  /** Lote N (AG-032): crea un proyecto propio, solo IA real. El id lo da `nextProjectId`. */
+  | { type: 'createProject'; name: string; sector?: string; at: string }
   | { type: 'setMode'; projectId: string; mode: Mode }
   | { type: 'generateReal'; projectId: string; at: string; real: RealState }
   | { type: 'clearDiagnosis'; projectId: string }
@@ -87,9 +91,22 @@ export function reducer(state: PersistedState, action: Action): PersistedState {
         diagnosis: { status: 'generated', generatedAt: action.at, decisions },
       }));
     }
+    case 'createProject': {
+      const created = state.createdProjects ?? [];
+      const name = action.name.trim();
+      if (validateCompanyName(action.name, existingNames(created)) !== null || validateSector(action.sector) !== null) return state;
+      const sector = action.sector?.trim();
+      const id = nextProjectId(created);
+      return {
+        ...state,
+        createdProjects: [...created, { id, companyName: name, ...(sector ? { sector } : {}), createdAt: action.at }],
+        projects: { ...state.projects, [id]: { ...emptyProjectState(), mode: 'real', serverFiles: [] } },
+      };
+    }
     case 'setMode': {
       // El modo queda fijado cuando hay diagnóstico (AG-029); solo «Limpiar diagnóstico» lo libera.
       const p = state.projects[action.projectId];
+      if (action.mode === 'simulated' && isCreatedId(action.projectId)) return state; // los proyectos creados solo trabajan en IA real (AG-032)
       if (!p || p.diagnosis.status !== 'none' || modeOf(p) === action.mode) return state;
       return updateProject(state, action.projectId, (pp) => ({ ...pp, mode: action.mode }));
     }

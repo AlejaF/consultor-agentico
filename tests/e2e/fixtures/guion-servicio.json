@@ -352,11 +352,290 @@
      "message": "Se agotó el saldo prepago de tu cuenta de OpenAI. Agrega crédito."
     }
    }
+  ],
+  "Empresa Ficticia Omega": [
+   {
+    "toolCalls": [
+     {
+      "name": "buscar_en_evidencia",
+      "arguments": {
+       "consulta": "indicadores responsable"
+      }
+     },
+     {
+      "name": "buscar_en_evidencia",
+      "arguments": {
+       "consulta": "sistemas integración presupuesto"
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "datos",
+       "titulo": "Indicadores fragmentados por área",
+       "texto": "Cada área mantiene sus cifras y no hay un responsable único de los indicadores.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 4",
+         "fragmento": "Cada área lleva sus propias cifras y no hay un responsable único de los indicadores."
+        }
+       ]
+      }
+     },
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "infraestructura",
+       "titulo": "Integración de sistemas pendiente",
+       "texto": "Se acordó pedir presupuesto para integrar los sistemas; aún no está ejecutado.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 8",
+         "fragmento": "Se acordó comprar un sistema nuevo para toda la empresa de inmediato."
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "infraestructura",
+       "titulo": "Integración de sistemas pendiente",
+       "texto": "Se acordó pedir presupuesto para integrar los sistemas; aún no está ejecutado.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 8",
+         "fragmento": "Se acordó pedir un presupuesto para integrar los sistemas de facturación, inventario y atención al cliente."
+        }
+       ]
+      }
+     },
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "gobernanza",
+       "titulo": "Sin responsable de la calidad de los datos",
+       "texto": "No existe un responsable único de la calidad de los datos.",
+       "citas": [
+        {
+         "archivo": "politica-datos.pdf",
+         "ubicacion": "pág. 2",
+         "fragmento": "No existe un responsable único de la calidad de los datos."
+        }
+       ]
+      }
+     },
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "talento",
+       "titulo": "Competencias de analítica sin evidencia",
+       "texto": "No hay respaldo documental sobre las competencias de analítica.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 2",
+         "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "talento",
+       "titulo": "Competencias de analítica sin evidencia",
+       "texto": "No hay respaldo documental sobre las competencias de analítica.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 2",
+         "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "toolCalls": [
+     {
+      "name": "registrar_hallazgo",
+      "arguments": {
+       "pilar": "talento",
+       "titulo": "Competencias de analítica sin evidencia",
+       "texto": "No hay respaldo documental sobre las competencias de analítica.",
+       "citas": [
+        {
+         "archivo": "notas-reunion.txt",
+         "ubicacion": "línea 2",
+         "fragmento": "Este texto no aparece en ningún archivo de ejemplo de la prueba."
+        }
+       ]
+      }
+     },
+     {
+      "name": "declarar_informacion_faltante",
+      "arguments": {
+       "pilar": "talento",
+       "descripcion": "Falta una evaluación verificable de competencias digitales del equipo."
+      }
+     },
+     {
+      "name": "declarar_informacion_faltante",
+      "arguments": {
+       "pilar": "cultura",
+       "descripcion": "Faltan encuestas que midan la adopción de herramientas digitales."
+      }
+     },
+     {
+      "name": "registrar_nivel_madurez",
+      "arguments": {
+       "dimension": "datos",
+       "nivel": 2,
+       "justificacion": "Las cifras viven en cada área y no hay un responsable único.",
+       "derivaDe": [
+        "R1"
+       ]
+      }
+     },
+     {
+      "name": "registrar_nivel_madurez",
+      "arguments": {
+       "dimension": "infraestructura",
+       "nivel": 3,
+       "justificacion": "Hay presupuesto pedido para integrar los sistemas, sin ejecutar.",
+       "derivaDe": [
+        "R2"
+       ]
+      }
+     },
+     {
+      "name": "registrar_nivel_madurez",
+      "arguments": {
+       "dimension": "gobernanza",
+       "nivel": 4,
+       "justificacion": "No hay responsable de la calidad de los datos, pero existe una política.",
+       "derivaDe": [
+        "R3"
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "text": "Resumen final de la corrida de prueba."
+   }
   ]
  },
  "estrategia": {
   "porEmpresa": {
    "Empresa Ficticia Alfa": [
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "riesgo",
+        "derivaDe": [
+         "R1"
+        ],
+        "titulo": "Decisiones con cifras dispersas",
+        "texto": "Cada área calcula sus cifras y la dirección decide sin una sola versión de los datos.",
+        "nivel": "alto"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "riesgo",
+        "derivaDe": [
+         "R4"
+        ],
+        "titulo": "Decisiones con cifras dispersas",
+        "texto": "Cada área calcula sus cifras y la dirección decide sin una sola versión de los datos.",
+        "nivel": "alto"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "fase",
+        "derivaDe": [
+         "R2",
+         "R3"
+        ],
+        "titulo": "Nombrar un responsable de indicadores",
+        "texto": "Designar a una persona responsable y unificar las cifras en un tablero común.",
+        "horizonte": "0-3 meses"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "toolCalls": [
+      {
+       "name": "registrar_elemento",
+       "arguments": {
+        "tipo": "fase",
+        "derivaDe": [
+         "R9"
+        ],
+        "titulo": "Nombrar un responsable de indicadores",
+        "texto": "Designar a una persona responsable y unificar las cifras en un tablero común.",
+        "horizonte": "0-3 meses"
+       }
+      }
+     ],
+     "usage": {
+      "input": 300,
+      "output": 60
+     }
+    },
+    {
+     "text": "Estrategia propuesta.",
+     "usage": {
+      "input": 100,
+      "output": 20
+     }
+    }
+   ],
+   "Empresa Ficticia Omega": [
     {
      "toolCalls": [
       {

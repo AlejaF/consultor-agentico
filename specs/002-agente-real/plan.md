@@ -210,6 +210,11 @@ Como se trabaja un lote a la vez, **la suma es en serie**: ningún tramo se sola
 - **Evidencia sugerida**: `MissingInfo` cambia su título a «Evidencia sugerida para fortalecer el diagnóstico» y añade la frase «Son sugerencias de la IA, no hallazgos ni contenido verificado.»
 - **Pruebas del lote D afectadas**: `tests/e2e/ia-real.spec.ts` y `tests/e2e/ia-real-faltante.spec.ts` (archivos **de la 002**, aún sin commit) afirman el rótulo y el título anteriores; se actualizan en D3 junto con sus pruebas nuevas. No hay ninguna prueba de la 001 afectada.
 
+## Nuevo proyecto (AG-032) — lote N, se ejecuta ANTES de F
+
+Orden: A → B → C → D → D2 → D3 → E → **N** → F (G diferido). N no renumera F ni G.
+Diseño mínimo: `createdProjects?: { id, companyName, sector?, createdAt }[]` opcional dentro de v3 (los guardados antiguos no lo tienen y se leen como `[]`; **no hay migración ni subida de versión**). Cada proyecto creado tiene su `ProjectState` en `projects` y pertenece al Equipo 1. `projectInfo(id, created)` los resuelve como los de ejemplo, sin tocar `data/projects.ts`. El nombre es un dato: texto en pantalla y `<empresa>` escapado y con tope hacia el agente.
+
 ## Riesgos y decisiones abiertas
 
 1. **Modelos por etapa** — *decisión de la persona (2026-11-11)*: solo como **PROPUESTA pendiente**: `gpt-6-luna` en desarrollo y `gpt-6.1-sol` en la demo (research.md §3). La persona decidirá antes de la prueba de humo del lote C y lo registrará en `docs/decisiones.md`. Las variables de entorno no traen valor por defecto aprobado. NO VERIFICADO el desempeño real de cada modelo con estas tareas.

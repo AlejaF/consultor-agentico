@@ -1,9 +1,8 @@
-import { COMPANIES } from '../data/companies';
-import { PROJECTS } from '../data/projects';
 import { TEAMS } from '../data/teams';
 import { buildEvidenceItems } from '../domain/evidence';
 import { countOf } from '../domain/format';
 import { deliveriesFor } from '../domain/deliveries';
+import { allProjects, companyFor } from '../domain/lookup';
 import { projectProgress, type Stage } from '../domain/progress';
 import { formatDecimal } from '../domain/format';
 import { teamMaturity, teamMatches } from '../domain/maturity';
@@ -15,11 +14,12 @@ const ORDER: Stage[] = ['Evidencia', 'Diagnóstico', 'Estrategia'];
 /** Etapas visibles solo Evidencia, Diagnóstico y Estrategia (FR-028). */
 export function TeamsTable({ state, query = '' }: { state: PersistedState; query?: string }) {
   const deliveries = deliveriesFor(state);
+  const projectsAll = allProjects(state.createdProjects);
   const visibles = TEAMS.filter((t) =>
     teamMatches(
       query,
       t.name,
-      PROJECTS.filter((p) => p.teamId === t.id).map((p) => COMPANIES.find((c) => c.id === p.companyId)!.name),
+      projectsAll.filter((p) => p.teamId === t.id).map((p) => companyFor(p, state.createdProjects).name),
     ),
   );
   if (visibles.length === 0) {
@@ -30,9 +30,9 @@ export function TeamsTable({ state, query = '' }: { state: PersistedState; query
     );
   }
   const rows = visibles.map((t) => {
-    const projects = PROJECTS.filter((p) => p.teamId === t.id);
+    const projects = projectsAll.filter((p) => p.teamId === t.id);
     const progress = projects.map((p) => {
-      const company = COMPANIES.find((c) => c.id === p.companyId)!;
+      const company = companyFor(p, state.createdProjects);
       const ps = state.projects[p.id];
       return projectProgress({
         evidenceCount: buildEvidenceItems(p, company.name, ps.localFiles).length,

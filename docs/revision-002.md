@@ -163,3 +163,18 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 **No se pudo comprobar con ojos humanos en la pantalla** que desaparece un elemento al rechazar un hallazgo: un diagnóstico emitido no se puede cambiar, así que eso solo lo prueban las pruebas unitarias.
 
 **Pendiente tuyo**: T107 (esta revisión), T108 (`build && check` con tu lista de nombres), T109 (commit) y T110 (push, solo cuando lo decidas).
+
+
+## Lote N — Nuevo proyecto (lista corta, máx. 10 min)
+
+**Para quien no es técnico**: el Consultor ya puede crear una empresa nueva («+ Nuevo proyecto»), subir sus documentos y recorrer todo el flujo con IA real hasta la Estrategia. El proyecto nuevo se guarda solo en este navegador y no tiene modo Simulado. Los 7 proyectos de ejemplo no cambian.
+
+1. **Crear** (3 min): `npm run dev:all` con `MODEL_PROVIDER=fake`; entra como Consultor y pulsa «+ Nuevo proyecto». Prueba un nombre vacío, uno repetido (p. ej. «empresa ficticia alfa») y uno válido. **Comprobar**: los errores se leen claros; el proyecto nuevo aparece «Creado por ti», Pendiente, 0 %, y te lleva a Evidencia.
+2. **Solo IA real** (1 min): en el proyecto nuevo, el botón «Simulado» está apagado y dice «El modo Simulado solo está disponible en los proyectos de ejemplo».
+3. **Recorrido** (3 min): sube un archivo, genera, revisa, emite, genera la Estrategia y envíala; cambia a Líder y mira el tablero (Equipo 1 con 5 proyectos), la entrega y la calificación.
+4. **Sin servicio** (1 min): abre solo `npm run dev` (sin servicio). **Comprobar**: el botón sale apagado y se lee «Requiere IA real (ejecutar la app en tu equipo)».
+5. **Recarga y restablecer** (2 min): recarga (el proyecto sigue). Pulsa «Restablecer demo»: debe decir cuántos proyectos creados se borrarán y pedir confirmación; «Cancelar» no borra nada.
+
+**Para probar con la API real** (tú): crea una empresa con tu nombre real, sube sus documentos y genera. NO VERIFICADO con el modelo real.
+
+**Pendiente tuyo**: T190 (esta revisión, `build && check` con tu lista de nombres y commit).

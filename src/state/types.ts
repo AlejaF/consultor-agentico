@@ -168,6 +168,14 @@ export interface ActivityItem {
   projectId?: string;
 }
 
+/** Proyecto creado por el Consultor (lote N, AG-032). El nombre y el sector son DATOS: siempre se muestran como texto. */
+export interface CreatedProject {
+  id: string;
+  companyName: string;
+  sector?: string;
+  createdAt: string;
+}
+
 export interface PersistedState {
   schemaVersion: typeof SCHEMA_VERSION;
   session: { role: Role | null };
@@ -175,6 +183,8 @@ export interface PersistedState {
   gradings: Record<string, Grading>;
   surveys: Record<string, SurveyResponse>;
   activity: ActivityItem[];
+  /** Opcional dentro de v3 (sin subir la versión): ausente = ningún proyecto creado. */
+  createdProjects?: CreatedProject[];
 }
 
 /** Catálogos inyectados para validar la forma de lo guardado. */

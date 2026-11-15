@@ -19,7 +19,7 @@ import { useAppState } from '../../state/context';
 
 export function Diagnosis({ projectId }: { projectId: string }) {
   const { state, dispatch } = useAppState();
-  const { project, company } = projectInfo(projectId);
+  const { project, company } = projectInfo(projectId, state.createdProjects);
   const ps = state.projects[projectId];
   const d = ps.diagnosis;
   const view = getDiagnosis(ps);
