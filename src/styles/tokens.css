@@ -60,6 +60,8 @@
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
+  --rhythm-block: var(--space-4); /* ritmo vertical: entre bloques de una misma zona (16 px) */
+  --rhythm-section: var(--space-5); /* y entre secciones (24 px) */
   --radius: 10px;
   --radius-sm: 6px;
   --target-min: 44px;

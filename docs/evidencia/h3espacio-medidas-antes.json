@@ -1,0 +1,35 @@
+{
+  "alturaRevision1280": 1799,
+  "huecosRevision": [
+    {
+      "a": "card",
+      "b": "maturity-panel",
+      "hueco": 12
+    },
+    {
+      "a": "stats-row",
+      "b": "chart-review-state",
+      "hueco": 0
+    },
+    {
+      "a": "chart-review-state",
+      "b": "chart-coverage",
+      "hueco": 12
+    },
+    {
+      "a": "chart-coverage",
+      "b": "SECTION",
+      "hueco": 12
+    },
+    {
+      "a": "SECTION",
+      "b": "SECTION",
+      "hueco": 16
+    },
+    {
+      "a": "SECTION",
+      "b": "SECTION",
+      "hueco": 27
+    }
+  ]
+}

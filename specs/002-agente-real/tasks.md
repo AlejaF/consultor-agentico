@@ -386,6 +386,7 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 - [X] T234 [H3-fix] Tablero: la barra de avance de la fila tenía ancho 0 (defecto real) y ahora se ve con su porcentaje; «Equipo N» en una línea; cola de revisión con máximo 3 tarjetas y enlace «Ver las N entregas por revisar» a `#/lider/entregas`, sin desplazamiento interno (`ReviewQueue` recibe `limit` solo en el Tablero)
 - [X] T235 [H3-fix] Resumen de la traza: barras a la izquierda y tres cifras con rótulo a la derecha; el nombre de la herramienta va sobre su barra y no se parte
 - [X] T236 [H3-fix] Espacios: chips del resumen del Diagnóstico separados (flex con espacio) y margen entre «Riesgo/Fase» y su título en la matriz (prueba ≥ 8 px; sin el margen mide 2 px y falla)
+- [X] T237 [H3-espacio] Ritmo vertical con tokens (`--rhythm-block` 16 px, `--rhythm-section` 24 px) en una sola regla sobre las zonas principal y lateral; prueba de pantalla (≥ 12 px entre bloques en Diagnóstico, Revisión y Estrategia a 1280) con mutación; altura de Revisión a 1280: 1847 px antes y 1847 px después (límite 1877)
 - [ ] T229 [PERSONA] Revisión humana del lote H3, `build && check` con la lista de nombres y commit
 
 ---

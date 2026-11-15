@@ -63,7 +63,7 @@
 
 /* ---------- Cifras compactas ---------- */
 .review-stats .stats-row { grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr)); gap: var(--space-2); }
-.review-stats .stat { padding: var(--space-2); }
+.review-stats .stat { padding: var(--space-1) var(--space-2); }
 .review-stats .stat-label { font-size: var(--font-size-xs); }
 
 /* ---------- Gráficos ---------- */
@@ -258,7 +258,8 @@
 .trace-grid { gap: var(--space-4); }
 @media (min-width: 640px) { .trace-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
 @media (max-width: 479px) { .trace-bars .ranked-row { grid-template-columns: minmax(0, 1fr) 2.5rem; } }
-.trace-bars .ranked-row { grid-template-columns: minmax(0, 1fr) 2.5rem; row-gap: 0; margin-bottom: var(--space-2); }
+.trace-bars { align-content: start; }
+.trace-bars .ranked-row { grid-template-columns: minmax(0, 1fr) 2.5rem; row-gap: 0; margin-bottom: var(--space-2); align-content: start; }
 .trace-bars .ranked-name { grid-column: 1 / -1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .trace-bars .ranked-name { overflow-wrap: normal; word-break: normal; }
 .trace-figures { display: grid; gap: var(--space-3); align-content: start; padding-left: var(--space-4); border-left: 1px solid var(--color-border-subtle); }
@@ -271,3 +272,16 @@
 .dots th .badge { margin-inline-end: var(--space-2); }
 /* La cola muestra como máximo 3 tarjetas y un enlace a todas; no hay desplazamiento interno */
 @media (min-width: 1024px) { .dash-split { align-items: start; } }
+
+/* ---------- H3-espacio: ritmo vertical único ---------- */
+/* Una sola regla para las zonas: 16 px entre bloques; 24 px antes de una sección. Sustituye a los huecos sueltos de cada pantalla. */
+.split-main, .split-side, .stack, .review-stats, [data-testid='strategy-content'], .strategy-charts { display: grid; row-gap: var(--rhythm-block); }
+.review-stats .stats-row { margin: 0; }
+.split-main > :is(section, .pillar-flow), .stack > :is(section, .pillar-flow), [data-testid='strategy-content'] > section { margin-top: calc(var(--rhythm-section) - var(--rhythm-block)); }
+/* Cuerpo de las pantallas que cuelga directamente de <main> (Estrategia, Informe): un bloque tras otro */
+.main > :is(.card, .chart, details, [data-testid='mode-selector'], [data-testid='trace-view'], [data-testid^='chart-']) + :is(.card, .chart, div, details, section, [data-testid='trace-view']) { margin-top: var(--rhythm-block); }
+.main > * + :is(.chart, [data-testid='trace-view'], [data-testid^='chart-']) { margin-top: var(--rhythm-block); }
+/* Celdas de mapa y matriz al mínimo táctil del brief (24 px): compensa el aire nuevo entre bloques sin pasar la altura de Revisión */
+.heat-cell, .dots-cell { height: 24px; }
+.heat th { padding-block: 0; }
+.pillar-flow { gap: var(--rhythm-block); }
