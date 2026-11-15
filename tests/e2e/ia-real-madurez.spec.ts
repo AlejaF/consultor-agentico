@@ -8,6 +8,7 @@ import { abrir, entrarConsultor, generarDiagnosticoReal, vaciarServicio } from '
 const ROTULO = 'Generado por IA · requiere revisión humana'; // D3: sin el nombre del modelo
 const ETIQUETA = 'Calculado por código a partir de niveles propuestos por IA';
 const card = (page: Page, id: string) => page.getByTestId(`finding-${id}`);
+const detalle = (page: Page, dim: string) => page.getByTestId(`maturity-detail-${dim}`); // UN desplegable por bloque (AG-035)
 const nivel = (page: Page, dim: string) => page.getByTestId(`maturity-level-${dim}`);
 // Una por una (como en ia-real.spec.ts): la primera versión las hacía en paralelo con Promise.all y en la corrida única de e2e
 // se perdieron clics (solo 1 de 3 hallazgos quedó aceptado en 768 y 1280 px). Corrección SIN volver a correr e2e (regla de una sola corrida).
@@ -27,7 +28,7 @@ test.describe('madurez en modo IA real', () => {
     await expect(panel.locator('[data-testid^="maturity-level-"]')).toHaveCount(6);
     for (const dim of ['datos', 'infraestructura', 'gobernanza']) {
       await expect(nivel(page, dim)).toContainText('Sin respaldo vigente');
-      await expect(nivel(page, dim)).toContainText('aún no están aceptados');
+      await expect(detalle(page, dim)).toContainText('aún no están aceptados');
     }
     for (const dim of ['estrategia', 'talento', 'cultura']) {
       await expect(nivel(page, dim)).toContainText('Sin evidencia suficiente');
@@ -46,19 +47,19 @@ test.describe('madurez en modo IA real', () => {
     await aceptar(page, 'R1', 'R2', 'R3');
     await expect(page.getByTestId('review-progress')).toHaveText('3 de 4 hallazgos revisados'); // el contador cuenta solo hallazgos
     const panel = page.getByTestId('maturity-panel');
-    await expect(nivel(page, 'datos')).toContainText('Nivel 2 de 5');
+    await expect(detalle(page, 'datos')).toContainText('Nivel 2 de 5');
     await expect(nivel(page, 'datos')).toContainText('basado en 1 hallazgo');
-    await expect(nivel(page, 'datos')).toContainText('Deriva de: R1');
-    await expect(nivel(page, 'datos')).toContainText('Las cifras viven en cada área');
+    await expect(detalle(page, 'datos')).toContainText('Deriva de: R1');
+    await expect(detalle(page, 'datos')).toContainText('Las cifras viven en cada área');
     await expect(page.getByTestId('maturity-panel').locator('.block-head').getByTestId('ai-badge')).toHaveText(ROTULO); // H2: el rótulo va unido al encabezado del bloque (AG-023)
-    await expect(nivel(page, 'infraestructura')).toContainText('Nivel 3 de 5');
-    await expect(nivel(page, 'gobernanza')).toContainText('Nivel 4 de 5');
+    await expect(detalle(page, 'infraestructura')).toContainText('Nivel 3 de 5');
+    await expect(detalle(page, 'gobernanza')).toContainText('Nivel 4 de 5');
     await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: 3,0 de 5'); // (2 + 3 + 4) / 3
     await expect(page.getByTestId('maturity-index')).not.toContainText('ilustrativo');
     await expect(page.getByTestId('maturity-index-label')).toHaveText(ETIQUETA);
     await card(page, 'R3').getByRole('button', { name: /^Rechazar/ }).click();
     await expect(nivel(page, 'gobernanza')).toContainText('Sin respaldo vigente');
-    await expect(nivel(page, 'gobernanza')).toContainText('rechazados');
+    await expect(detalle(page, 'gobernanza')).toContainText('rechazados');
     await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: 2,5 de 5'); // (2 + 3) / 2
     await expect(panel.getByRole('button')).toHaveCount(0);
     // «Aprobar y emitir» se rige solo por los hallazgos (FR-021): falta revisar R4
@@ -116,7 +117,7 @@ test.describe('madurez en modo IA real', () => {
     await aceptar(page, 'R1', 'R2');
     await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: 2,5 de 5');
     await page.reload();
-    await expect(nivel(page, 'infraestructura')).toContainText('Nivel 3 de 5');
+    await expect(detalle(page, 'infraestructura')).toContainText('Nivel 3 de 5');
     await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: 2,5 de 5');
   });
 

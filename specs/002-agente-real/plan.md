@@ -223,6 +223,10 @@ Orden: A → B → C → D → D2 → D3 → E → N → **H** → F (G diferido
 
 Orden: … → N → H → **H2** → F (G diferido). H2 no renumera F ni G. Solo presentación: tokens nuevos en `tokens.css`, CSS global (barra lateral, encabezados, tarjetas, chips, cifras, movimiento con `prefers-reduced-motion`) y recomposición del marcado **solo de componentes de la 002** (madurez real, hallazgos reales, estrategia real, tablero ampliado). Las pantallas simuladas cambian solo por CSS y envoltorios aditivos. El rótulo de IA (principio III, AG-023) va unido al encabezado de cada bloque de madurez y de estrategia; cada hallazgo conserva el suyo.
 
+## Composición definitiva y visualización de datos (AG-035) — lote H3, se ejecuta ANTES de F
+
+Orden: … → N → H → H2 → **H3** → F (G diferido). H3 no renumera F ni G. Solo presentación. Funciones puras nuevas en `src/domain/charts.ts` (los datos de cada gráfico a partir del estado existente, con pruebas unitarias; `visual.ts` no cambia salvo lo ya existente) y componentes de presentación reutilizables en `src/components/charts/` que solo reciben datos ya calculados (`Meter`, `SegmentedBar`, `RankedBars`, `Heatmap`, `DotMatrix`, `ChartFrame` con «Ver como tabla» y tooltip). SVG y CSS propios en `src/styles/h3.css`, con tokens. La composición usa CSS grid sobre los contenedores existentes y envoltorios aditivos; nada de la 001 se mueve.
+
 ## Riesgos y decisiones abiertas
 
 1. **Modelos por etapa** — *decisión de la persona (2026-11-11)*: solo como **PROPUESTA pendiente**: `gpt-6-luna` en desarrollo y `gpt-6.1-sol` en la demo (research.md §3). La persona decidirá antes de la prueba de humo del lote C y lo registrará en `docs/decisiones.md`. Las variables de entorno no traen valor por defecto aprobado. NO VERIFICADO el desempeño real de cada modelo con estas tareas.

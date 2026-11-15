@@ -362,6 +362,34 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ---
 
+## Lote H3 — Composición definitiva y visualización de datos (P2 · AG-035) · *se ejecuta ANTES de F*
+
+**Propósito**: aprovechar el ancho (contenedor, zona principal + lateral sticky, cuadrículas) y añadir gráficos que apoyen una decisión. Solo presentación. Numerado a continuación de T215; F y G **no se renumeran**.
+
+- [X] T216 [H3] Spec-first: AG-035 en `spec.md`; este lote en `tasks.md`; nota de orden en `plan.md`; contrato de composición y lista de funciones/componentes en `docs/evidencia/h3-contrato.md`
+- [X] T217 [P] [H3] Pruebas unitarias primero de las funciones puras de `src/domain/charts.ts` (cobertura pilar × documento, estado de la revisión, procedencia, riesgos por nivel, proyectos por etapa, madurez por proyecto, resumen de la traza), con caso borde cada una (`tests/unit/charts.test.ts`)
+- [X] T218 [P] [H3] Pruebas de pantalla primero (`tests/e2e/ia-real-h3.spec.ts`, 320/768/1280): criterios de posición y tamaño (altura, columnas, ancho usado, sin desplazamiento horizontal ni solapamientos) y presencia de tabla equivalente y valor en texto de cada gráfico
+- [X] T219 [H3] Ver fallar T217 y T218 y anotarlo en `docs/evidencia/h3-rojo.md`
+- [X] T220 [H3] **P1** Funciones puras y componentes de gráfico reutilizables; CSS `h3.css`
+- [X] T221 [H3] **P1** Composición: contenedor, zona principal + lateral (Diagnóstico, Revisión, Informe), cuadrícula de hallazgos, un solo desplegable de justificaciones
+- [X] T222 [H3] **P1** Gráficos «Cobertura de evidencia» y «Estado de la revisión»
+- [X] T223 [H3] **P2** Estrategia (riesgos, ruta por horizonte, «Riesgos por nivel», «¿De dónde sale cada recomendación?») y Proyectos (auto-fill)
+- [X] T224 [H3] **P3** HECHO: cifras, equipos 2/3 con chips y barra de avance en la fila (cierra T210), cola 1/3, «Proyectos por etapa», «Madurez por proyecto» y «Resumen de la traza»; PENDIENTE: nada de lo pedido en P3.
+- [ ] T225 [H3] **P4 NO HECHO (documentado)**: fragmentos por archivo y radar quedan para después; **P4** (si hay tiempo) fragmentos por archivo y radar con 6 dimensiones; lo que no quepa queda anotado aquí
+- [X] T226 [H3] Mutaciones (número en celda sin evidencia, contar rechazado como vigente, volver a una columna a 1280 px), restaurar y anotar en `docs/evidencia/mutacion-h3.md`
+- [X] T227 [H3] Capturas `docs/evidencia/h3-*.png` a 1280, 1920, 768 y 320 y autoverificación contra los criterios
+- [X] T228 [H3] `typecheck:all`, `test:all`, `build && check:all`, suite completa de la 002 (3 anchos: 261 pasaron, 6 omitidos) y de la 001 (506 pasaron, 75 omitidos, 1 intermitente: contraste del menú lateral por la transición de `redesign.css`, lote H2; ver `docs/revision-002.md`); `docs/revision-002.md` (10 min) y `docs/tiempos-002.md`
+- [X] T230 [H3-fix] Quitar la transición de fondo del menú lateral (`redesign.css`): `matrix.spec.ts` con `--repeat-each=10` pasa 180 de 180 (antes fallaba 2 de cada 4 veces por contraste 4,37 frente a 4,5)
+- [X] T231 [H3-fix] «Madurez por proyecto»: columna del valor fija y «ilustrativo» bajo el nombre; prueba que mide todas las pistas (mutación: 139/230/137 px → falla; restaurado) (`ia-real-h3fix.spec.ts`)
+- [X] T232 [H3-fix] La captura «No encontramos esa pantalla» fue del script (navegaba a `#/consultor/proyectos`, ruta inexistente; la correcta es `#/consultor`), no un defecto de la aplicación; script corregido
+- [X] T233 [H3-fix] Revisión: la columna lateral ya empezaba a la altura de las cifras (285 px y 285 px con scroll 0, a 1280 y a 1920) y «Aprobar y emitir» está dentro de la ventana (449 px); queda una prueba que lo mide; no hizo falta cambiar el diseño
+- [X] T234 [H3-fix] Tablero: la barra de avance de la fila tenía ancho 0 (defecto real) y ahora se ve con su porcentaje; «Equipo N» en una línea; cola de revisión con máximo 3 tarjetas y enlace «Ver las N entregas por revisar» a `#/lider/entregas`, sin desplazamiento interno (`ReviewQueue` recibe `limit` solo en el Tablero)
+- [X] T235 [H3-fix] Resumen de la traza: barras a la izquierda y tres cifras con rótulo a la derecha; el nombre de la herramienta va sobre su barra y no se parte
+- [X] T236 [H3-fix] Espacios: chips del resumen del Diagnóstico separados (flex con espacio) y margen entre «Riesgo/Fase» y su título en la matriz (prueba ≥ 8 px; sin el margen mide 2 px y falla)
+- [ ] T229 [PERSONA] Revisión humana del lote H3, `build && check` con la lista de nombres y commit
+
+---
+
 ## Lote F — Cierre (P1/P2 · todas las historias construidas)
 
 **Objetivo**: accesibilidad y responsive de lo nuevo, documentación honesta, evidencia, repaso de todos los criterios y una **grabación de respaldo** de la demo por si falla la conexión o el crédito el día de la presentación.
@@ -412,7 +440,7 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 
 ## Dependencias y orden
 
-- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N → H → H2** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
+- **Orden de ejecución**: A → B → C → D → **D2 → D3** → E → **N → H → H2 → H3** → F; **G diferido**. D2 y D3 nacen del cambio de alcance 2026-11-14 (aprobado en T139); E (estrategia) depende de D2 solo en que el diagnóstico real ya trae niveles, no los usa. Cada lote se cierra con «cierre estándar → revisión humana → commit de la persona» antes de empezar el siguiente (principio VIII).
 - **Las tareas de cuenta y crédito (T001, T002, T003) no bloquean A** y se pueden hacer mientras el agente trabaja; **bloquean la prueba de humo del lote C** (T064). La clave y `server/.env` (T018) también.
 - **A bloquea todo**: T004 primero; T005, T006, T008, T010 y T012 en paralelo; T007 depende de T006; T009 de T008; T011 de T010 y T009; T013 de T011; T014 de T007.
 - **B depende de A**: T023 antes de los extractores; T025 antes de las pruebas que usan los fixtures; las pruebas T026, T027, T028, T029 y T030 antes de su implementación; T037 depende de T033, T034, T035 y T036; T040 de T037, T038 y T039.

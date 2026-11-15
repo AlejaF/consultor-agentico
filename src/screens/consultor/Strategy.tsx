@@ -80,7 +80,7 @@ export function Strategy({ projectId }: { projectId: string }) {
             )}
           </section>
           {real && ps.real?.strategyRun && <RunNotices run={ps.real.strategyRun} />}
-          <StrategyView derived={deriveStrategy(getStrategy(ps).template, view.findings, ps.diagnosis.decisions)} ai={real} {...(real ? { findings: view.findings } : {})} />
+          <StrategyView derived={deriveStrategy(getStrategy(ps).template, view.findings, ps.diagnosis.decisions)} ai={real} {...(real ? { findings: view.findings } : {})} adopted={view.findings.filter((f) => ['accepted', 'edited'].includes(ps.diagnosis.decisions[f.id]?.state ?? 'pending'))} />
           {real && ps.real?.strategyRun && <TraceView run={ps.real.strategyRun} />}
           {status === 'sent' && <DeliveryStatus deliveryId={`st/${projectId}`} label="de la estrategia" />}
         </>

@@ -15,6 +15,7 @@ import { evaluateMaturity, maturityOf } from '../../domain/maturity';
 import { MaturityPanel } from '../../components/MaturityPanel';
 import { MaturityIndexCard } from '../../components/MaturityIndexCard';
 import { ReviewStats } from '../../components/ReviewStats';
+import { CoveragePanel } from '../../components/charts/Panels';
 import { formatDateTime, formatDecimal } from '../../domain/format';
 import { canGenerate } from '../../domain/progress';
 import { projectInfo } from '../../domain/lookup';
@@ -73,7 +74,8 @@ export function Diagnosis({ projectId }: { projectId: string }) {
       )}
 
       {d.status !== 'none' && (
-        <>
+        <div className="split" data-testid="split">
+          <aside className="split-side" aria-label="Resumen y madurez">
           <section className="card report-head" aria-label="Resumen del diagnóstico">
             <p>
               <span className={issued ? 'badge badge-ok' : 'badge badge-warn'}>{issued ? 'Emitido' : 'Generado — pendiente de revisión'}</span>{' '}
@@ -103,8 +105,11 @@ export function Diagnosis({ projectId }: { projectId: string }) {
           </section>
 
           {!real && <MaturityIndexCard index={maturityOf(projectId)} mode="simulated" />}
-          <ReviewStats findings={view.findings} decisions={d.decisions} />
           {real && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} />}
+          </aside>
+          <div className="split-main">
+          <ReviewStats findings={view.findings} decisions={d.decisions} />
+          {real && <CoveragePanel findings={view.findings} decisions={d.decisions} />}
 
           <PillarGroups
             idPrefix="dim"
@@ -123,7 +128,8 @@ export function Diagnosis({ projectId }: { projectId: string }) {
           />
           {real && <MissingInfo items={ps.real?.missingInfo ?? []} />}
           {real && ps.real?.diagnosisRun && <TraceView run={ps.real.diagnosisRun} />}
-        </>
+          </div>
+        </div>
       )}
     </>
   );

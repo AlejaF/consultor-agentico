@@ -4,12 +4,12 @@ import { useAppState } from '../state/context';
 import { UnverifiedCount } from './UnverifiedCount';
 
 /** Cola de entregas por revisar. */
-export function ReviewQueue({ deliveries }: { deliveries: readonly Delivery[] }) {
+export function ReviewQueue({ deliveries, limit }: { deliveries: readonly Delivery[]; limit?: number }) {
   const { state } = useAppState();
   if (deliveries.length === 0) return <p data-testid="review-queue">No hay entregas por revisar.</p>;
   return (
     <ul className="list-plain stack" data-testid="review-queue">
-      {deliveries.map((d) => {
+      {(limit === undefined ? deliveries : deliveries.slice(0, limit)).map((d) => {
         const { company, team } = projectInfo(d.projectId, state.createdProjects);
         const kind = d.tipo === 'dx' ? 'Diagnóstico' : 'Estrategia';
         return (

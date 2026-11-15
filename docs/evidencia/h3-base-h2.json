@@ -1,0 +1,42 @@
+{
+  "revision-1024": {
+    "ancho": 1024,
+    "alturaTotal": 2909,
+    "alturaMadurez": 762,
+    "tarjetasPorFila": 1,
+    "anchoContenido": 720,
+    "anchoDisponible": 752,
+    "desbordaH": false,
+    "columnasRuta": 0
+  },
+  "revision-1280": {
+    "ancho": 1280,
+    "alturaTotal": 2888,
+    "alturaMadurez": 762,
+    "tarjetasPorFila": 1,
+    "anchoContenido": 976,
+    "anchoDisponible": 1008,
+    "desbordaH": false,
+    "columnasRuta": 0
+  },
+  "revision-1536": {
+    "ancho": 1536,
+    "alturaTotal": 2888,
+    "alturaMadurez": 762,
+    "tarjetasPorFila": 1,
+    "anchoContenido": 1120,
+    "anchoDisponible": 1152,
+    "desbordaH": false,
+    "columnasRuta": 0
+  },
+  "revision-1920": {
+    "ancho": 1920,
+    "alturaTotal": 2888,
+    "alturaMadurez": 762,
+    "tarjetasPorFila": 1,
+    "anchoContenido": 1120,
+    "anchoDisponible": 1152,
+    "desbordaH": false,
+    "columnasRuta": 0
+  }
+}

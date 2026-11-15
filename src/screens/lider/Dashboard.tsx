@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { KpiCard } from '../../components/KpiCard';
 import { ReviewQueue } from '../../components/ReviewQueue';
 import { hasRealIssued } from '../../domain/visual';
+import { MaturityProjectsPanel, StagePanel } from '../../components/charts/Panels';
 import { PillarAverages } from '../../components/PillarAverages';
 import { TeamsTable } from '../../components/TeamsTable';
 import { TEAMS } from '../../data/teams';
@@ -14,6 +15,9 @@ import { MIX_NOTE, averageMaturity, averageMixesModes } from '../../domain/matur
 import { projectProgress } from '../../domain/progress';
 import { averageOfGradings } from '../../domain/rubric';
 import { useAppState } from '../../state/context';
+
+/** Tarjetas máximas de la cola en el Tablero; el resto se ve en la pantalla de entregas. */
+const QUEUE_LIMIT = 3;
 
 export function Dashboard() {
   const { state } = useAppState();
@@ -50,21 +54,36 @@ export function Dashboard() {
           {MIX_NOTE}
         </p>
       )}
-      <section aria-labelledby="tab-equipos">
-        <h2 id="tab-equipos">Equipos</h2>
-        <div className="field">
-          <label htmlFor="buscar-equipo">Buscar equipo o empresa</label>
-          <input id="buscar-equipo" type="search" value={query} onChange={(e) => setQuery(e.target.value)} autoComplete="off" />
-        </div>
-        <TeamsTable state={state} query={query} />
-      </section>
-      <div className="dash-columns">
+      <div className="dash-split">
+        <section aria-labelledby="tab-equipos">
+          <h2 id="tab-equipos">Equipos</h2>
+          <div className="field">
+            <label htmlFor="buscar-equipo">Buscar equipo o empresa</label>
+            <input id="buscar-equipo" type="search" value={query} onChange={(e) => setQuery(e.target.value)} autoComplete="off" />
+          </div>
+          <TeamsTable state={state} query={query} />
+        </section>
         <section aria-labelledby="tab-cola">
           <h2 id="tab-cola">Cola de revisión</h2>
-          <ReviewQueue deliveries={pending} />
+          <ReviewQueue deliveries={pending} limit={QUEUE_LIMIT} />
+          {pending.length > QUEUE_LIMIT && (
+            <p>
+              <a href="#/lider/entregas" data-testid="queue-see-all">
+                Ver las {pending.length} entregas por revisar
+              </a>
+            </p>
+          )}
         </section>
-        {hasRealIssued(state) && <PillarAverages state={state} />}
       </div>
+      <div className="dash-charts">
+        <StagePanel state={state} />
+        <MaturityProjectsPanel state={state} />
+      </div>
+      {hasRealIssued(state) && (
+        <div className="dash-columns">
+          <PillarAverages state={state} />
+        </div>
+      )}
     </>
   );
 }

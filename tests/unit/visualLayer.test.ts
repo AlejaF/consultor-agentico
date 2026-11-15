@@ -128,7 +128,7 @@ describe('cifras de la revisión', () => {
     const m = renderToStaticMarkup(createElement(ReviewStats, { findings, decisions }));
     for (const id of ['stat-total', 'stat-adopted', 'stat-rejected', 'stat-pending', 'stat-unverified']) expect(m).toContain(`data-testid="${id}"`);
     expect(m).toContain('role="img"');
-    expect(m).toContain('aria-label="Estado de la revisión: 3 aceptados o editados, 1 rechazado, 1 pendiente"');
+    expect(m).toMatch(/aria-label="Estado de la revisión: [^"]*Rechazados 1[^"]*Pendientes 1"/); // barra segmentada de H3 (AG-035)
     expect(m).toContain('NO VERIFICADO');
   });
 });

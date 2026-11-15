@@ -47,3 +47,5 @@ Notas: el costo es una **estimación** (NO VERIFICADO contra el panel de uso). E
 | Lote H (Capa visual) | estimación sin medir: ~1 h de generación y pruebas, ~10 min de revisión de la persona (NO VERIFICADO) |
 
 | Lote H2 (Rediseño de composición) | estimación sin medir: ~1,5 h de generación y pruebas, ~10 min de revisión de la persona (NO VERIFICADO) |
+
+| Lote H3 (Composición y gráficos) | estimación sin medir: ~1,5 h de generación y pruebas (tope pedido: 90 min), ~10 min de revisión de la persona (NO VERIFICADO) |

@@ -4,6 +4,7 @@ import { getDiagnosis } from '../../providers';
 import { AiBadge } from '../../components/AiBadge';
 import { RunNotices } from '../../components/TraceView';
 import { ReviewStats } from '../../components/ReviewStats';
+import { CoveragePanel } from '../../components/charts/Panels';
 import { MaturityPanel } from '../../components/MaturityPanel';
 import { evaluateMaturity } from '../../domain/maturity';
 import { FindingCard } from '../../components/FindingCard';
@@ -61,6 +62,9 @@ export function Review({ projectId }: { projectId: string }) {
         </section>
       )}
 
+      {d.status !== 'none' ? (
+        <div className="split" data-testid="split">
+          <aside className="split-side" aria-label="Avance y madurez">
       {d.status === 'generated' && (
         <ReviewSummary
           {...progress}
@@ -93,15 +97,17 @@ export function Review({ projectId }: { projectId: string }) {
         <DeliveryStatus deliveryId={`dx/${projectId}`} label="del diagnóstico" />
       )}
 
+      {ai && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} />}
+          </aside>
+          <div className="split-main">
       <div aria-live="polite" role="status" className="visually-hidden" data-testid="decision-announcer">
         {announcement}
       </div>
 
-      {d.status !== 'none' && <ReviewStats findings={view.findings} decisions={d.decisions} />}
-      {ai && d.status !== 'none' && ps.real?.diagnosisRun && <RunNotices run={ps.real.diagnosisRun} />}
-      {ai && d.status !== 'none' && <MaturityPanel evaluation={evaluateMaturity(ps.real?.maturity, view.findings, d.decisions)} />}
-
-      {d.status !== 'none' && (
+      {<ReviewStats findings={view.findings} decisions={d.decisions} />}
+      {ai && <CoveragePanel findings={view.findings} decisions={d.decisions} />}
+      {ai && ps.real?.diagnosisRun && <RunNotices run={ps.real.diagnosisRun} />}
+      {(
         <PillarGroups
           idPrefix="rev"
           findings={view.findings}
@@ -126,6 +132,9 @@ export function Review({ projectId }: { projectId: string }) {
           )}
         />
       )}
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

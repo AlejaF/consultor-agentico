@@ -204,3 +204,24 @@ e2e completa (`npm run test:e2e`: la de la 001 con el modo Simulado **sin modifi
 5. **Móvil y tablet** (1 min): reduce la ventana a 768 y 320 px: mismos colores (la barra de pestañas también es de color), sin barra de desplazamiento horizontal. Mira `docs/evidencia/h2-*.png`.
 
 **Pendiente tuyo**: T215 (esta revisión, `build && check` con tu lista de nombres y commit). **Pendiente documentado (P3)**: chips y barra de avance dentro de las filas de la tabla de equipos.
+
+
+## Lote H3 — composición y gráficos (lista corta, máx. 10 min)
+
+**Para quien no es técnico**: la pantalla aprovecha el ancho (resumen y madurez a un lado, hallazgos en varias columnas) y hay gráficos que responden una pregunta cada uno. Nada de las reglas cambió.
+
+1. **Revisión a 1280 px** (3 min): `npm run dev:all` con `MODEL_PROVIDER=fake`; genera un diagnóstico real y abre «Revisión». **Comprobar**: la columna derecha (avance con «Aprobar y emitir» y madurez) se queda fija al bajar; los hallazgos van en 2 columnas; «Estado de la revisión» es una barra con leyenda y cifras; «Cobertura de evidencia» tiene celdas rayadas con «sin evidencia» y sin número. Pulsa «Ver como tabla» y pasa el teclado (Tab) por las celdas: aparece la etiqueta.
+2. **Estrategia** (2 min): emite, genera la estrategia. **Comprobar**: «Nivel de gravedad», «¿De dónde sale cada recomendación?» (puntos) y la ruta en columnas.
+3. **Líder** (2 min): cambia el rol; el Tablero trae la tabla con etiquetas y barra de avance, la cola a la derecha, «Proyectos por etapa» y «Madurez por proyecto» (simulados en gris con «ilustrativo»).
+4. **Empresa** (1 min): cambia a Empresa: no hay «Resumen de la traza» ni gráficos técnicos.
+5. **Anchos** (2 min): 768 (la columna lateral pasa arriba) y 320 (una columna, sin barra horizontal). Capturas en `docs/evidencia/h3-*.png`. Imprime el informe en blanco y negro: tablas abiertas y valores en texto.
+
+**Pendiente tuyo**: T229 (esta revisión, `build && check` con tu lista de nombres y commit).
+
+## Lote H3-fix — correcciones tras la revisión (lista corta, máx. 5 min)
+
+1. Tablero a 1280: la tabla de equipos muestra la barra de avance con su porcentaje en cada fila y «Equipo N» en una línea; la cola de revisión tiene 3 tarjetas con «Revisar» a la derecha y, debajo, «Ver las 4 entregas por revisar» (lleva a Entregas). No hay desplazamiento dentro del recuadro.
+2. Tablero, «Madurez por proyecto»: todas las barras empiezan y terminan en el mismo lugar; «ilustrativo» va bajo el nombre.
+3. Revisión a 1280 y 1920: la columna de la derecha empieza a la altura de las cifras y «Aprobar y emitir» se ve sin bajar.
+4. Diagnóstico: el Resumen de la traza tiene las barras a la izquierda y tres cifras con rótulo a la derecha; los nombres de herramienta no se parten. Los dos chips de arriba a la derecha están separados.
+5. Estrategia: en la matriz «¿De dónde sale cada recomendación?» hay aire entre «Riesgo»/«Fase» y el título.

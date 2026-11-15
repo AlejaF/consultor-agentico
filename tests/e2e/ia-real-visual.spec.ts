@@ -35,7 +35,7 @@ test.describe('capa visual', () => {
     await expect(barra(page, 'gobernanza')).toHaveAttribute('aria-label', 'Gobernanza: Sin respaldo vigente, basado en 0 hallazgos');
     await expect(barra(page, 'gobernanza')).not.toContainText(/\d de 5/);
     // los textos actuales siguen
-    await expect(page.getByTestId('maturity-level-datos')).toContainText('Deriva de: R1');
+    await expect(page.getByTestId('maturity-detail-datos')).toContainText('Deriva de: R1'); // en el desplegable único (AG-035)
     await expect(page.getByTestId('maturity-index')).toContainText('Índice de madurez: 2,5 de 5');
   });
 
@@ -90,7 +90,7 @@ test.describe('capa visual', () => {
     await expect(s.getByTestId('stat-adopted')).toContainText('2');
     await expect(s.getByTestId('stat-rejected')).toContainText('1');
     await expect(s.getByTestId('stat-pending')).toContainText('1');
-    await expect(s.locator('[role=img]')).toHaveAttribute('aria-label', 'Estado de la revisión: 2 aceptados o editados, 1 rechazado, 1 pendiente');
+    await expect(s.locator('[role=img]')).toHaveAttribute('aria-label', 'Estado de la revisión: Aceptados 2, Rechazados 1, Pendientes 1');
     await expectNoAxeViolations(page);
     await expectNoHorizontalScroll(page);
   });

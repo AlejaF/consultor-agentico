@@ -1,16 +1,10 @@
-import { countOf } from '../domain/format';
+import { ReviewStatePanel } from './charts/Panels';
 import type { Decision } from '../state/types';
 import { reviewStats } from '../domain/visual';
 
 /** Cifras de la revisión y una barra segmentada de su estado (AG-033). Solo lectura: no decide nada. */
 export function ReviewStats({ findings, decisions }: { findings: readonly { id: string; verified: boolean }[]; decisions: Record<string, Decision> }) {
   const s = reviewStats(findings, decisions);
-  const parts: { key: string; n: number; cls: string }[] = [
-    { key: 'adopted', n: s.adopted, cls: 'rs-adopted' },
-    { key: 'rejected', n: s.rejected, cls: 'rs-rejected' },
-    { key: 'pending', n: s.pending, cls: 'rs-pending' },
-  ];
-  const label = `Estado de la revisión: ${countOf(s.adopted, 'aceptado o editado', 'aceptados o editados')}, ${countOf(s.rejected, 'rechazado', 'rechazados')}, ${countOf(s.pending, 'pendiente', 'pendientes')}`;
   const stat = (id: string, value: number, text: string) => (
     <div className="stat" data-testid={id}>
       <span className="stat-value">{value}</span>
@@ -26,9 +20,7 @@ export function ReviewStats({ findings, decisions }: { findings: readonly { id: 
         {stat('stat-pending', s.pending, 'Pendientes')}
         {stat('stat-unverified', s.unverified, 'NO VERIFICADO')}
       </div>
-      <div className="rs-bar" role="img" aria-label={label}>
-        {parts.map((p) => (p.n > 0 ? <span key={p.key} className={`rs-seg ${p.cls}`} style={{ width: `${(p.n / Math.max(1, s.total)) * 100}%` }} /> : null))}
-      </div>
+      <ReviewStatePanel findings={findings} decisions={decisions} />
     </section>
   );
 }

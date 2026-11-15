@@ -6,6 +6,7 @@ import { DerivedFrom } from './DerivedFrom';
 import { SimBadge } from './badges';
 import { RiskCard } from './RiskCard';
 import { RouteTimeline } from './RouteTimeline';
+import { ProvenancePanel, RiskLevelPanel, buildProvenance, titleOf } from './charts/Panels';
 
 /** Línea de aviso: los NO VERIFICADO aceptados no respaldan la estrategia; solo con N > 0 (FR-025). */
 function unverifiedLine(n: number): string {
@@ -48,7 +49,10 @@ function AnalysisSection({ id, title, analysis }: { id: string; title: string; a
  * `ai`: estrategia generada por el agente (modo IA real): rótulo de IA sin modelo, «Deriva de» con los hallazgos reales y SIN análisis de
  * sector ni mercado (no hay contenido ilustrativo en modo real). Sin `ai` es la vista de la 001, idéntica.
  */
-export function StrategyView({ derived, ai = false, findings }: { derived: DerivedStrategy; ai?: boolean; findings?: readonly Finding[] }) {
+export function StrategyView({ derived, ai = false, findings, adopted }: { derived: DerivedStrategy; ai?: boolean; findings?: readonly Finding[]; adopted?: readonly { id: string; title: string; verified: boolean }[] }) {
+  // Hallazgos aceptados o editados (AG-035): si quien llama no los da, solo se muestran los que alguna acción usa (sin marcar «sin uso»).
+  const used = [...new Set([...derived.risks, ...derived.route].flatMap((i) => i.derivedFrom))];
+  const provenance = buildProvenance(derived, adopted ?? used.map((id) => ({ id, title: titleOf(id, findings), verified: true })));
   return (
     <div>
       {!ai && (
@@ -71,6 +75,10 @@ export function StrategyView({ derived, ai = false, findings }: { derived: Deriv
         </section>
       ) : (
         <div data-testid="strategy-content" className="stack">
+          <div className="strategy-charts">
+            <RiskLevelPanel risks={derived.risks} />
+            <ProvenancePanel data={provenance} />
+          </div>
           <section aria-labelledby="estr-riesgos">
             <div className="block-head">
               <h2 id="estr-riesgos">Riesgos</h2>

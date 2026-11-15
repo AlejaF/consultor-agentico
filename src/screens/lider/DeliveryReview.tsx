@@ -76,7 +76,7 @@ export function DeliveryReview({ tipo, projectId }: { tipo: 'dx' | 'st'; project
         <section aria-labelledby="entrega-st">
           <h2 id="entrega-st">Estrategia enviada</h2>
           {ai && ps.real?.strategyRun && <RunNotices run={ps.real.strategyRun} />}
-          <StrategyView derived={deriveStrategy(getStrategy(ps).template, view.findings, decisions)} ai={ai} {...(ai ? { findings: view.findings } : {})} />
+          <StrategyView derived={deriveStrategy(getStrategy(ps).template, view.findings, decisions)} ai={ai} {...(ai ? { findings: view.findings } : {})} adopted={view.findings.filter((f) => ['accepted', 'edited'].includes(decisions[f.id]?.state ?? 'pending'))} />
           {ai && ps.real?.strategyRun && <TraceView run={ps.real.strategyRun} />}
         </section>
       )}

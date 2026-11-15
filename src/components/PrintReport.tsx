@@ -128,7 +128,7 @@ export function PrintReport({ content, companyName, projectLabel, ai = false, ma
               {content.strategy.kind === 'derived' && (
                 <section aria-labelledby="inf-st">
                   <h2 id="inf-st">Estrategia</h2>
-                  <StrategyView derived={content.strategy.derived} ai={ai} {...(findings ? { findings } : {})} />
+                  <StrategyView derived={content.strategy.derived} ai={ai} {...(findings ? { findings } : {})} adopted={content.findings.map((f) => ({ id: f.finding.id, title: f.finding.title, verified: f.finding.verified }))} />
                 </section>
               )}
               {techSheet && techSheet.length > 0 && <TechSheet rows={techSheet} />}

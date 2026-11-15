@@ -7,6 +7,7 @@ import { projectProgress, type Stage } from '../domain/progress';
 import { formatDecimal } from '../domain/format';
 import { teamMaturity, teamMatches } from '../domain/maturity';
 import type { PersistedState } from '../state/types';
+import { ProgressBar } from './ProgressBar';
 import { ResponsiveTable } from './ResponsiveTable';
 
 const ORDER: Stage[] = ['Evidencia', 'Diagnóstico', 'Estrategia'];
@@ -48,8 +49,12 @@ export function TeamsTable({ state, query = '' }: { state: PersistedState; query
       cells: {
         team: t.name,
         projects: countOf(projects.length, 'proyecto', 'proyectos'),
-        stage,
-        progress: `${percent} %`,
+        stage: <span className="badge chip-pillar">{stage}</span>,
+        progress: (
+          <span className="row-progress">
+            <ProgressBar percent={percent} label={`Avance de ${t.name}`} />
+          </span>
+        ),
         maturity: (() => { const m = teamMaturity(state, t); return m === null ? '—' : formatDecimal(m); })(),
         activity: projects[0].lastActivityLabel,
         pending: String(pending),

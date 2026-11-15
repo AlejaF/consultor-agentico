@@ -44,7 +44,7 @@ describe('madurez real: composición en dos columnas sin duplicados', () => {
   });
   it('las filas son compactas: nombre, barra y valor; la justificación y «Deriva de» van en un detalle', () => {
     const m = panel();
-    expect(count(m, /<details/g)).toBeGreaterThanOrEqual(2);
+    expect(count(m, /<details/g)).toBe(1); // UN solo desplegable para todo el bloque (AG-035)
     expect(m).toContain('Las cifras viven en cada área.');
     expect(m).toContain('Deriva de: R1');
   });
@@ -68,10 +68,11 @@ describe('madurez real: composición en dos columnas sin duplicados', () => {
 });
 
 describe('línea corta, chips y detalle', () => {
-  it('cada dimensión respaldada deja visibles la línea corta y los chips con los ids', () => {
+  it('la línea corta ya no se repite en cada fila: la justificación vive solo en el desplegable del bloque (AG-035)', () => {
     const m = panel();
-    expect(m).toContain('class="row-just"');
-    expect(m).toMatch(/class="badge chip-id">R1</);
+    expect(m).not.toContain('class="row-just"');
+    expect(m).not.toMatch(/class="badge chip-id">R1</);
+    expect(count(m, /Las cifras viven en cada área\./g)).toBe(1);
   });
   it('la línea corta es la primera frase y no pasa de 90 caracteres', () => {
     expect(shortJustification('Primera frase. Segunda frase.')).toBe('Primera frase.');
@@ -80,8 +81,8 @@ describe('línea corta, chips y detalle', () => {
   });
   it('el informe imprimible abre los detalles (`open`); la pantalla los deja cerrados', () => {
     const ev = evaluateMaturity(maturity, findings, decisions);
-    expect(renderToStaticMarkup(createElement(MaturityPanel, { evaluation: ev, openDetails: true }))).toMatch(/<details class="row-detail" open=""/);
-    expect(renderToStaticMarkup(createElement(MaturityPanel, { evaluation: ev }))).not.toMatch(/<details class="row-detail" open/);
+    expect(renderToStaticMarkup(createElement(MaturityPanel, { evaluation: ev, openDetails: true }))).toMatch(/<details class="maturity-detail row-detail"[^>]* open=""/);
+    expect(renderToStaticMarkup(createElement(MaturityPanel, { evaluation: ev }))).not.toMatch(/<details class="maturity-detail row-detail"[^>]* open/);
   });
 });
 

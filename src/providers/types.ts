@@ -23,6 +23,7 @@ export interface ServiceHealth {
   version: string;
   keyConfigured: boolean;
   models: { diagnosis: string | null; strategy: string | null; critic: string | null };
+  limits?: { maxIterations?: number };
   fake: boolean;
 }
 

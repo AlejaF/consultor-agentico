@@ -40,41 +40,30 @@ export function shortJustification(text: string): string {
   return first.length <= 90 ? first : `${first.slice(0, 87).trimEnd()}…`;
 }
 
-/** Línea corta de justificación y chips con los ids de los que deriva: siempre visibles (AG-034). */
-function RowSummary({ l }: { l: LevelView }) {
-  if (l.status !== 'backed') return null;
+/**
+ * UN solo desplegable para todo el bloque (AG-035): justificación completa y «Deriva de» (o la explicación del estado) de cada dimensión.
+ * No repite la línea corta. Abierto en el informe imprimible; el CSS de impresión también lo muestra.
+ */
+function MaturityDetail({ levels, open }: { levels: LevelView[]; open: boolean }) {
   return (
-    <div className="row-summary">
-      <p className="row-just">{shortJustification(l.justification)}</p>
-      <p className="row-chips" aria-label="Deriva de">
-        {l.backing.map((id) => (
-          <span key={id} className="badge chip-id">
-            {id}
-          </span>
+    <details className="maturity-detail row-detail" data-testid="maturity-detail" {...(open ? { open: true } : {})}>
+      <summary>Justificación y respaldo de cada dimensión</summary>
+      <dl>
+        {levels.map((l) => (
+          <div key={l.dimension} data-testid={`maturity-detail-${l.dimension}`}>
+            <dt>{label(l.dimension)}</dt>
+            <dd>
+              {l.status === 'insufficient' && <>No hay hallazgos verificados en esta dimensión; no entra en el índice.</>}
+              {l.status === 'no-backing' && (l.reason === 'rejected' ? 'Todos sus hallazgos fueron rechazados; no entra en el índice.' : 'Sus hallazgos aún no están aceptados o editados; no entra en el índice.')}
+              {l.status === 'backed' && (
+                <>
+                  <strong>Nivel {l.level} de 5</strong> · {basedOnText(l.basedOn)}. {l.justification} <span className="subtitle">Deriva de: {l.backing.join(', ')}</span>
+                </>
+              )}
+            </dd>
+          </div>
         ))}
-      </p>
-    </div>
-  );
-}
-
-/** Detalle desplegable: texto completo y «Deriva de» (o la explicación del estado). Abierto en el informe imprimible; el CSS de impresión también lo muestra. */
-function RowDetail({ l, open }: { l: LevelView; open: boolean }) {
-  return (
-    <details className="row-detail" {...(open ? { open: true } : {})}>
-      <summary>Justificación y respaldo</summary>
-      {l.status === 'insufficient' && <p className="subtitle">No hay hallazgos verificados en esta dimensión; no entra en el índice.</p>}
-      {l.status === 'no-backing' && (
-        <p className="subtitle">{l.reason === 'rejected' ? 'Todos sus hallazgos fueron rechazados; no entra en el índice.' : 'Sus hallazgos aún no están aceptados o editados; no entra en el índice.'}</p>
-      )}
-      {l.status === 'backed' && (
-        <>
-          <p>
-            <strong>Nivel {l.level} de 5</strong> · {basedOnText(l.basedOn)}
-          </p>
-          <p>{l.justification}</p>
-          <p className="subtitle">Deriva de: {l.backing.join(', ')}</p>
-        </>
-      )}
+      </dl>
     </details>
   );
 }
@@ -106,16 +95,17 @@ export function MaturityPanel({ evaluation, openDetails = false }: { evaluation:
               <li key={l.dimension} className="maturity-row" data-testid={`maturity-level-${l.dimension}`}>
                 <div className="row-head">
                   <strong>{label(l.dimension)}</strong>
-                  <RowState l={l} />
                 </div>
                 <ScaleBar view={levelBar(l)} name={label(l.dimension)} compact />
-                <RowSummary l={l} />
-                <RowDetail l={l} open={openDetails} />
+                <div className="row-state">
+                  <RowState l={l} />
+                </div>
               </li>
             ))}
           </ul>
         </div>
       </div>
+      <MaturityDetail levels={evaluation.levels} open={openDetails} />
     </section>
   );
 }

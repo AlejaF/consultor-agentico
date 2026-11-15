@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { canSeeTrace } from '../domain/visibility';
 import { formatDateTime } from '../domain/format';
 import { useAppState } from '../state/context';
+import { TraceSummaryPanel } from './charts/Panels';
 import type { TraceStepSummary, TraceSummary } from '../state/types';
 
 type Run = Pick<TraceSummary, 'steps'> & Partial<Omit<TraceSummary, 'steps'>>;
@@ -78,6 +79,8 @@ export function TraceView({ run }: { run: Run }) {
   const lines = run.steps.map((s, i) => ({ i, line: stepLine(s) })).filter((x): x is { i: number; line: { key: string; text: string } } => x.line !== null);
   const errors = run.errors ?? run.steps.flatMap((s) => (s.type === 'model_error' ? [{ category: s.category, message: s.message }] : []));
   return (
+    <>
+    <TraceSummaryPanel run={run} />
     <details className="card trace-view" data-testid="trace-view">
       <summary>Ver cómo trabajó el agente</summary>
       <dl className="trace-facts" aria-label="Datos de la corrida">
@@ -102,5 +105,6 @@ export function TraceView({ run }: { run: Run }) {
         </ol>
       )}
     </details>
+    </>
   );
 }

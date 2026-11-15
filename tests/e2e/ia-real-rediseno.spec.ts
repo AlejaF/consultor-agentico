@@ -7,7 +7,6 @@ const PRIMARY = 'rgb(80, 70, 229)';
 const card = (page: Page, id: string) => page.getByTestId(`finding-${id}`);
 const box = async (page: Page, testid: string) => (await page.getByTestId(testid).boundingBox())!;
 const wide = (page: Page) => (page.viewportSize()?.width ?? 0) >= 1024;
-const sideBySide = (page: Page) => (page.viewportSize()?.width ?? 0) >= 768; // la madurez pasa a dos columnas desde 768 px
 async function aceptar(page: Page, ...ids: string[]) {
   for (const id of ids) await card(page, id).getByRole('button', { name: /^Aceptar/ }).click();
 }
@@ -33,13 +32,9 @@ test.describe('rediseño de composición', () => {
     const panel = page.getByTestId('maturity-panel');
     const tarjeta = await box(page, 'maturity-card');
     const barras = (await panel.locator('.maturity-bars').boundingBox())!;
-    if (sideBySide(page)) {
-      expect(tarjeta.x + tarjeta.width, 'a la izquierda').toBeLessThanOrEqual(barras.x + 1);
-      expect(Math.abs(tarjeta.y - barras.y), 'misma fila').toBeLessThan(40);
-      expect(tarjeta.height, 'la tarjeta es pieza principal').toBeGreaterThan(160);
-    } else {
-      expect(barras.y, 'apiladas').toBeGreaterThanOrEqual(tarjeta.y + tarjeta.height - 1);
-    }
+    // H3 (AG-035): el bloque va en la zona lateral (340 px) o arriba, y la tarjeta queda siempre ENCIMA de las barras compactas
+    expect(barras.y, 'apiladas').toBeGreaterThanOrEqual(tarjeta.y + tarjeta.height - 1);
+    expect(tarjeta.height, 'la tarjeta es pieza principal').toBeGreaterThan(60);
     const texto = await panel.innerText();
     expect((texto.match(/Índice de madurez/g) ?? []).length).toBe(1);
     expect((texto.match(/3,0 de 5/g) ?? []).length).toBe(1); // el índice no se repite
@@ -68,7 +63,7 @@ test.describe('rediseño de composición', () => {
     await generarDiagnosticoReal(page);
     await abrir(page, 'P-A', 'revision');
     await aceptar(page, 'R1');
-    const detalle = page.getByTestId('maturity-level-datos').locator('details');
+    const detalle = page.getByTestId('maturity-panel').locator('details'); // UN desplegable por bloque (AG-035)
     await expect(detalle).toHaveCount(1);
     expect(await detalle.evaluate((e) => (e as HTMLDetailsElement).open)).toBe(false);
     await detalle.locator('summary').focus();
@@ -204,15 +199,15 @@ test.describe('rediseño de composición', () => {
     await expectNoHorizontalScroll(page);
   });
 
-  test('cada dimensión deja visibles una línea corta de justificación y los chips con los ids; el texto completo, en el detalle', async ({ page }) => {
+  test('H3: la línea corta ya no se repite en cada fila; el texto completo vive en el único desplegable', async ({ page }) => {
     await generarDiagnosticoReal(page);
     await abrir(page, 'P-A', 'revision');
     await aceptar(page, 'R1');
-    const fila = page.getByTestId('maturity-level-datos');
-    await expect(fila.locator('.row-just')).toBeVisible();
-    await expect(fila.locator('.row-just')).toContainText('Las cifras viven en cada área');
-    await expect(fila.locator('.row-chips .chip-id')).toHaveText(['R1']);
-    await expect(fila.locator('details p', { hasText: 'Nivel 2 de 5' })).toBeHidden(); // cerrado en pantalla
+    const panel = page.getByTestId('maturity-panel');
+    await expect(panel.locator('.row-just')).toHaveCount(0);
+    await expect(panel.locator('.row-chips')).toHaveCount(0);
+    await expect(panel.locator('details')).toHaveCount(1);
+    await expect(page.getByTestId('maturity-detail-datos').locator('p, dd')).toContainText('Las cifras viven en cada área');
     await expectNoAxeViolations(page);
   });
 
@@ -221,15 +216,16 @@ test.describe('rediseño de composición', () => {
     // Vista de impresión de la revisión (details cerrados en pantalla)
     await abrir(page, 'P-A', 'diagnostico');
     await page.emulateMedia({ media: 'print' });
-    const fila = page.getByTestId('maturity-level-datos');
-    await expect(fila.locator('details p', { hasText: 'Nivel 2 de 5' })).toBeVisible();
-    await expect(fila.locator('details p', { hasText: 'Deriva de: R1' })).toBeVisible();
+    const fila = page.getByTestId('maturity-detail-datos');
+    await expect(fila).toContainText('Nivel 2 de 5');
+    await expect(fila).toBeVisible(); // el único desplegable sale abierto al imprimir
+    await expect(fila).toContainText('Deriva de: R1');
     await expect(page.getByTestId('maturity-panel').locator('.block-head').getByTestId('ai-badge')).toBeVisible();
     await page.emulateMedia({ media: 'screen' });
     // Informe imprimible: los details llevan `open`
     await abrir(page, 'P-A', 'informe');
     const informe = page.getByTestId('print-report');
-    await expect(informe.locator('details.row-detail')).toHaveCount(6);
+    await expect(informe.locator('details.row-detail')).toHaveCount(1);
     for (const d of await informe.locator('details.row-detail').all()) expect(await d.evaluate((e) => (e as HTMLDetailsElement).open)).toBe(true);
     await expect(informe.locator('.block-head').getByTestId('ai-badge').first()).toBeVisible();
   });
