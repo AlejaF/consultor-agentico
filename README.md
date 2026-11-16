@@ -57,16 +57,6 @@ PDF, DOCX, TXT, VTT, SRT y XLSX, hasta 25 MB y nombres de hasta 150 caracteres. 
 
 Se usa en dos sentidos: (1) un **hallazgo** con respaldo insuficiente se marca «NO VERIFICADO»; puede aceptarse, pero **no cuenta como respaldo de la estrategia**; (2) en este README y en `docs/`, una **afirmación** que nadie ha comprobado todavía (ver la lista más abajo).
 
-## Límites conocidos y cosas NO VERIFICADO
-
-- **No evaluado en esta versión de demostración** — SC-001 (completar el recorrido P1 en 10 minutos o menos) y SC-005 («9 de cada 10» identifican lo simulado) se mantienen como metas del spec; no hay ningún resultado y no se afirma ninguno.
-- **NO VERIFICADO** — La revisión manual con **lector de pantalla** no se hizo (`docs/evidencia/revision-manual.md`). La revisión manual con **teclado** sí se hizo el 2026-11-02 en Chrome para Windows: todo funcionó salvo el foco visible del diálogo de «Restablecer demo», ya corregido. Axe automatiza solo una parte de WCAG 2.2 AA: que axe no encuentre violaciones **no** equivale a cumplir WCAG.
-- **NO VERIFICADO** — La tipografía (Plus Jakarta Sans) es una aproximación a la de las referencias.
-- **NO VERIFICADO** — Los tiempos y metas del plan (horas por lote, paquete menor de 150 kB comprimidos) son estimaciones; el tamaño medido está en `docs/evidencia/sc-checklist.md`.
-- **NO VERIFICADO** — Conformidad legal sobre tratamiento de datos personales: no se ha evaluado. La demo no pide datos personales.
-- Los datos viven solo en el navegador: borrar los datos del sitio o usar otro navegador reinicia la demo. Con el almacenamiento bloqueado la demo avisa y funciona en memoria.
-- Un hallazgo editado o una calificación guardada no se pueden deshacer, salvo con «Restablecer demo» (botón «Restablecer demo» de la cabecera; pide una confirmación).
-
 ## Cómo ejecutarla
 
 Requisitos: Node 22.12 o superior y npm (verificado con Node 26.13 en local y Node 24 en CI).
@@ -92,10 +82,6 @@ npm run check       # nombres reales, referencias/ no versionada, colores fuera 
 npm run test:e2e    # Playwright + axe a 320, 768 y 1280 px
 EVIDENCIA=1 npm run test:e2e   # además guarda capturas y salidas de axe en docs/evidencia/
 ```
-
-**Playwright corre en local, no en CI.** El flujo de CI (GitHub Actions) solo instala las dependencias de la raíz y ejecuta `typecheck`, `test`, compilación y `check` (este último omite la lista local de nombres vetados, que no se versiona). Las pruebas de extremo a extremo y la evidencia se ejecutan a mano antes de cada commit.
-
-Las capturas y los resultados de axe están en `docs/evidencia/` (ver su `README.md`). La revisión manual de teclado se hizo el 2026-11-02; la del lector de pantalla **NO se hizo** (NO VERIFICADO); ver `docs/evidencia/revision-manual.md`.
 
 ## Cómo se despliega
 
