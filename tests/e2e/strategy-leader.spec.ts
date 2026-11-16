@@ -211,7 +211,7 @@ test.describe('Líder: tablero, revisión y calificación', () => {
     }
   });
 
-  test('tablero: indicadores, tabla de equipos y cola de revisión', async ({ page }) => {
+  test('tablero: indicadores, tabla de equipos y enlace a «Entregas por revisar» (H5c: sin cola de revisión)', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Entrar como Líder' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Tablero' })).toBeVisible();
@@ -221,7 +221,7 @@ test.describe('Líder: tablero, revisión y calificación', () => {
     const rows = page.getByTestId('teams-table').getByRole('row');
     await expect(rows).toHaveCount(5); // encabezado + 4 equipos
     await expect(page.getByTestId('teams-table')).toContainText('Equipo 3');
-    await expect(page.getByTestId('review-queue').getByRole('link', { name: /^Revisar/ }).first()).toBeVisible();
+    await expect(page.getByTestId('kpi-por-revisar').getByRole('link', { name: 'Ver entregas →' })).toHaveAttribute('href', '#/lider/entregas'); // las entregas se abren desde «Entregas por revisar»
     await expect(page.getByText('Devuelto')).toHaveCount(0);
   });
 

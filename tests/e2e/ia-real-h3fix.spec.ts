@@ -29,7 +29,7 @@ test('Madurez por proyecto: todas las pistas miden exactamente lo mismo (con y s
   expect(new Set(ancho).size, `anchos de pista: ${ancho.join(', ')}`).toBe(1);
 });
 
-test('Tablero: avance con porcentaje en la fila, cola compacta (no más alta que la tabla) y «Equipo N» en una línea', async ({ page }) => {
+test('Tablero: avance con porcentaje en la fila y «Equipo N» en una línea (la cola salió del Tablero en H5c)', async ({ page }) => {
   await aTablero(page);
   for (const w of [1280, 1920]) {
     await size(page, w);
@@ -37,23 +37,7 @@ test('Tablero: avance con porcentaje en la fila, cola compacta (no más alta que
     const fila = tabla.locator('tbody tr').first();
     await expect(fila.locator('[role="progressbar"], progress, .progress-track').first()).toBeVisible();
     await expect(fila).toContainText(/\d+\s?%/);
-    const cola = page.getByTestId('review-queue');
-    const [hTabla, hCola] = await page.locator('.dash-split > section').evaluateAll((l) => l.map((e) => e.getBoundingClientRect().height));
-    expect(hCola!, `columna de la cola ${hCola} vs tabla ${hTabla} a ${w}`).toBeLessThanOrEqual(hTabla! + 1);
-    expect(await cola.locator('.queue-item').count(), 'máximo 3 tarjetas').toBeLessThanOrEqual(3);
-    // sin desplazamiento interno: nada en la cola se desplaza por dentro
-    expect(await page.locator('.dash-split > section:last-child *').evaluateAll((l) => l.some((e) => ['auto', 'scroll'].includes(getComputedStyle(e).overflowY) && e.scrollHeight > e.clientHeight + 1))).toBe(false);
-    // las 4 entregas siguen alcanzables: enlace «Ver las N entregas por revisar» a la pantalla existente
-    const ver = page.getByTestId('queue-see-all');
-    await expect(ver).toHaveText(/^Ver las 4 entregas por revisar$/);
-    await expect(ver).toHaveAttribute('href', '#/lider/entregas');
-    // título/empresa a la izquierda y «Revisar» a la derecha, en la misma fila
-    const item = cola.locator('.queue-item').first();
-    const ib = (await item.boundingBox())!;
-    const bb = (await item.getByRole('link', { name: /Revisar/ }).boundingBox())!;
-    const tb = (await item.locator('p').first().boundingBox())!;
-    expect(bb.x).toBeGreaterThan(tb.x + tb.width - 1);
-    expect(Math.abs(bb.y + bb.height / 2 - (ib.y + ib.height / 2))).toBeLessThan(ib.height / 2);
+    // H5c: la cola de revisión salió del Tablero (las entregas se abren desde «Entregas por revisar»); aquí solo queda la tabla
     // «Equipo 1» no se parte
     const alturas = await tabla.locator('tbody tr').evaluateAll((trs) =>
       trs.map((tr) => {

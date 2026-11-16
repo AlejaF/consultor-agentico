@@ -43,7 +43,7 @@ function Screen({ route }: { route: RouteMatch }) {
     case 'lider.delivery':
       return <DeliveryReview tipo={route.params.tipo as 'dx' | 'st'} projectId={route.params.projectId} />;
     case 'lider.dashboard':
-      return <Dashboard {...(route.params.vista ? { vista: route.params.vista } : {})} />;
+      return <Dashboard />; // #/lider, #/lider/detalle y #/lider/resumen abren esta misma página (H5c)
     case 'contacto.report':
       return <CompanyReport />;
     case 'contacto.survey':

@@ -12,9 +12,11 @@ async function entrarLider(page: import('@playwright/test').Page) {
 }
 
 test.describe('FR-053: recuento NO VERIFICADO', () => {
-  test('la cola del tablero muestra el recuento en cada entrega (P-B tiene 1)', async ({ page }) => {
+  test('«Entregas por revisar» muestra el recuento en cada entrega (P-B tiene 1)', async ({ page }) => { // H5c: la cola salió del Tablero; el recuento se verifica en esta pantalla
     await entrarLider(page);
-    const items = page.getByTestId('review-queue').locator('li');
+    await page.getByTestId('kpi-por-revisar').getByRole('link', { name: 'Ver entregas →' }).click();
+    await page.getByRole('heading', { level: 1, name: 'Entregas por revisar' }).waitFor();
+    const items = page.locator('main ul > li');
     const n = await items.count();
     expect(n).toBeGreaterThan(0);
     for (let i = 0; i < n; i++) await expect(items.nth(i).getByTestId('unverified-count')).toHaveText(/NO VERIFICADO entre los aceptados o editados/);
@@ -37,8 +39,8 @@ test.describe('FR-053: recuento NO VERIFICADO', () => {
     await page.goto('/#/lider/entregas/dx/P-B');
     await expect(page.getByTestId('unverified-count')).toHaveText(UNO);
     // una entrega sin NO VERIFICADO aceptados
-    const sin = page.getByTestId('review-queue');
-    await page.goto('/#/lider');
+    const sin = page.locator('main ul'); // H5c: la lista vive en «Entregas por revisar»
+    await page.goto('/#/lider/entregas');
     await sin.waitFor();
     const textos = await sin.locator('[data-testid=unverified-count]').allTextContents();
     expect(textos.some((t) => t === NINGUNO) || textos.every((t) => t === UNO)).toBe(true);

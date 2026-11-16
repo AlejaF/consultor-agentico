@@ -165,7 +165,7 @@ test.describe('Estrategia · Resumen', () => {
   });
 });
 
-test.describe('Tablero · Resumen', () => {
+test.describe('Tablero · una sola página (H5c)', () => {
   const entrarLider = async (page: Page, conReal = false) => {
     if (conReal) {
       await emitirDiagnostico(page); // un proyecto real emitido: 4 entregas por revisar y una barra «estimado por IA»
@@ -176,48 +176,36 @@ test.describe('Tablero · Resumen', () => {
     await page.getByRole('heading', { level: 1, name: 'Tablero' }).waitFor();
   };
 
-  test('por defecto abre el Resumen: 4 cifras con su contexto, tabla de 4 columnas, un gráfico con una leyenda y un enlace al Detalle (sin cola)', async ({ page }) => {
+  test('una sola página: 4 cifras, tabla completa con búsqueda y los dos gráficos lado a lado; sin cola ni control Resumen | Detalle', async ({ page }) => {
     await entrarLider(page, true);
-    await expect(page.getByTestId('tablero-resumen')).toBeVisible();
     expect(await hash(page)).toBe('#/lider');
-    const control = page.getByRole('navigation', { name: 'Vista de la pantalla' });
-    await expect(control.getByRole('link', { name: 'Resumen' })).toHaveAttribute('aria-current', 'page');
-    for (const id of ['equipos', 'por-revisar', 'promedio', 'madurez']) {
-      const k = page.getByTestId(`kpi-${id}`);
-      await expect(k).toBeVisible();
-      expect(((await k.locator('.subtitle').innerText()) || '').trim().length, `contexto de la cifra ${id}`).toBeGreaterThan(3);
-    }
-    await expect(page.getByTestId('kpi-equipos').locator('.subtitle')).toContainText(/proyectos/);
-    // «Proyectos por etapa» deja de ser un bloque; sin buscador
-    await expect(page.getByTestId('chart-stages')).toHaveCount(0);
-    await expect(page.getByLabel('Buscar equipo o empresa')).toHaveCount(0);
-    // tabla simplificada: Equipo, Etapa, Avance, Madurez
-    const tabla = page.getByTestId('teams-table');
-    const cabeceras = (await tabla.locator('thead th').allInnerTexts()).map((t) => t.trim());
-    expect(cabeceras).toEqual(['Equipo', 'Etapa', 'Avance', 'Madurez']);
-    await expect(tabla).not.toContainText('Última actividad');
-    await expect(tabla).not.toContainText('Entregas por revisar');
-    await expect(tabla.locator('tbody th').first()).toContainText(/\d proyectos?/); // «N proyectos» como subtítulo del equipo
-    await expect(tabla.getByRole('progressbar').first()).toBeVisible();
-    // H5·3: sin cola de revisión en el Resumen; la cifra de entregas es un enlace a la pantalla «Entregas por revisar»
+    await expect(page.getByTestId('tablero-resumen')).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Vista de la pantalla' })).toHaveCount(0);
     await expect(page.getByTestId('review-queue')).toHaveCount(0);
-    await expect(page.getByTestId('queue-see-all')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Cola de revisión' })).toHaveCount(0);
+    for (const id of ['equipos', 'por-revisar', 'promedio', 'madurez']) await expect(page.getByTestId(`kpi-${id}`)).toBeVisible();
     await expect(page.getByTestId('kpi-ver-entregas')).toHaveText('Ver entregas →');
     await expect(page.getByTestId('kpi-ver-entregas')).toHaveAttribute('href', '#/lider/entregas');
-    // un solo gráfico («Madurez por proyecto») con una sola leyenda
-    await expect(page.locator('[data-testid^="chart-"]')).toHaveCount(1);
-    await expect(page.getByTestId('chart-maturity-projects')).toBeVisible();
-    await expect(page.getByTestId('ranked-legend')).toHaveCount(1);
-    await expect(page.getByTestId('ranked-legend')).toContainText('gris = simulado, ilustrativo');
-    await expect(page.getByTestId('pillar-averages')).toHaveCount(0);
-    // el texto «ilustrativo» sigue por fila para lectores de pantalla y en «Ver como tabla»; pero sin un chip por fila
-    expect(await page.locator('.ranked-note').count()).toBeGreaterThan(0);
-    for (const w of await page.locator('.ranked-note').evaluateAll((l) => l.map((e) => e.getBoundingClientRect().width))) expect(w, 'sin chip visible por fila (solo texto para lectores de pantalla)').toBeLessThanOrEqual(1);
-    await expect(page.getByTestId('chart-maturity-projects').locator('.ranked-track').first()).toHaveAttribute('aria-label', /ilustrativo|estimado por IA/);
-    await page.getByTestId('chart-maturity-projects').getByText('Ver como tabla').click();
-    await expect(page.getByTestId('chart-maturity-projects').locator('table')).toContainText('ilustrativo');
-    await expect(page.getByTestId('resumen-detalle-link')).toHaveText('Ver tabla completa y filtros →');
+    await expect(page.getByLabel('Buscar equipo o empresa')).toBeVisible();
+    const cab = (await page.getByTestId('teams-table').locator('thead th').allInnerTexts()).map((t) => t.trim());
+    expect(cab).toEqual(['Equipo', 'Proyectos', 'Etapa', 'Avance', 'Madurez', 'Última actividad', 'Entregas por revisar']);
+    const tabla = await page.getByTestId('teams-table').boundingBox();
+    const main = await page.locator('main').boundingBox();
+    expect(tabla!.width, 'la tabla ocupa todo el ancho').toBeGreaterThan(main!.width * 0.85);
+    const etapas = await page.getByTestId('chart-stages').boundingBox();
+    const madurez = await page.getByTestId('chart-maturity-projects').boundingBox();
+    if (page.viewportSize()!.width >= 768) {
+      expect(Math.abs(etapas!.y - madurez!.y), 'los gráficos van lado a lado').toBeLessThan(4);
+      expect(madurez!.x).toBeGreaterThan(etapas!.x + etapas!.width - 1);
+    }
     expect(await idsDuplicados(page)).toEqual([]);
+    // las rutas antiguas abren esta misma página, sin 404
+    for (const h of ['#/lider/detalle', '#/lider/resumen']) {
+      await ir(page, h);
+      await expect(page.getByRole('heading', { level: 1, name: 'Tablero' })).toBeVisible();
+      await expect(page.getByTestId('chart-stages')).toBeVisible();
+      await expect(page.getByRole('navigation', { name: 'Vista de la pantalla' })).toHaveCount(0);
+    }
   });
 
   test('las pistas de las barras de madurez miden lo mismo (a 320, 768, 1280 y 1920)', async ({ page }) => {
@@ -228,24 +216,6 @@ test.describe('Tablero · Resumen', () => {
       expect(anchos.length).toBeGreaterThan(1);
       expect(Math.max(...anchos) - Math.min(...anchos), `pistas de igual longitud a ${w}: ${anchos.join(', ')}`).toBeLessThanOrEqual(0.5);
     }
-  });
-
-  test('«Ver detalle del tablero» abre el Detalle, que conserva todo lo de antes; la vista sobrevive a recargar', async ({ page }) => {
-    await entrarLider(page);
-    await page.getByTestId('resumen-detalle-link').click();
-    await expect.poll(() => hash(page)).toBe('#/lider/detalle');
-    await expect(page.getByTestId('review-queue')).toBeVisible(); // el Detalle conserva la cola
-    await expect(page.getByLabel('Buscar equipo o empresa')).toBeVisible();
-    await expect(page.getByTestId('chart-stages')).toBeVisible();
-    const cab = (await page.getByTestId('teams-table').locator('thead th').allInnerTexts()).map((t) => t.trim());
-    expect(cab).toEqual(['Equipo', 'Proyectos', 'Etapa', 'Avance', 'Madurez', 'Última actividad', 'Entregas por revisar']);
-    await expect(page.getByTestId('tablero-resumen')).toHaveCount(0);
-    expect(await idsDuplicados(page)).toEqual([]);
-    await page.reload();
-    await expect(page.getByLabel('Buscar equipo o empresa')).toBeVisible();
-    await page.getByRole('navigation', { name: 'Vista de la pantalla' }).getByRole('link', { name: 'Resumen' }).click();
-    await page.reload();
-    await expect(page.getByTestId('tablero-resumen')).toBeVisible();
   });
 });
 
@@ -337,7 +307,6 @@ test('accesibilidad AA, teclado, objetivos de 44 px y sin desplazamiento horizon
   const medidas: Record<string, unknown> = {};
   const pantallas: { clave: string; raiz: string; abrir: () => Promise<void> }[] = [
     { clave: 'estrategia', raiz: 'estrategia-resumen', abrir: async () => { await rol(page, 'consultor'); await ir(page, EST); } },
-    { clave: 'tablero', raiz: 'tablero-resumen', abrir: async () => { await rol(page, 'lider'); await page.getByRole('heading', { level: 1, name: 'Tablero' }).waitFor(); } },
   ];
   for (const p of pantallas) {
     await p.abrir();
@@ -354,7 +323,7 @@ test('accesibilidad AA, teclado, objetivos de 44 px y sin desplazamiento horizon
       expect(m.principal, `${p.clave}: bloque principal a ${w}`).toBe(1);
       expect(m.visual, `${p.clave}: visuales a ${w}`).toBeLessThanOrEqual(2);
       expect(m.lista, `${p.clave}: listas a ${w}`).toBeLessThanOrEqual(1);
-      if (w === 1280) expect(m.alto, `${p.clave}: altura del Resumen a 1280: ${m.alto}`).toBeLessThanOrEqual(p.clave === 'tablero' ? 800 : 1000); // H5·3: el Tablero baja a 800 px
+      if (w === 1280) expect(m.alto, `${p.clave}: altura del Resumen a 1280: ${m.alto}`).toBeLessThanOrEqual(1000);
     }
     // teclado: Tab alcanza el control y los botones
     await resize(page, 1280);
@@ -364,7 +333,7 @@ test('accesibilidad AA, teclado, objetivos de 44 px y sin desplazamiento horizon
       await page.keyboard.press('Tab');
       alcanzados.add(await page.evaluate(() => (document.activeElement?.textContent ?? '').trim()));
     }
-    const esperados = p.clave === 'estrategia' ? ['Resumen', 'Detalle', 'Ver riesgos y ruta en detalle', 'Ver trazabilidad', 'Ver informe imprimible'] : ['Resumen', 'Detalle', 'Ver tabla completa y filtros', 'Ver entregas'];
+    const esperados = ['Resumen', 'Detalle', 'Ver riesgos y ruta en detalle', 'Ver trazabilidad', 'Ver informe imprimible'];
     for (const t of esperados) expect([...alcanzados].some((x) => x.includes(t)), `${p.clave}: Tab alcanza «${t}»`).toBe(true);
   }
   writeFileSync('docs/evidencia/h4b-medidas.json', JSON.stringify(medidas, null, 2));

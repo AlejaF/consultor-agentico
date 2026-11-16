@@ -117,3 +117,7 @@ Las pantallas de referencia del profesorado y de los estudiantes muestran pocas 
 | Tablas simples con una etiqueta por estado | Tabla de equipos de 4 columnas (Equipo, Etapa, Avance, Madurez) |
 | Barras de un solo tono con el valor a la derecha | «Madurez por proyecto»: pistas iguales, una leyenda en lugar de un chip por fila |
 | El detalle vive en otra pantalla | Botones «Ver riesgos y ruta en detalle», «Ver trazabilidad», «Ver detalle del tablero» |
+
+## H5c — Tablero de una sola página
+
+La referencia del profesor para el Tablero (cifras, una tabla simple, un gráfico) se cumple con la pantalla única: 4 cifras con enlace a las entregas, tabla de equipos y los gráficos «Proyectos por etapa» y «Madurez por proyecto». La cola de revisión salió del Tablero: las entregas se abren desde «Entregas por revisar».

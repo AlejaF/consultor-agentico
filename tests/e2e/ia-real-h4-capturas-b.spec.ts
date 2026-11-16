@@ -41,7 +41,7 @@ test('capturas de H4b', async ({ page, request }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   // Tablero
   await page.locator('#rol-activo').selectOption('lider');
-  await expect(page.getByTestId('tablero-resumen')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Tablero' })).toBeVisible();
   await page.waitForTimeout(300);
   await page.screenshot({ path: 'docs/evidencia/h4b-tablero-1280-ventana.png' });
   await page.screenshot({ path: 'docs/evidencia/h4b-tablero-1280-pagina.png', fullPage: true });

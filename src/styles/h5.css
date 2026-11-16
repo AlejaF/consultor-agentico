@@ -56,3 +56,19 @@ section[aria-labelledby='encuesta-form'] .field-error { padding: var(--space-3);
 .pillar-flow { gap: var(--space-3); }
 .pillar-flow > section > h2 { margin: 0; }
 .split-main .chart { padding-block: var(--space-1); }
+
+/* ── H5c: Tablero de una sola página, compacto para quedar en ~1000 px ── */
+.tablero .kpi-grid > .kpi { padding: var(--space-2) var(--space-3); gap: var(--space-1); }
+.tablero .kpi-value { font-size: 1.75rem; }
+.tablero .field { margin-bottom: var(--space-2); }
+.tablero .rtable th, .tablero .rtable td { padding-block: var(--space-1); }
+.tablero .tablero-equipos > h2 { margin-bottom: var(--space-1); }
+.tablero .dash-charts { margin-top: var(--space-3); }
+.tablero .chart { padding-block: var(--space-2); }
+.tablero .field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); }
+.tablero .field label { margin: 0; }
+.tablero .field input { flex: 0 1 24rem; min-width: 0; }
+.tablero .chart-summary { margin-block: var(--space-1); }
+.tablero .kpi-grid > .kpi { padding-block: var(--space-1); }
+.tablero .rtable th, .tablero .rtable td { padding-block: 2px; }
+.tablero > p { margin-block: var(--space-1) var(--space-2); }

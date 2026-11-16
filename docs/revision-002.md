@@ -253,3 +253,9 @@ Para ver el Resumen con datos: `npm run dev:all`, elige «IA real», sube archiv
 4. **Entregas por revisar, Proyectos y Captura de evidencia**: filas compactas, barra y botón alineados, rótulos cerca de su valor.
 5. **Empresa**: índice destacado, ruta de 3 pasos en línea, dos columnas; **Encuesta**: columna centrada, «Pregunta N de 3», contador, ✓ en la opción elegida, aviso de simulación destacado.
 6. **Avisos**: en un proyecto con resultado parcial se ve la línea del aviso en cada Resumen (solo Consultor y Líder).
+
+## H5c — Tablero de una sola página (revisión de 3 min)
+
+1. Entra como Líder: el Tablero no tiene cola ni «Resumen | Detalle»; ves 4 cifras, la tabla completa con buscador y los dos gráficos lado a lado.
+2. Pulsa «Ver entregas →» en la cifra de entregas, abre una entrega y califícala: al volver, las entregas por revisar bajan en 1 y el promedio cambia.
+3. «Restablecer demo» devuelve los valores de partida. Abre `#/lider/detalle`: es la misma página.

@@ -421,6 +421,8 @@ En todos los casos: spec → plan → tareas antes del código, y constancia en 
 - [X] T255 [H5] Puntos 7 a 11 y 5: Entregas, Proyectos, Datos de la empresa, Empresa (Resumen y Encuesta) y propósito de pantalla
 - [X] T256 [H5] Pruebas nuevas `ia-real-h4-h5.spec.ts`; pruebas de H4b actualizadas (solo del Tablero Resumen); mutaciones en `docs/evidencia/mutacion-h5.md`; capturas `h5-*.png`
 - [ ] T257 [PERSONA] Revisión humana de H5 (lista en `docs/revision-002.md`) y commit. Las suites completas se corren en el lote F.
+- [X] T258 [H5c] Tablero de una sola página (sin cola ni control de alternar); inventario y ajuste de 7 comprobaciones existentes; pruebas de ausencia y de dinamismo (`ia-real-h4-h5c.spec.ts`); mutaciones en `docs/evidencia/mutacion-h5c.md`
+- [ ] T259 [PERSONA] Revisión humana de H5c (3 min, `docs/revision-002.md`) y commit
 
 ---
 
