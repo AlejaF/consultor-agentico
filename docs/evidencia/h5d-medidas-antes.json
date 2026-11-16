@@ -1,0 +1,26 @@
+{
+  "768": {
+    "descripcionACifras": 8,
+    "cifrasATitulo": 24,
+    "filaMin": 53,
+    "tablaAGraficos": 12,
+    "entreGraficos": 16,
+    "rellenoCifras": 4,
+    "rellenoGrafico": 8,
+    "dispersionNumeros": 48,
+    "enlaceDebajo": 4,
+    "alto": 1296
+  },
+  "1280": {
+    "descripcionACifras": 8,
+    "cifrasATitulo": 24,
+    "filaMin": 31,
+    "tablaAGraficos": 12,
+    "entreGraficos": 16,
+    "rellenoCifras": 4,
+    "rellenoGrafico": 8,
+    "dispersionNumeros": 48,
+    "enlaceDebajo": 4,
+    "alto": 989
+  }
+}

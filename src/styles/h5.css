@@ -72,3 +72,41 @@ section[aria-labelledby='encuesta-form'] .field-error { padding: var(--space-3);
 .tablero .kpi-grid > .kpi { padding-block: var(--space-1); }
 .tablero .rtable th, .tablero .rtable td { padding-block: 2px; }
 .tablero > p { margin-block: var(--space-1) var(--space-2); }
+
+/* ── H5d: Tablero con aire (ritmo de 16 y 24 px, filas de 44 px, relleno de 24 px y cifras alineadas) ── */
+.tablero > p { margin-block: var(--space-1) var(--rhythm-block); }
+.tablero .kpi-grid { gap: var(--rhythm-block); margin-bottom: var(--rhythm-section); grid-auto-rows: auto; }
+.tablero .kpi-grid > .kpi { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: var(--space-1); align-content: start; justify-content: stretch; height: auto; padding: var(--rhythm-section); }
+.tablero .kpi-grid > .kpi > p { margin: 0; }
+.tablero .kpi-grid > .kpi > .kpi-value { align-self: end; }
+.tablero .tablero-equipos > h2 { margin-bottom: var(--rhythm-block); }
+.tablero .field { margin-bottom: var(--rhythm-block); }
+.tablero .rtable th, .tablero .rtable td { padding-block: var(--space-2); }
+@media (min-width: 1024px) { .tablero .rtable tbody tr { height: var(--target-min); } }
+.tablero .dash-charts { margin-top: var(--rhythm-section); gap: var(--rhythm-section); }
+.tablero .chart { padding: var(--rhythm-section); }
+.tablero .kpi-link { display: inline; min-height: 0; text-decoration: underline; }
+.tablero .kpi-grid > .kpi > .subtitle { line-height: var(--line-height-tight, 1.3); }
+.tablero .tablero-equipos > h2 { margin-bottom: var(--space-2); }
+.tablero .field { margin-bottom: var(--space-2); }
+.tablero .rtable th, .tablero .rtable td { padding-block: var(--space-1); }
+.tablero .chart-summary { margin-block: 0 var(--space-2); }
+.tablero .chart .chart-title { margin-bottom: var(--space-1); }
+.tablero .kpi-grid > .kpi { row-gap: 0; }
+.tablero .kpi-value { font-size: var(--font-size-h2); }
+.tablero .chart .chart-table { margin-top: 0; }
+.tablero .ranked-legend { margin-top: var(--space-1); }
+/* El enlace de la cifra mide 44 px de alto (criterio de objetivos de la 001); fila propia debajo del número */
+.tablero .kpi-link { display: inline-flex; align-items: center; min-height: var(--target-min); }
+.tablero h1 { margin-block: 0 var(--space-1); }
+@media (min-width: 768px) {
+  .tablero .tablero-equipos { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: var(--rhythm-section); align-items: center; }
+  .tablero .tablero-equipos > .field { justify-self: end; margin: 0 0 var(--space-2); }
+  .tablero .tablero-equipos > h2 { margin-bottom: var(--space-2); }
+  .tablero .tablero-equipos > :not(h2):not(.field) { grid-column: 1 / -1; }
+}
+@media (min-width: 768px) {
+  .tablero .tablero-equipos > .field { display: flex; flex-flow: row nowrap; align-items: center; gap: var(--space-3); }
+  .tablero .tablero-equipos > .field label { white-space: nowrap; }
+  .tablero .tablero-equipos > .field input { flex: 1 1 16rem; width: 16rem; max-width: 100%; }
+}

@@ -144,12 +144,68 @@ test('Tablero: axe AA, sin desplazamiento horizontal y objetivos de 44 px a 320,
   // peor caso (con un proyecto real emitido aparece además «Madurez por pilar (promedio)»): se registra, no se acota
 });
 
-test('Tablero: altura a 1280 con los datos de ejemplo ≤ 1000 px', async ({ page }) => {
+// H5d: el criterio pasa de 1000 a 1100 px porque el Tablero ganó aire (ritmo de 16 y 24 px, filas de 44 px, relleno de 24 px y cifras con su enlace en fila propia)
+test('Tablero: altura a 1280 con los datos de ejemplo ≤ 1100 px', async ({ page }) => {
   await entrarConsultor(page);
   await comoLider(page);
   await page.setViewportSize({ width: 1280, height: 600 });
   await page.waitForTimeout(200);
   const alto = await page.evaluate(() => document.documentElement.scrollHeight);
   writeFileSync('docs/evidencia/h5c-medidas-ejemplo.json', JSON.stringify({ alto1280: alto }, null, 2));
-  expect(alto, `altura del Tablero a 1280: ${alto}`).toBeLessThanOrEqual(1000);
+  expect(alto, `altura del Tablero a 1280: ${alto}`).toBeLessThanOrEqual(1100);
+});
+
+/** Espacios del Tablero (H5d): mínimos de ritmo (16 y 24 px), filas de 40 px, relleno de 20 px y cifras alineadas. */
+async function medirEspacios(page: Page) {
+  return page.evaluate(() => {
+    const r = (e: Element) => e.getBoundingClientRect();
+    const main = document.querySelector('main')!;
+    const intro = main.querySelector('h1 + p')!;
+    const kpis = [...document.querySelectorAll('[data-testid^="kpi-"]')].filter((e) => e.classList.contains('kpi'));
+    const grid = document.querySelector('section[aria-label="Indicadores"]')!;
+    const h2 = document.getElementById('tab-equipos')!;
+    const tabla = document.querySelector('[data-testid="teams-table"]')!;
+    const etapas = document.querySelector('[data-testid="chart-stages"]')!;
+    const madurez = document.querySelector('[data-testid="chart-maturity-projects"]')!;
+    const filas = [...document.querySelectorAll('[data-testid="teams-table"] tbody tr')].map((e) => r(e).height);
+    const pad = (e: Element) => { const s = getComputedStyle(e); return Math.min(...[s.paddingTop, s.paddingRight, s.paddingBottom, s.paddingLeft].map(parseFloat)); };
+    const valores = kpis.map((k) => r(k.querySelector('.kpi-value')!).top);
+    const enlace = document.querySelector('[data-testid="kpi-ver-entregas"]')!;
+    const valorEntregas = document.querySelector('[data-testid="kpi-por-revisar"] .kpi-value')!;
+    const lado = Math.abs(r(etapas).top - r(madurez).top) < 4;
+    return {
+      descripcionACifras: Math.round(r(grid).top - r(intro).bottom),
+      cifrasATitulo: Math.round(r(h2).top - r(grid).bottom),
+      filaMin: Math.round(Math.min(...filas)),
+      tablaAGraficos: Math.round(r(etapas).top - r(tabla).bottom),
+      entreGraficos: Math.round(lado ? r(madurez).left - r(etapas).right : r(madurez).top - r(etapas).bottom),
+      rellenoCifras: pad(kpis[0]!),
+      rellenoGrafico: pad(etapas),
+      dispersionNumeros: Math.round(Math.max(...valores) - Math.min(...valores)),
+      enlaceDebajo: Math.round(r(enlace).top - r(valorEntregas).bottom),
+      alto: document.documentElement.scrollHeight,
+    };
+  });
+}
+
+test('Tablero (H5d): espacios mínimos de ritmo, filas de 40 px, relleno de 20 px y cifras alineadas, a 1280 y a 768', async ({ page }) => {
+  await entrarConsultor(page);
+  await comoLider(page);
+  const medidas: Record<string, unknown> = {};
+  for (const w of [1280, 768]) {
+    await page.setViewportSize({ width: w, height: w === 1280 ? 600 : 800 });
+    await page.waitForTimeout(200);
+    const m = await medirEspacios(page);
+    medidas[w] = m;
+    expect.soft(m.descripcionACifras, `descripción → cifras a ${w}`).toBeGreaterThanOrEqual(16);
+    expect.soft(m.cifrasATitulo, `cifras → «Equipos» a ${w}`).toBeGreaterThanOrEqual(24);
+    if (w >= 1024) expect.soft(m.filaMin, `alto mínimo de fila a ${w}`).toBeGreaterThanOrEqual(40);
+    expect.soft(m.tablaAGraficos, `tabla → gráficos a ${w}`).toBeGreaterThanOrEqual(24);
+    expect.soft(m.entreGraficos, `entre los dos gráficos a ${w}`).toBeGreaterThanOrEqual(24);
+    expect.soft(m.rellenoCifras, `relleno de las cifras a ${w}`).toBeGreaterThanOrEqual(20);
+    expect.soft(m.rellenoGrafico, `relleno de los gráficos a ${w}`).toBeGreaterThanOrEqual(20);
+    expect.soft(m.dispersionNumeros, `los 4 números a la misma altura a ${w}`).toBeLessThanOrEqual(1);
+    expect.soft(m.enlaceDebajo, `«Ver entregas →» en una fila propia, debajo del número, a ${w}`).toBeGreaterThanOrEqual(0);
+  }
+  writeFileSync(process.env.H5D_ANTES ? 'docs/evidencia/h5d-medidas-antes.json' : 'docs/evidencia/h5d-medidas.json', JSON.stringify(medidas, null, 2));
 });
