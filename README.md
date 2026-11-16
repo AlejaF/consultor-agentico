@@ -57,19 +57,6 @@ PDF, DOCX, TXT, VTT, SRT y XLSX, hasta 25 MB y nombres de hasta 150 caracteres. 
 
 Se usa en dos sentidos: (1) un **hallazgo** con respaldo insuficiente se marca «NO VERIFICADO»; puede aceptarse, pero **no cuenta como respaldo de la estrategia**; (2) en este README y en `docs/`, una **afirmación** que nadie ha comprobado todavía (ver la lista más abajo).
 
-## Decisión sobre el alcance de P3 (2026-11-02)
-
-Se incluyen L5a (informe imprimible) y L5b (vista de la Empresa y encuesta simulada), y tres ampliaciones de P3: el tablero del Líder con madurez y buscador (E), los datos de la empresa en la captura de evidencia (F), y el análisis de sector y de mercado de solo lectura (G). Quedó registrado en el spec, `tasks.md`, `docs/decisiones.md` y `docs/cobertura-referencias.md`, y la constitución se enmendó (1.0.1).
-
-> **Constitución 2.1.0 (2026-11-14; 2.0.0 el 2026-11-11)**: el sitio publicado en GitHub Pages sigue siendo estático y funciona solo en modo Simulado. Se permite un backend local opcional (`server/`) que solo corre en el equipo de la persona y es el único lugar donde puede existir la clave de API del proveedor de IA; la clave nunca va en el repositorio, el historial, el frontend ni `dist/`. En modo IA real los documentos propios viven solo en memoria durante la sesión, todo contenido del modelo se rotula «Generado por IA · requiere revisión humana» (sin nombre de modelo; el modelo, la fecha y los tokens se ven solo en la traza y la ficha técnica, y solo para los roles internos) y las citas se verifican por código. Nuevo principio IX «Seguridad y costo de la IA». Esta enmienda es solo de gobierno: el backend aún no está construido y lo descrito en este README sigue siendo la demo simulada.
-
-## Alcance: qué se incluyó y qué se recortó
-
-- **Vista de la Empresa y encuesta simulada** (historia 7): **incluida el 2026-11-02** (L5b). La Empresa Ficticia Beta ve su ruta de adopción en tres pasos, el próximo paso, una actividad de ejemplo, el informe de diagnóstico en solo lectura y una encuesta simulada de 3 preguntas que se guarda solo en el navegador.
-- **Informe imprimible** (historia 8): **incluido** (lotes L6f y L6g). Desde un diagnóstico emitido, «Ver informe imprimible» abre una vista que se imprime o se guarda como PDF con la función del navegador; lleva «DEMO · datos ficticios» en cada página y los rótulos «Simulada» y «NO VERIFICADO». La impresión real en papel o PDF queda por revisar a mano (tarea T071).
-- Qué se tomó de las interfaces de referencia y qué no (con resumen de conteos por estado): [`docs/cobertura-referencias.md`](docs/cobertura-referencias.md).
-- Fuera de la demo por pertenecer al sistema completo: IA real, transcripción de audio, lectura del contenido de los archivos, cuentas y permisos reales, envío de correos, almacenamiento compartido, administración de la plataforma, exportaciones oficiales, fuentes reales de sector y mercado, estrategia conversacional por etapas, portafolio de casos de uso y la devolución de un entregable para corregirlo (el Líder solo califica).
-
 ## Límites conocidos y cosas NO VERIFICADO
 
 - **No evaluado en esta versión de demostración** — SC-001 (completar el recorrido P1 en 10 minutos o menos) y SC-005 («9 de cada 10» identifican lo simulado) se mantienen como metas del spec; no hay ningún resultado y no se afirma ninguno.
@@ -113,9 +100,3 @@ Las capturas y los resultados de axe están en `docs/evidencia/` (ver su `README
 ## Cómo se despliega
 
 GitHub Actions compila con `BASE_PATH=/<nombre-del-repositorio>/` y publica `dist/` en GitHub Pages (`.github/workflows/`). La app usa rutas con `#` (`#/consultor`), así que no necesita configuración de servidor. Una prueba (`tests/e2e/base-path.spec.ts`) compila bajo una subruta y comprueba que no hay recursos rotos.
-
-## Contenido, créditos y licencias
-
-- Ningún nombre, marca, logo ni dato real: las empresas («Empresa Ficticia …») y las cuentas («… Demo») son inventadas. `npm run check` lo vigila con una lista local de nombres vetados que no se versiona. La carpeta `referencias/` (material de consulta) no se versiona ni se publica.
-- Tipografía **Plus Jakarta Sans** (paquete `@fontsource-variable/plus-jakarta-sans`), bajo la licencia SIL Open Font License 1.1: [`public/licenses/OFL-PlusJakartaSans.txt`](public/licenses/OFL-PlusJakartaSans.txt) (también se publica con la app en `licenses/OFL-PlusJakartaSans.txt`).
-- El emblema es un dibujo genérico creado para esta demo, sin relación con ninguna marca.
